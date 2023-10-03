@@ -1,0 +1,330 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: ProdCom-E API
+  description: An e-commerce website to deliver best and authentic gadget items.
+  contact:
+    name: Md. Sifytul Karim
+    email: sifytul09@gmail.com
+
+tags:
+  - name: Auth
+    description: Authentication Endpoints (public)
+  - name: User
+    description: User Endpoints (private)
+
+servers:
+  - description: localhost
+    url: http://localhost:4000
+
+paths:
+  '/health':
+    get:
+      description: Check the health of api
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Api is running
+  '/auth/register':
+    post:
+      tags: [Auth]
+      description: This route will create a user with provided payload
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'Sifytul Karim'
+                email:
+                  type: string
+                  example: sifytul@example.com
+                  format: email
+                password:
+                  type: string
+                  example: password123
+                  format: password
+              required: [name, email, password]
+
+      responses:
+        '201':
+          description: registered a new user
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        format: int32
+                        example: 1
+                      name:
+                        type: string
+                        example: Sifytul Karim
+                      email:
+                        type: string
+                        example: sifytul@example.com
+                      role:
+                        type: string
+                        example: user
+        '400':
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: email
+                        message:
+                          type: string
+                          example: Field can't be empty
+        '409':
+          description: 'duplicate value'
+          $ref: '#/components/responses/409'
+  '/auth/signin':
+    post:
+      tags: [Auth]
+      description: This route will log in a user to the website
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: sifytul@example.com
+                password:
+                  type: string
+                  example: password123
+              required: [email, password]
+
+      responses:
+        '200':
+          description: login success
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: Sifytul Karim
+                      email:
+                        type: string
+                        example: sifytul@example.com
+        '400':
+          $ref: '#/components/responses/400'
+        '409':
+          $ref: '#/components/responses/409'
+  '/auth/password/forgot':
+    post:
+      tags: [Auth]
+      description: This route will log in a user to the website
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: sifytul@example.com
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    example: true
+                  message:
+                    type: string
+                    example: 'If this email id is valid, a password change request is send to this id. Please check the email inbox or Spam folder'
+  # "/auth/password/reset/{token}":
+  '/auth/refresh-token':
+    get:
+      tags: [Auth]
+      description: retrive access token by providing httponly refresh token
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+        '401':
+          $ref: '#/components/responses/401'
+
+  '/me':
+    get:
+      description: This will retrieve the profile data based on the provided token.
+      tags: [User]
+      responses:
+        '200':
+          description: User data
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Sifytul Karim
+                      email:
+                        type: string
+                        example: sifytul@example.com
+                      address:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 3
+                          address:
+                            type: string
+                            example: '204, sholoshohor'
+                          city:
+                            type: string
+                            example: chittagong
+                          state:
+                            type: string
+                            example: chittagong
+                          pinCode:
+                            type: integer
+                            example: 4333
+                          phoneNo:
+                            type: string
+                            example: +8801000000000
+                      avatar:
+                        type: string
+                        example: s3.avatar.jpeg
+                      orderDetails:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 3
+                            orderDate:
+                              type: string
+                              example: 2023-09-26 03:03:00
+                            status:
+                              type: string
+                              example: processing
+                            itemsPrice:
+                              type: integer
+                              example: 345.34
+                            links:
+                              type: object
+                              properties:
+                                self:
+                                  type: string
+                                  example: /orders/3
+
+components:
+  responses:
+    '400':
+      description: Bad request
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: email
+                    message:
+                      type: string
+                      example: Field can't be empty
+    '409':
+      description: Conflict
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 409
+              message:
+                type: string
+                example: duplicate email
+    '401':
+      description: Unauthorized
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              accessToken:
+                type: string
+                example: ''
