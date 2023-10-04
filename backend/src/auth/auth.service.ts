@@ -1,6 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare } from 'bcryptjs';
+import { compare } from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 export type TRegisterProps = {
   name: string;
@@ -11,6 +11,8 @@ type TLoginProps = {
   email: string;
   password: string;
 };
+
+type TErrors = { field: string; message: string };
 
 @Injectable()
 export class AuthService {
@@ -48,10 +50,29 @@ export class AuthService {
     password: string;
   }): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
-    if (!user || (await compare(user?.password, password))) {
-      throw new UnauthorizedException();
+    let errors: TErrors[] = [];
+    if (!user) {
+      errors.push({
+        field: 'email',
+        message: 'wrong credential',
+      });
+      throw new BadRequestException({
+        success: false,
+        errors,
+      });
     }
-    const { password: pass, ...result } = user;
+
+    const hasMatch = await compare(password, user?.password);
+    if (!hasMatch) {
+      errors.push({
+        field: 'password',
+        message: 'wrong credentials',
+      });
+      throw new BadRequestException({
+        success: false,
+        errors,
+      });
+    }
     const payload = {
       id: user.id,
       email: user.email,
@@ -69,6 +90,5 @@ export class AuthService {
         tokenVersion: user.tokenVersion,
       },
     };
-    return result;
   }
 }
