@@ -1,15 +1,18 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
+  Param,
   Post,
   Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
+import { genSalt, hash } from 'bcrypt';
 import { Request, Response } from 'express';
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { UserService } from 'src/user/user.service';
@@ -18,6 +21,7 @@ import { sendRefreshToken } from 'src/utils/sendRefreshToken';
 import { createAccessToken } from 'src/utils/tokenCreator';
 import { AuthService } from './auth.service';
 import { Cookies } from './cookie.decorator';
+import { ChangePasswordDto } from './dto/changePasswordDto';
 import { ForgotPasswordDto } from './dto/forgotPasswordDto';
 import { registerUserDto } from './dto/registerUserDto';
 import { SignInDto } from './dto/signinDto';
@@ -112,6 +116,7 @@ export class AuthController {
     };
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('password/forgot')
   async forgotPassword(@Body() { email }: ForgotPasswordDto) {
     const isUserExist = await this.userService.findOneByEmail(email);
@@ -124,13 +129,14 @@ export class AuthController {
     }
     let forgotPasswordToken = sign(
       { email },
-      process.env.FORGET_PASSWORD_SECRET!,
+      process.env.FORGOT_PASSWORD_SECRET!,
       {
-        expiresIn: '15m',
+        expiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIREDIN,
       },
     );
     try {
       await sendResetPasswordLinkEMail(email, forgotPasswordToken);
+      //TODO: Need to add a service to track the email.
     } catch (err) {
       throw new InternalServerErrorException({
         success: false,
@@ -145,7 +151,45 @@ export class AuthController {
   }
 
   @Post('password/reset/:token')
-  async resetPassword() {}
+  async resetPassword(
+    @Param('token') token: string,
+    @Body() { password, wantToLogOutFromOtherDevices }: ChangePasswordDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    if (!token) {
+      throw new BadRequestException('Invalid input');
+    }
+    let payload;
+    try {
+      payload = verify(
+        token,
+        process.env.FORGOT_PASSWORD_SECRET!,
+      ) as JwtPayload;
+    } catch (err) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Token expired. Please get a new one.',
+      });
+    }
+    const salt = await genSalt(12);
+    const hashedPassword = await hash(password, salt);
+    let updatedUser = await this.userService.resetUserPassword(
+      payload.email,
+      hashedPassword,
+      wantToLogOutFromOtherDevices,
+    );
+    let tokenPayload = {
+      userId: updatedUser.id,
+      email: updatedUser.email,
+      tokenVersion: updatedUser.tokenVersion,
+      role: updatedUser.role,
+    };
+    sendRefreshToken(res, tokenPayload);
+    return {
+      success: true,
+      accessToken: createAccessToken(tokenPayload),
+    };
+  }
 
   @Post('logout')
   async logout() {}

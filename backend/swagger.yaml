@@ -227,6 +227,9 @@ paths:
                   type: string
                   example: password123
                   minLength: 8
+                wantToLogoutFromOtherDevices:
+                  type: boolean
+                  example: false
               required: [password]
       responses:
         '201':
@@ -247,16 +250,14 @@ paths:
           content:
             'application/json':
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    field:
-                      type: string
-                      example: password
-                    error:
-                      type: string
-                      example: password can't be less than 8 characters.
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Token expired. Please get a new one.
   '/auth/logout':
     post:
       tags: [Auth]

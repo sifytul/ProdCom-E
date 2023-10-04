@@ -35,4 +35,21 @@ export class UserService {
   async findAllUsers() {
     return this.userRepo.find({});
   }
+
+  async resetUserPassword(
+    email: string,
+    password: string,
+    wantToLogOutFromOtherDevices: boolean,
+  ) {
+    let oldUserData = await this.findOneByEmail(email);
+
+    oldUserData.password = password;
+    if (wantToLogOutFromOtherDevices) {
+      oldUserData.tokenVersion += 1;
+    }
+    let updatedUser = await this.userRepo.save(oldUserData);
+    console.log(updatedUser);
+    delete updatedUser.password;
+    return updatedUser;
+  }
 }
