@@ -130,7 +130,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     - message: "Unauthorized"
     - code: 401
 
-- [ ] PATCH- [public] - auth/password/forgot
+- [x] PATCH- [public] - auth/password/forgot
 - Forgot password
 
   Method: POST

@@ -4,18 +4,21 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Post,
   Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { JwtPayload, verify } from 'jsonwebtoken';
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { UserService } from 'src/user/user.service';
+import { sendResetPasswordLinkEMail } from 'src/utils/sendEmail';
 import { sendRefreshToken } from 'src/utils/sendRefreshToken';
 import { createAccessToken } from 'src/utils/tokenCreator';
 import { AuthService } from './auth.service';
 import { Cookies } from './cookie.decorator';
+import { ForgotPasswordDto } from './dto/forgotPasswordDto';
 import { registerUserDto } from './dto/registerUserDto';
 import { SignInDto } from './dto/signinDto';
 
@@ -108,4 +111,42 @@ export class AuthController {
       accessToken: createAccessToken(tokenPayload),
     };
   }
+
+  @Post('password/forgot')
+  async forgotPassword(@Body() { email }: ForgotPasswordDto) {
+    const isUserExist = await this.userService.findOneByEmail(email);
+    if (!isUserExist) {
+      return {
+        success: true,
+        message:
+          'Sent an email with reset link if the email is valid. Check your inbox',
+      };
+    }
+    let forgotPasswordToken = sign(
+      { email },
+      process.env.FORGET_PASSWORD_SECRET!,
+      {
+        expiresIn: '15m',
+      },
+    );
+    try {
+      await sendResetPasswordLinkEMail(email, forgotPasswordToken);
+    } catch (err) {
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'Some error occured. Please try again.',
+      });
+    }
+    return {
+      success: true,
+      message:
+        'Sent an email with reset link if the email is valid. Check your inbox',
+    };
+  }
+
+  @Post('password/reset/:token')
+  async resetPassword() {}
+
+  @Post('logout')
+  async logout() {}
 }
