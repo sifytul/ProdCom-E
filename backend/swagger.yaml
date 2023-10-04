@@ -156,6 +156,9 @@ paths:
                       email:
                         type: string
                         example: sifytul@example.com
+                      role:
+                        type: string
+                        example: user
         '400':
           $ref: '#/components/responses/400'
         '409':
@@ -401,4 +404,4 @@ components:
       description: reset password token
       schema:
         type: string
-        example: '6b9d1701-2ff6-4fa2-ac7d-108b196d475f'
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
