@@ -13,7 +13,7 @@ export async function createTestAccount() {
       pass,
     },
   });
-  return transporter;
+  return { transporter, user };
 }
 
 export async function sendResetPasswordLinkEMail(
@@ -22,9 +22,9 @@ export async function sendResetPasswordLinkEMail(
 ) {
   const resetLink = process.env.FRONTEND_URL! + '/forgotPassword/' + resetToken;
   const user = to?.split('@')[0];
-  const transporter = await createTestAccount();
+  const { transporter, user: smtpUser } = await createTestAccount();
   const info = await transporter.sendMail({
-    from: process.env.NODEMAILER_USER!,
+    from: smtpUser,
     to,
     subject: 'ProdCom-E password recovery link',
     html: `<!DOCTYPE html>
