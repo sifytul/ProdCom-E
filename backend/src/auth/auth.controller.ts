@@ -192,5 +192,11 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout() {}
+  async logout(@Res({ passthrough: true }) res: Response) {
+    sendRefreshToken(res, '');
+    return {
+      success: true,
+      accessToken: '',
+    };
+  }
 }
