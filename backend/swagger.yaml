@@ -227,7 +227,7 @@ paths:
                   type: string
                   example: password123
                   minLength: 8
-                wantToLogoutFromOtherDevices:
+                wantToLogOutFromOtherDevices:
                   type: boolean
                   example: false
               required: [password]
