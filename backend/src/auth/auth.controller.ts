@@ -21,6 +21,7 @@ import { sendRefreshToken } from 'src/utils/sendRefreshToken';
 import { createAccessToken } from 'src/utils/tokenCreator';
 import { AuthService } from './auth.service';
 import { Cookies } from './cookie.decorator';
+import { Public } from './decorators/public.decorator';
 import { ChangePasswordDto } from './dto/changePasswordDto';
 import { ForgotPasswordDto } from './dto/forgotPasswordDto';
 import { registerUserDto } from './dto/registerUserDto';
@@ -33,26 +34,32 @@ export class AuthController {
     private readonly userService: UserService,
   ) {}
 
+  @Public()
   @Post('/register')
   async registerUser(
     @Res({ passthrough: true }) res: Response,
     @Body() registerProps: registerUserDto,
   ) {
     const response = await this.authService.register(registerProps);
-    const {
-      data: { id, email, role, tokenVersion },
-    } = response;
+    const { id, email, role, tokenVersion } = response;
     const tokenPayload = {
       userId: id,
       email,
       role,
-      tokenVersion: tokenVersion,
+      tokenVersion,
     };
     sendRefreshToken(res, tokenPayload);
-    delete response.data.tokenVersion;
-    return response;
+    delete response.tokenVersion;
+    return {
+      success: true,
+      accessToken: createAccessToken(tokenPayload),
+      data: {
+        ...response,
+      },
+    };
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('/signin')
   async loginUser(
@@ -60,18 +67,22 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const response = await this.authService.signIn(body);
-    const {
-      data: { id, email, role, tokenVersion },
-    } = response;
+    const { id, email, role, tokenVersion } = response;
     const tokenPayload = {
       userId: id,
       email,
       role,
-      tokenVersion: tokenVersion,
+      tokenVersion,
     };
     sendRefreshToken(res, tokenPayload);
-    delete response.data.tokenVersion;
-    return response;
+    delete response.tokenVersion;
+    return {
+      success: true,
+      accessToken: createAccessToken(tokenPayload),
+      data: {
+        ...response,
+      },
+    };
   }
 
   @HttpCode(HttpStatus.OK)

@@ -23,22 +23,13 @@ export class AuthService {
 
   async register(registerProps: TRegisterProps) {
     const createdUser = await this.userService.registerUser(registerProps);
-    const payload = {
-      id: createdUser.id,
-      email: createdUser.email,
-      tokenVersion: createdUser.tokenVersion,
-    };
-    const accessToken = await this.jwtService.signAsync(payload);
+
     return {
-      success: true,
-      accessToken,
-      data: {
-        id: createdUser.id,
-        name: createdUser.name,
-        email: createdUser.email,
-        role: createdUser.role,
-        tokenVersion: createdUser.tokenVersion,
-      },
+      id: createdUser.id,
+      name: createdUser.name,
+      email: createdUser.email,
+      role: createdUser.role,
+      tokenVersion: createdUser.tokenVersion,
     };
   }
 
@@ -73,22 +64,13 @@ export class AuthService {
         errors,
       });
     }
-    const payload = {
-      id: user.id,
-      email: user.email,
-      tokenVersion: user.tokenVersion,
-    };
-    const accessToken = await this.jwtService.signAsync(payload);
+
     return {
-      success: true,
-      accessToken,
-      data: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        tokenVersion: user.tokenVersion,
-      },
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      tokenVersion: user.tokenVersion,
     };
   }
 }
