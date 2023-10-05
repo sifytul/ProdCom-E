@@ -26,7 +26,9 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: 'https://ibb.co/1R25ccH' })
+  @Column({
+    default: 'https://i.ibb.co/F87MppG/man-character-665280-46967.jpg',
+  })
   avatar: string;
 
   @Column({ type: 'enum', enum: UserType, default: UserType.USER })
@@ -35,11 +37,11 @@ export class User {
   @Column({ default: 0 })
   tokenVersion: number;
 
-  @Column({ nullable: true })
-  resetPasswordToken: string;
+  // @Column({ nullable: true })
+  // resetPasswordToken: string;
 
-  @Column({ nullable: true })
-  resetPasswordExpire: Date;
+  // @Column({ nullable: true })
+  // resetPasswordExpire: Date;
 
   @CreateDateColumn()
   createdAt: Date;
