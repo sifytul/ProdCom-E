@@ -9,9 +9,17 @@ info:
 
 tags:
   - name: Auth
-    description: Authentication Endpoints (public)
+    description: Authentication Endpoints (public + private)
   - name: User
     description: User Endpoints (private)
+  - name: Products
+    description: Products Endpoints (public + private)
+  - name: Orders
+    description: Orders Endpoints(private)
+  - name: Cart
+    description: Cart Endpoints (private)
+  - name: Payment
+    description: Payment Endpoints (private)
 
 servers:
   - description: localhost
@@ -21,6 +29,8 @@ paths:
   '/health':
     get:
       description: Check the health of api
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: success response
@@ -156,37 +166,15 @@ paths:
                       email:
                         type: string
                         example: sifytul@example.com
-                      role:
-                        type: string
-                        example: user
         '400':
           $ref: '#/components/responses/400'
         '409':
           $ref: '#/components/responses/409'
-  '/auth/refresh-token':
-    get:
-      tags: [Auth]
-      description: retrive access token by providing httponly refresh token
-      responses:
-        '200':
-          description: success response
-          content:
-            'application/json':
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  accessToken:
-                    type: string
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-
-        '401':
-          $ref: '#/components/responses/401'
   '/auth/password/forgot':
     post:
       tags: ['Auth']
+      security:
+        - bearerAuth: []
       description: This route will help a user to reset his password if he has an account on this website with the provided email.
       requestBody:
         content:
@@ -214,6 +202,8 @@ paths:
   '/auth/password/reset/{token}':
     post:
       tags: [Auth]
+      security:
+        - bearerAuth: []
       description: This route will reset the password of the particular user.
       parameters:
         - $ref: '#/components/parameters/tokenParam'
@@ -227,9 +217,6 @@ paths:
                   type: string
                   example: password123
                   minLength: 8
-                wantToLogOutFromOtherDevices:
-                  type: boolean
-                  example: false
               required: [password]
       responses:
         '201':
@@ -250,17 +237,43 @@ paths:
           content:
             'application/json':
               schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: password
+                    error:
+                      type: string
+                      example: password can't be less than 8 characters.
+  '/auth/refresh-token':
+    get:
+      tags: [Auth]
+      description: retrive access token by providing httponly refresh token
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
                 type: object
                 properties:
                   success:
                     type: boolean
-                    example: false
-                  message:
+                    example: true
+                  accessToken:
                     type: string
-                    example: Token expired. Please get a new one.
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+        '401':
+          $ref: '#/components/responses/401'
   '/auth/logout':
     post:
       tags: [Auth]
+      security:
+        - bearerAuth: []
+
       description: This route will logout the user
       responses:
         '200':
@@ -283,6 +296,8 @@ paths:
     get:
       description: This will retrieve the profile data based on the provided token.
       tags: [User]
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: User data
@@ -347,7 +362,383 @@ paths:
                                 self:
                                   type: string
                                   example: /orders/3
+  '/password/update':
+    patch:
+      tags: [User]
+      security:
+        - bearerAuth: []
+      description: This route will update the password
+      requestBody:
+        description: take old and new password
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  example: password123
+                newPassword:
+                  type: string
+                  example: newpassword123
+                  minLength: 8
+              required: [oldPassword, newPassword]
+      responses:
+        '204':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Password successfully changed.
+        '400':
+          description: wrong old password or new password validation error
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: wrong password
+        '401':
+          $ref: '#/components/responses/401'
+  '/me/update':
+    patch:
+      description: This route will update the name or avatar of the user.
+      tags: [User]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: New Name
+                avatar:
+                  type: string
+                  example: s3.fdfjdlfr.jpg
+      responses:
+        '204':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: requested field successfully changed.
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
 
+  '/admin/users':
+    get:
+      tags: [User]
+      security:
+        - bearerAuth: []
+      description: Retrieve all users list. Admin only
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/sordTypeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/searchParam'
+
+      responses:
+        '200':
+          description: list of users
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      $ref: '#/components/schemas/User'
+
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      tags: [User]
+      description: This route will create a user with provided payload
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'Sifytul Karim'
+                email:
+                  type: string
+                  example: sifytul@example.com
+                  format: email
+                password:
+                  type: string
+                  example: password123
+                  format: password
+              required: [name, email, password]
+
+      responses:
+        '201':
+          description: registered a new user
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: email
+                        message:
+                          type: string
+                          example: Field can't be empty
+        '409':
+          $ref: '#/components/responses/409'
+
+  '/admin/users/{id}':
+    get:
+      tags: [User]
+      security:
+        - bearerAuth: []
+      description: Retrieve a single user's data
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: user id
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: detailes of a single user
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    patch:
+      tags: [User]
+      security:
+        - bearerAuth: []
+      description: update any user data
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 2
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum: [user, admin]
+                  example: user
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: role changed successfully
+
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    delete:
+      tags: [User]
+      security:
+        - bearerAuth: []
+      description: This route will delete a user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: user id
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: success delete response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: successfully deleted user with id 2
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+
+  '/products':
+    get:
+      description: This route will retrieve all the products
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/sordTypeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/searchParam'
+      responses:
+        '200':
+          description: retrieve all articles based on the query param
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: Macbook Pro
+                        image_url:
+                          type: string
+                          example: s3.productimage.jpeg
+                        price:
+                          type: number
+                          example: 499.99
+                        ratings:
+                          type: number
+                          example: 4.8
+                        stock:
+                          type: integer
+                          example: 20
+                        links:
+                          type: object
+                          properties:
+                            self:
+                              type: string
+                              example: /products/2
+        '500':
+          $ref: '#/components/responses/500'
+  '/products/{id}':
+    get:
+      description: Retrieve single product by id
+      tags:
+        - Products
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: Macbook Pro
+                      description:
+                        type: string
+                        example: This is an awesome product
+                      variant:
+                        type:
+                      image_url:
+                        type: string
+                        example: s3.productimage.jpeg
+                      price:
+                        type: number
+                        example: 499.99
+                      ratings:
+                        type: number
+                        example: 4.8
+                      stock:
+                        type: integer
+                        example: 20
 components:
   responses:
     '400':
@@ -397,6 +788,32 @@ components:
               accessToken:
                 type: string
                 example: ''
+    '403':
+      description: Forbidden
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: You are not authorized to see this resources
+    '500':
+      description: Server error
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Server Error
   parameters:
     tokenParam:
       in: path
@@ -405,4 +822,114 @@ components:
       description: reset password token
       schema:
         type: string
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        example: '6b9d1701-2ff6-4fa2-ac7d-108b196d475f'
+
+    pageParam:
+      in: query
+      name: page
+      required: false
+      description: page no
+      schema:
+        type: integer
+        format: int32
+        example: 2
+    limitParam:
+      in: query
+      name: limit
+      required: false
+      description: number of users in one page
+      schema:
+        type: integer
+        format: int32
+        example: 10
+    sordTypeParam:
+      in: query
+      name: sort_type
+      description: how the data will be sorted (asc or desc)
+      schema:
+        type: string
+        enum: [asc, desc]
+        example: desc
+    sortByParam:
+      in: query
+      name: sort_by
+      description: by which field the users will be sorted(by createdAt or name)
+      schema:
+        type: string
+        enum: [createdAt, name]
+        example: createdAt
+    searchParam:
+      in: query
+      name: search
+      description: search term
+      schema:
+        type: string
+        example: sifytul
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Sifytul Karim
+        email:
+          type: string
+          example: sifytul@example.com
+        address:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 3
+            address:
+              type: string
+              example: '204, sholoshohor'
+            city:
+              type: string
+              example: chittagong
+            state:
+              type: string
+              example: chittagong
+            pinCode:
+              type: integer
+              example: 4333
+            phoneNo:
+              type: string
+              example: +8801000000000
+        avatar:
+          type: string
+          example: s3.avatar.jpeg
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              example: /admin/users/3
+        orderDetails:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 3
+              orderDate:
+                type: string
+                example: 2023-09-26 03:03:00
+              status:
+                type: string
+                example: processing
+              itemsPrice:
+                type: integer
+                example: 345.34
+              links:
+                type: object
+                properties:
+                  self:
+                    type: string
+                    example: /orders/3
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
