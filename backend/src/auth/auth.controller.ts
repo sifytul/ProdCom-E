@@ -85,6 +85,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Get('refresh-token')
   async getRefreshToken(
@@ -161,6 +162,7 @@ export class AuthController {
     };
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('password/reset/:token')
   async resetPassword(
     @Param('token') token: string,
@@ -202,6 +204,7 @@ export class AuthController {
     };
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
     sendRefreshToken(res, '');
