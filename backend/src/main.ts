@@ -27,7 +27,7 @@ async function bootstrap() {
   // const document = SwaggerModule.createDocument(app, config);
   let document;
   try {
-    document = yaml.load(fs.readFileSync('swagger.yaml', 'utf8'));
+    document = yaml.load(fs.readFileSync('doc/swagger.yaml', 'utf8'));
   } catch (e) {
     console.log('yaml read error: ', e);
   }

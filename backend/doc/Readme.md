@@ -28,7 +28,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
 
 ### Start Project: 7/9/23
 
-### Probable End: 7/10/23
+### Probable End: 15/10/23
 
 ## Tech Stack - PNNNT (Postgres, NestJS, NextJS, Node, TypeScipt)
 
@@ -49,7 +49,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     Data fetching tool: **Rtk Query**
   - To improve the user experience, we need to use the caching technique. RTK Query handles this smoothly. So, we picked it for data fetching and caching purposes.
 
-[Project Timeline for E-Commerce Fullstack Project](https://smoggy-larch-f18.notion.site/Project-Timeline-for-E-Commerce-Fullstack-Project-5af509f91da940ad81218b7463f43a12)
+[Project Timeline for E-Commerce Fullstack Project](https://www.notion.so/Project-Timeline-for-E-Commerce-Fullstack-Project-5af509f91da940ad81218b7463f43a12?pvs=21)
 
 # Backend
 
@@ -151,7 +151,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     response will send an email to the user email address with the resetPassword url and provide a response as follows.
     - message - [Sent an email with reset link if the email is valid. Check your inbox]
 
-- [ ] PATCH- [private] - auth/password/reset/:token
+- [x] PATCH- [private] - auth/password/reset/:token
 - Password reset
 
   Method: POST
@@ -178,17 +178,37 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
   - 400:
     - message
 
-- [ ] /logout
+- [x] /logout
 - Logout
+  Method: POST
+  Access: private
+  Path: /auth/logout
+  Description: This route will logout the user
+  Response :
+  - 200 :
+    response will invalidate the refresh token in the cookies and provide response as follows.
+    - data:
+      - success: true
+      - accessToken: string
+  - 400:
+    - message
 - User
+
   ### Me Route
+
   - [ ] GET - [private] - /me
   - Fetch the user details
+
     Method: Get
+
     Access: Private
+
     path: /me
+
     description: This will retrieve the profile data based on the provided token.
+
     response:
+
     - 200:
       - data:
         - name
@@ -207,22 +227,32 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
       - status: "error"
       - message: "Unauthorized"
       - code: 401
+
   - [ ] PATCH- [private] - /password/update
   - update password
+
     Method: PATCH
+
     Access: Private
+
     path: /password/update
+
     description: This route will update the password
+
     Request Body:
+
     - old Password
     - newPassword
-      Response:
-    - 201:
+
+    Response:
+
+    - 204:
       - success: message
     - 400:
       - message: bad request
     - 401:
       - message: unauthorized
+
   - [ ] PATCH- [private] - /me/update
   - Update the user profile
     Method: PATCH
@@ -232,26 +262,65 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     Request body:
     - name
     - avatar
+      Response:
+    - 204:
+      - success: message
+    - 400:
+      - message: bad request
+    - 401:
+      - message: unauthorized
+
   ### Role-based routes (Admin)
-  - [ ] GET - [private] - /admin/users
+
+  - [ ] GET - [private] - /admin/users?query=params
   - Get all Users
+
     Method: GET
+
     Access: private (admin)
-    path: /admin/users
+
+    path: /admin/users?query=params
+
+    Query:
+
+    - page (default 1) - current page number
+    - limit (default 10) - the number of objects should be returned
+    - sortType (default desc) - the type of sort, it could be either asc or desc
+    - sortBy (default createdAt) - the property that will used to sort. It could be either createdAt or name.
+    - search - the search term to filter users based on the titles.
+
     response:
+
     - 200:
       - Data
         - [ user data ]
+      - pagination
+        - page
+        - limit
+        - nextPage
+        - prevPage
+        - totalPage
+        - totalArticle
+      - links
+        - self
+        - nextPage
+        - prevPage
     - 401:
       - message
     - 403:
       - message
+
   - [ ] GET - [private] - /admin/users/:id
   - Get an individual user by ID
+
     Method: GET
+
     Access: private (admin)
+
     path: /admin/users/:id
+
     Response:
+
     - 200:
       - data:
         - name
@@ -268,16 +337,26 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
       - message
     - 404:
       - message
+
   - [ ] PATCH- [private] - /admin/users/:id
   - Update user role
+
     Method: PATCH
+
     Access: private (admin)
+
     path: /admin/users/:id
+
     params: id
+
     description: This route will update the user role
+
     Request body:
+
     - role
-      Response:
+
+    Response:
+
     - 201:
       - message
     - 401:
@@ -286,6 +365,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
       - message
     - 404:
       - message
+
   - [ ] DELETE- [private] - /admin/users/:id
   - Delete a user
     Method: DELETE
@@ -302,16 +382,22 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
       - message
     - 404:
       - message
+
 - Products
+
   ### Public Routes
+
   - [ ] GET - [public] - /products
   - Get all products to display
+
     Method: GET
     Access: public
     path: /products
     description: This route will retrieve all the products
     Response:
+
     - 200:
+
     - Data
       - type: array
       - content:
@@ -321,6 +407,9 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
         - price
         - ratings
         - stock
+        - links:
+          - self: /products/2
+
   - [ ] GET - [public] - /products/:id
   - Get details of an individual product by ID
     Method: GET
@@ -334,6 +423,8 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
         - name
         - description
         - variant
+        - color
+        - size
         - ratings
         - price
         - images URL list
@@ -347,6 +438,120 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
             - ratings
     - 404:
       - message
+
+  ### Admin routes
+
+  - [ ] GET - [private] - /admin/products
+  - Get all products
+
+    Method: GET
+
+    Access: private
+
+    path: /products
+
+    description: This route will retrieve all the products
+
+    Response:
+
+    - 200 :
+      - Data:
+        - type: array
+        - content:
+          - id
+          - name
+          - First product image URL
+          - price
+          - ratings
+          - stock
+          - category
+          - numOfReviews
+    - 401:
+      - message
+    - 403:
+      - message
+    - 404:
+      - message
+
+  - [ ] POST - [private] - /admin/products/new
+  - Add a new Product
+
+    Method: POST
+
+    Access: private
+
+    Path: /admin/product/new
+
+    Description: This route will create a product with provided payload
+
+    Request body:
+
+    - Name string
+    - description string
+    - price float
+    - images
+    - category
+    - stock
+    - addedBy
+
+    Response :
+
+    201: message
+
+  - [ ] PATCH - [private] - /admin/products/:id
+  - Update product’s info
+
+    Method: PATCH
+
+    Access: private
+
+    path: /admin/product/:id
+
+    param: id (productId)
+
+    description: This route will update a product based on productId
+
+    request body:
+
+    - name
+    - description
+    - price
+    - ratings
+    - images
+    - category
+    - stock
+
+    response:
+
+    - 201:
+      - message
+    - 401: → If not logged in
+      - message
+    - 403: → if the updater is not authorized to perform this action
+      - message
+    - 404:
+      - message
+
+  - [ ] DELETE - [private] - /admin/products/:id
+  - Delete a product
+    Method: DELETE
+    Access: private
+    path: /admin/product/:id
+    param: productID (id)
+    description: This route will delete a product based on **\*\*\*\***\*\*\*\***\*\*\*\***productId**\*\*\*\***\*\*\*\***\*\*\*\***
+    requset body: none
+    response:
+    - 200:
+      - message
+    - 401: → If not logged in
+      - message
+    - 403: → if the deleter is not authorized to perform this
+      - message
+    - 404:
+      - message
+
+- Reviews
+
   - [ ] GET - [public] - /products/:id/reviews
   - Get reviews related to individual product
     Method: GET
@@ -375,35 +580,59 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
               - ratings
     - 404:
       - message (if certain product didn’t exist)
+
   ### Authenticated user routes
+
   - [ ] POST - [private] - /products/:id/reviews
   - Post a review for a certain product
+
     Method: POST
+
     Access: private
+
     path: /products/:id/review
+
     param: productID (id)
+
     description: This route will post a review on a specific product
+
     Request Body:
+
     - comment: string
     - rating: default - 5
     - product images: default - null
+
     - reviewerID: int → will be collected from token
     - productID: int → will be collected from url params
-      Response:
+
+    Response:
+
     - 201:
       - message: success
-      -
+    - 401:
+      - message: failure
+    - -
+
   - [ ] PATCH - [private] - /reviews/:id
   - Update a review
+
     Method: PATCH
+
     Access: private
+
     path: reviews/:id
+
     param: id (reviewId)
+
     description: This route will update a review on a specific product based on **reviewId** and **reviewerId**
+
     request body:
+
     - comment
     - images
-      response:
+
+    response:
+
     - 201:
       - message
     - 401: → If not logged in
@@ -412,6 +641,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
       - message
     - 404:
       - message
+
   - [ ] DELETE - [private] - /products/:id/reviews/:reviewId
   - Delete a review
     Method: DELETE
@@ -429,91 +659,77 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
       - message
     - 404:
       - message
-  ### Admin routes
-  - [ ] GET - [private] - /admin/products
-  - Get all products
+
+- Orders
+
+  - [ ] GET - [private] - /me/orders
+  - Get all the orders of the logged in user
+
     Method: GET
+
     Access: private
-    path: /products
-    description: This route will retrieve all the products
+
+    path: /me/orders
+
+    description: This route will retrieve all the orders
+
     Response:
+
     - 200 :
       - Data:
         - type: array
         - content:
           - id
-          - name
-          - First product image URL
-          - price
-          - ratings
-          - stock
-          - category
-          - numOfReviews
+          - itemsPrice
+          - shippingPrice
+          - totalPrice
+          - paymentInfo
+          - (status == ‘delivered’) ? deliveredAt : probableDeliveryDate
+          - status
     - 401:
       - message
     - 403:
       - message
-    - 404:
-      - message
-  - [ ] POST - [private] - /admin/products/new
-  - Add a new Product
-    Method: POST
+
+  - [ ] GET - [private] - /me/orders/:id
+  - Get all an individual order details of the logged in user
+
+    Method: GET
+
     Access: private
-    Path: /admin/product/new
-    Description: This route will create a product with provided payload
-    Request body:
-    - Name string
-    - description string
-    - price float
-    - images
-    - category
-    - stock
-    - addedBy
-      Response :
-      201: message
-  - [ ] PATCH - [private] - /admin/products/:id
-  - Update product’s info
-    Method: PATCH
-    Access: private
-    path: /admin/product/:id
-    param: id (productId)
-    description: This route will update a product based on productId
-    request body:
-    - name
-    - description
-    - price
-    - ratings
-    - images
-    - category
-    - stock
-      response:
-    - 201:
+
+    path: /me/orders/:id
+
+    description: This route will retrieve an individual order details
+
+    Response:
+
+    - 200 :
+      - Data:
+        - type: array
+        - content:
+          - id
+          - itemsPrice
+          - shippingPrice
+          - totalPrice
+          - paymentInfo
+          - (status == ‘delivered’) ? deliveredAt : probableDeliveryDate
+          - status
+          - orderedItems:
+            - type: array
+            - content:
+              - product
+                - name
+                - first image url
+                - price
+              - quantity
+              - subtotal
+    - 401:
       - message
-    - 401: → If not logged in
+    - 403:
       - message
-    - 403: → if the updater is not authorized to perform this action
-      - message
-    - 404:
-      - message
-  - [ ] DELETE - [private] - /admin/products/:id
-  - Delete a product
-    Method: DELETE
-    Access: private
-    path: /admin/product/:id
-    param: productID (id)
-    description: This route will delete a product based on **\*\*\*\***\*\*\*\***\*\*\*\***productId**\*\*\*\***\*\*\*\***\*\*\*\***
-    requset body: none
-    response:
-    - 200:
-      - message
-    - 401: → If not logged in
-      - message
-    - 403: → if the deleter is not authorized to perform this
-      - message
-    - 404:
-      - message
-- Orders
-  - [ ] POST - [private] - /order/new
+
+  - [ ] POST - [private] - /orders/new
   - This will create an order
     Method: POST
     Access: private
@@ -523,109 +739,112 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     - products (array)
       - product id
       - quantity
-    - paymentInfo
-      Response:
+        Response:
     - 201:
-      - message: success
+      - message: success and redirect to payment page with the invoice
         Process:
     1. Create an order in Order Table and get the orderId =⇒
     2. Create multiple ordered Items in orderedItems table with the ordertId retrieved from the prev stage =⇒
     3. Then update the Order table with that specific OrderId(total Price, estimate delivery, paymentInfo etc.)
-  - [ ] GET - [private] - /orders/me
-  - Get all the orders of the logged in user
-    Method: GET
+  - [ ] PATCH - [private] - /me/orders/:id
+  - Edit / coupon apply / cancel or confirm the order by providing payment information (cod or paid) within 30 min. After 30 min the order will be deleted automatically.
+    Method: PATCH
     Access: private
-    path: /orders/me
-    description: This route will retrieve all the orders
-    Response:
-    - 200 :
-      - Data:
-        - type: array
-        - content:
-          - id
-          - itemsPrice
-          - shippingPrice
-          - totalPrice
-          - paymentInfo
-          - (status == ‘delivered’) ? deliveredAt : probableDeliveryDate
-          - status
+    path: /me/orders/:id
+    description: This route will change the order status to cancel. After that, there will be another chance to reorder the product with a payload (like changing variant, quantity, etc.). After that, there will be no chance to cancel.
+    request payload:
+    type: edit / coupon / confirmation or cancel
+    - discard or increase product quantity
+      - product id
+      - quantity
+        or,
+    - coupon apply
+      - coupon code
+        or,
+    - status
+      - if confirmed then must provide payment info - payment
+        response:
+    - 200:
+      - success: message
     - 401:
-      - message
-    - 403:
-      - message
-  - [ ] GET - [private] - /orders/:id
-  - Get all an individual order details of the logged in user
-    Method: GET
-    Access: private
-    path: /order/:id
-    description: This route will retrieve an individual order details
-    Response:
-    - 200 :
-      - Data:
-        - type: array
-        - content:
-          - id
-          - itemsPrice
-          - shippingPrice
-          - totalPrice
-          - paymentInfo
-          - (status == ‘delivered’) ? deliveredAt : probableDeliveryDate
-          - status
-          - orderedItems:
-            - type: array
-            - content:
-              - product
-                - name
-                - first image url
-              - quantity
-              - subtotal
-    - 401:
-      - message
-    - 403:
-      - message
-  ### Admin routes
-  - [ ] GET - [private] - /admin/orders
-  - Get all orders list
-    Method: GET
-    Access: private
-    path: /admin/orders
-    description: This route will retrieve all order details
-    Response:
-    - 200 :
-      - Data:
-        - type: array
-        - content:
-          - id
-          - itemsPrice
-          - shippingPrice
-          - totalPrice
-          - paymentInfo
-          - (status == ‘delivered’) ? deliveredAt : probableDeliveryDate
-          - status
-          - orderedItems:
-            - type: array
-            - content:
-              - product
-                - name
-                - first image url
-              - quantity
-              - subtotal
-    - 401:
-      - message
-    - 403:
-      - message
-  - [ ] PUT - [private] -/admin/orders/:id
-  - Update an order if exists otherwise create a new one
+      - success: unauthorized
+    - 500
+  - [ ] PUT - [private] - /me/orders/:id/reorder
+  - Reorder the previously canceled order
     Method: PUT
     Access: private
-    path: /admin/order/:id
-    description: Update an order if exists otherwise create a new one
+    path: /me/orders/:id/reorder
+    description: This route will reorder a previously canceled order.
     Request Body:
+    - products (array)
+      - product id
+      - quantity
+    - paymentInfo
+      Response:
+    - 201:
+      - message: success
+    - 402:
+      - message: payment required
+
+  ### Admin routes
+
+  - [ ] GET - [private] - /admin/orders
+  - Get all orders list
+
+    Method: GET
+
+    Access: private
+
+    path: /admin/orders
+
+    description: This route will retrieve all order details
+
+    Response:
+
+    - 200 :
+      - Data:
+        - type: array
+        - content:
+          - id
+          - itemsPrice
+          - shippingPrice
+          - totalPrice
+          - paymentInfo
+          - (status == ‘delivered’) ? deliveredAt : probableDeliveryDate
+          - status
+          - orderedItems:
+            - type: array
+            - content:
+              - product
+                - name
+                - first image url
+              - quantity
+              - subtotal
+    - 401:
+      - message
+    - 403:
+      - message
+
+  - [ ] PUT - [private] -/admin/orders/:id
+  - Update an order if exists otherwise create a new one
+
+    Method: PUT
+
+    Access: private
+
+    path: /admin/order/:id
+
+    description: Update an order if exists otherwise create a new one
+
+    Request Body:
+
     - probableShippingDate (if not delivered yet)
     - status
     - quantity of specific ordered products
     - shippingPrice
-      Response:
+
+    Response:
+
     - 200 :
       - Data:
         - type: array
@@ -649,6 +868,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
       - message
     - 403:
       - message
+
   - [ ] DELETE - [private] -/admin/orders/:id
   - Delete an order by id
     Method: DELETE
@@ -666,8 +886,8 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
 
 //Need to implement in future
 
+- Category
 - Cart
-  - [ ] POST - [private] - /cart
   - [ ] GET - [private] - /cart
   - [ ] PUT - [private] - /cart
   - [ ] DELETE - [private] - /cart
@@ -747,3 +967,5 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
 # ER Diagram
 
 ![ER-diagram.drawio.png](./ER-diagram.drawio.png)
+
+## Swagger (OpenAPI specification)
