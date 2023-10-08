@@ -14,6 +14,8 @@ tags:
     description: User Endpoints (private)
   - name: Products
     description: Products Endpoints (public + private)
+  - name: Reviews
+    description: Reviews Endpoints(public + private)
   - name: Orders
     description: Orders Endpoints(private)
   - name: Cart
@@ -26,6 +28,7 @@ servers:
     url: http://localhost:4000
 
 paths:
+  # Auth Endpoints
   '/health':
     get:
       description: Check the health of api
@@ -292,6 +295,7 @@ paths:
         '401':
           $ref: '#/components/responses/401'
 
+  # User - Me Endpoints
   '/me':
     get:
       description: This will retrieve the profile data based on the provided token.
@@ -449,6 +453,7 @@ paths:
         '401':
           $ref: '#/components/responses/401'
 
+  # User - Admin endpoints
   '/admin/users':
     get:
       tags: [User]
@@ -485,7 +490,10 @@ paths:
           $ref: '#/components/responses/403'
     post:
       tags: [User]
-      description: This route will create a user with provided payload
+      description: This route will create a user with provided payload by admin
+      security:
+        - bearerAuth: []
+
       requestBody:
         content:
           'application/json':
@@ -539,7 +547,6 @@ paths:
                           example: Field can't be empty
         '409':
           $ref: '#/components/responses/409'
-
   '/admin/users/{id}':
     get:
       tags: [User]
@@ -644,7 +651,8 @@ paths:
         '403':
           $ref: '#/components/responses/403'
 
-  '/products':
+  # Products Endpoints
+  '/products': &all_products_endpoint
     get:
       description: This route will retrieve all the products
       tags:
@@ -674,6 +682,9 @@ paths:
                         id:
                           type: integer
                           example: 1
+                        sku:
+                          type: string
+                          example: abccd-11
                         name:
                           type: string
                           example: Macbook Pro
@@ -702,6 +713,8 @@ paths:
       description: Retrieve single product by id
       tags:
         - Products
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
       responses:
         '200':
           description: success response
@@ -719,6 +732,9 @@ paths:
                       id:
                         type: integer
                         example: 1
+                      sku:
+                        type: string
+                        example: abccd-11
                       name:
                         type: string
                         example: Macbook Pro
@@ -726,10 +742,21 @@ paths:
                         type: string
                         example: This is an awesome product
                       variant:
-                        type:
-                      image_url:
                         type: string
-                        example: s3.productimage.jpeg
+                        example: China
+                      colors:
+                        type: array
+                        example:
+                          - blue
+                          - white
+                      sizes:
+                        type: string
+                        example:
+                      image_urls:
+                        type: array
+                        example:
+                          - s3.productimage.jpeg
+                          - s3.secondimage.jpeg
                       price:
                         type: number
                         example: 499.99
@@ -739,6 +766,927 @@ paths:
                       stock:
                         type: integer
                         example: 20
+                      reviews:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/Review'
+                            - $ref: '#/components/schemas/Timestamp'
+        '404':
+          $ref: '#/components/responses/404'
+
+  # Products - Admin Endpoints
+  '/admin/products': *all_products_endpoint
+  '/admin/products/new':
+    post:
+      description: This route will create a product with provided payload.
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: product payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: xiaomi airdot 6
+                description:
+                  type: string
+                  example: Details description of the product
+                price:
+                  type: number
+                  example: 29.99
+                image_urls:
+                  type: array
+                  example:
+                    - s3.firstimage.jpeg
+                    - s3.secondimage.jpeg
+                category:
+                  type: string
+                  example: phone
+                stock:
+                  type: integer
+                  example: 30
+              required:
+                - name
+                - description
+                - price
+                - image_urls
+                - category
+
+      responses:
+        '201':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: successfully added
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+  '/admin/products/{id}':
+    patch:
+      description: This route will update a product based on productId
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
+      requestBody:
+        description: product update payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: xiaomi airdot 6
+                description:
+                  type: string
+                  example: Details description of the product
+                price:
+                  type: number
+                  example: 29.99
+                image_urls:
+                  type: array
+                  example:
+                    - s3.firstimage.jpeg
+                    - s3.secondimage.jpeg
+                category:
+                  type: string
+                  example: phone
+                stock:
+                  type: integer
+                  example: 30
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      description: This route will delete a product based on productId
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+
+  # Reviews Endpoints
+  '/products/{id}/reviews':
+    get:
+      tags:
+        - Reviews
+      description: Retrieve all reviews of an individual product
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/Review'
+                        - $ref: '#/components/schemas/Timestamp'
+    post:
+      tags:
+        - Reviews
+      description: Post a review on individual product
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: review payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  example: nice product
+                rating:
+                  type: integer
+                  example: 5
+                  minimum: 0
+                  maximum: 5
+              required:
+                - comment
+                - rating
+      responses:
+        '201':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: successfully posted
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 34
+                          comment:
+                            type: string
+                            example: another comment
+                          reviewerName:
+                            type: string
+                            example: Ullah Khan
+                          rating:
+                            type: integer
+                            example: 5
+                            minimum: 0
+                            maximum: 5
+                      - $ref: '#/components/schemas/Timestamp'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  '/reviews/{id}':
+    patch:
+      tags:
+        - Reviews
+      description: update the review
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: review ID
+          required: true
+          schema:
+            type: integer
+            example: 3
+      requestBody:
+        description: update payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  example: nice product
+                rating:
+                  type: integer
+                  example: 5
+                  minimum: 0
+                  maximum: 5
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      tags:
+        - Reviews
+      description: This route will delete a review on a specific product based on reviewId and reviewerId
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: review ID
+          schema:
+            type: integer
+            example: 34
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          description: if the reviewer tries to delete another review that is not made by him.
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+
+  # Orders Endpoints
+  '/me/orders':
+    get:
+      tags:
+        - Orders
+      description: This route will retrieve all the orders of logged in user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 343
+                            status:
+                              type: string
+                              enum:
+                                - pending
+                                - cancelled
+                                - confirmed
+                                - processing
+                                - shipping
+                                - delivered
+                              example: pending
+                            totalItems:
+                              type: integer
+                              example: 32
+                            totalPrice:
+                              type: number
+                              example: 32.32
+                            paymentInfo:
+                              type: string
+                              enum:
+                                - cod
+                                - paid
+                              example: cod
+
+                            probableDeliveryDate: #if not delivered yet
+                              type: string
+                              example: 2023-09-26 03:03:00
+                            deliveredAt: # if delivered
+                              type: string
+                              example: 2023-09-26 03:03:00
+                        - $ref: '#/components/schemas/Timestamp'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  '/me/orders/{id}':
+    get:
+      tags:
+        - Orders
+      description: This route will retrieve an individual order of logged in user
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/orderIdParam'
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 343
+                          status:
+                            type: string
+                            enum:
+                              - pending
+                              - processing
+                              - shipping
+                              - delivered
+                            example: pending
+                          orderedItems:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: samsung a71
+                                image:
+                                  type: string
+                                  example: s3.firstimage.jpeg
+                                price:
+                                  type: number
+                                  example: 32.32
+                                quantity:
+                                  type: integer
+                                  example: 2
+                                subTotal:
+                                  type: number
+                                  example: 32.32
+                          totalItems:
+                            type: integer
+                            example: 5
+                          itemsPrice:
+                            type: number
+                            example: 32.32
+                          shippingPrice:
+                            type: number
+                            example: 32.32
+                          totalPrice:
+                            type: number
+                            example: 32.32
+                          paymentInfo:
+                            type: string
+                            enum:
+                              - cod
+                              - paid
+                            example: cod
+                          probableDeliveryDate: #if not delivered yet
+                            type: string
+                            example: 2023-09-26 03:03:00
+                          deliveredAt: # if delivered
+                            type: string
+                            example: 2023-09-26 03:03:00
+                          shippingAddress:
+                            $ref: '#/components/schemas/Address'
+
+                      - $ref: '#/components/schemas/Timestamp'
+
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      tags:
+        - Orders
+      description: Edit / coupon apply / cancel or confirm the order by providing payment information (cod or paid) within 30 min. After 30 min the order will be deleted automatically.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/orderIdParam'
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - edit products
+                    - coupon_apply
+                    - order_confirm_or_cancel
+                  example: order_confirm_or_cancel
+                data:
+                  type: object
+                  properties:
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          productId:
+                            type: integer
+                            example: 432
+                          quantity:
+                            type: integer
+                            example: 2
+                    coupon:
+                      type: string
+                      example: sifat324d
+                    status:
+                      type: string
+                      example: cancelled
+                    payment:
+                      type: string
+                      example: cod
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  '/me/orders/{id}/reorder':
+    put:
+      tags:
+        - Orders
+      description: This route will reorder a previously canceled order.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/orderIdParam'
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - edit products
+                    - coupon_apply
+                    - order_confirm
+                  example: order_confirm
+                data:
+                  type: object
+                  properties:
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          productId:
+                            type: integer
+                            example: 432
+                          quantity:
+                            type: integer
+                            example: 2
+                    coupon:
+                      type: string
+                      example: sifat324d
+                    status:
+                      type: string
+                      example: confirmed
+                    payment:
+                      type: string
+                      example: cod
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  '/orders/new':
+    post: &create_order
+      tags:
+        - Orders
+      description: This route will create an order.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: order payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: integer
+                        example: 432
+                      quantity:
+                        type: integer
+                        example: 2
+      responses:
+        '201':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: successfully created the order
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+
+  # Orders - Admin Endpoints
+  '/admin/orders':
+    get:
+      tags:
+        - Orders
+      description: This route will retrieve all the orders of logged in user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 343
+                            status:
+                              type: string
+                              enum:
+                                - pending
+                                - cancelled
+                                - confirmed
+                                - processing
+                                - shipping
+                                - delivered
+                              example: pending
+                            totalItems:
+                              type: integer
+                              example: 32
+                            totalPrice:
+                              type: number
+                              example: 32.32
+                            paymentInfo:
+                              type: string
+                              enum:
+                                - cod
+                                - paid
+                              example: cod
+
+                            probableDeliveryDate: #if not delivered yet
+                              type: string
+                              example: 2023-09-26 03:03:00
+                            deliveredAt: # if delivered
+                              type: string
+                              example: 2023-09-26 03:03:00
+                            user:
+                              $ref: '#/components/schemas/User'
+                        - $ref: '#/components/schemas/Timestamp'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+    post: *create_order
+  '/admin/orders/{id}':
+    get:
+      tags:
+        - Orders
+      description: This route will retrieve an individual order of logged in user
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/orderIdParam'
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 343
+                          status:
+                            type: string
+                            enum:
+                              - pending
+                              - processing
+                              - shipping
+                              - delivered
+                            example: pending
+                          orderedItems:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: samsung a71
+                                image:
+                                  type: string
+                                  example: s3.firstimage.jpeg
+                                price:
+                                  type: number
+                                  example: 32.32
+                                quantity:
+                                  type: integer
+                                  example: 2
+                                subTotal:
+                                  type: number
+                                  example: 32.32
+                          totalItems:
+                            type: integer
+                            example: 5
+                          itemsPrice:
+                            type: number
+                            example: 32.32
+                          shippingPrice:
+                            type: number
+                            example: 32.32
+                          totalPrice:
+                            type: number
+                            example: 32.32
+                          paymentInfo:
+                            type: string
+                            enum:
+                              - cod
+                              - paid
+                            example: cod
+                          probableDeliveryDate: #if not delivered yet
+                            type: string
+                            example: 2023-09-26 03:03:00
+                          deliveredAt: # if delivered
+                            type: string
+                            example: 2023-09-26 03:03:00
+                          shippingAddress:
+                            $ref: '#/components/schemas/Address'
+
+                          user:
+                            $ref: '#/components/schemas/User'
+                      - $ref: '#/components/schemas/Timestamp'
+
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      description: will update certain fields like order status, probableDeliveryDate, quantity, shippingPrice, shippingAddress
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: upload payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: processing
+                probableDeliveryDate:
+                  type: string
+                  example: 2023-09-26 03:03:00
+                quantity:
+                  type: integer
+                  example: 2
+                shippingPrice:
+                  type: number
+                  example: 34.32
+                shippingAddress:
+                  type: string
+                  example: 23, uttar madarsha
+      responses:
+        '200':
+          description: success response
+          $ref: '#/components/responses/200'
+    delete:
+      tags:
+        - Orders
+      description: Delete an order if exists
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/orderIdParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+
+  # Cart Endpoints
+  '/me/carts':
+    get:
+      tags:
+        - Cart
+      description: Retrieve all the cart items of logged in user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 43
+                        name:
+                          type: string
+                          example: BMW umbrella 12 stick
+                        price:
+                          type: number
+                          example: 7.99
+                        quantity:
+                          type: integer
+                          example: 43
+                        subTotal:
+                          type: number
+                          example: 7.99
+
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+  '/me/carts/{id}':
+    put:
+      tags:
+        - Cart
+      description: Add items to the cart
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cartItemIdParam'
+      requestBody:
+        description: cart payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: integer
+                  example: 343
+                quantity:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+    delete:
+      tags:
+        - Cart
+      description: Remove products from the cart
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cartItemIdParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+
+  # Payment Endpoint
+  '/payment/process':
+    post:
+      tags:
+        - Payment
+      description: make payment through hitting the external api(stripe or sslCommerce) with the totalPrice calculated from the order. This url will be hit by order route.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: success respone from the external api and send back to the order page with payment Details
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+                    example: 3dsjfosjskmf
+                  paidAmount:
+                    type: number
+                    example: 43.43
+                  medium:
+                    type: string
+                    example: bKash
+                  paidAt:
+                    type: string
+                    example: 2023-09-26 03:03:00
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+
 components:
   responses:
     '400':
@@ -758,7 +1706,7 @@ components:
                   properties:
                     field:
                       type: string
-                      example: email
+                      example: required field
                     message:
                       type: string
                       example: Field can't be empty
@@ -785,9 +1733,9 @@ components:
               success:
                 type: boolean
                 example: false
-              accessToken:
+              message:
                 type: string
-                example: ''
+                example: Please sign in to perform the action.
     '403':
       description: Forbidden
       content:
@@ -800,7 +1748,7 @@ components:
                 example: false
               message:
                 type: string
-                example: You are not authorized to see this resources
+                example: You are not authorized to see these resources
     '500':
       description: Server error
       content:
@@ -813,7 +1761,46 @@ components:
                 example: false
               message:
                 type: string
-                example: Server Error
+                example: Internal server Error
+    '404':
+      description: Resource not found
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: not found
+    '204':
+      description: successful deletion of the resource
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Successfully performed the delete action
+    '200':
+      description: update success response
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: successfully updated
   parameters:
     tokenParam:
       in: path
@@ -823,7 +1810,6 @@ components:
       schema:
         type: string
         example: '6b9d1701-2ff6-4fa2-ac7d-108b196d475f'
-
     pageParam:
       in: query
       name: page
@@ -865,10 +1851,46 @@ components:
       schema:
         type: string
         example: sifytul
+    productIdParam:
+      in: path
+      name: id
+      required: true
+      description: product ID
+      schema:
+        type: integer
+        format: int32
+        example: 2
+    orderIdParam:
+      in: path
+      name: id
+      required: true
+      description: Order ID
+      schema:
+        type: integer
+        example: 32
+    reviewIdParam:
+      in: path
+      name: id
+      required: true
+      description: review ID
+      schema:
+        type: integer
+        example: 32
+    cartItemIdParam:
+      in: path
+      name: id
+      required: true
+      description: cart Item ID
+      schema:
+        type: integer
+        example: 32
   schemas:
     User:
       type: object
       properties:
+        id:
+          type: integer
+          example: 434
         name:
           type: string
           example: Sifytul Karim
@@ -876,26 +1898,9 @@ components:
           type: string
           example: sifytul@example.com
         address:
-          type: object
-          properties:
-            id:
-              type: integer
-              example: 3
-            address:
-              type: string
-              example: '204, sholoshohor'
-            city:
-              type: string
-              example: chittagong
-            state:
-              type: string
-              example: chittagong
-            pinCode:
-              type: integer
-              example: 4333
-            phoneNo:
-              type: string
-              example: +8801000000000
+          $ref: '#/components/schemas/Address'
+        contact:
+          $ref: '#/components/schemas/ContactInfo'
         avatar:
           type: string
           example: s3.avatar.jpeg
@@ -928,6 +1933,62 @@ components:
                   self:
                     type: string
                     example: /orders/3
+    Review:
+      type: object
+      properties:
+        reviewerId:
+          type: integer
+          example: 5
+        reviewerName:
+          type: string
+          example: Khan
+        comment:
+          type: string
+          example: Nice Product
+        rating:
+          type: integer
+          example: 5
+          minimum: 0
+          maximum: 5
+    Timestamp:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          example: '2023-9-3 03:03:00'
+        updatedAt:
+          type: string
+          example: '2023-9-3 03:03:00'
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        address:
+          type: string
+          example: '204, sholoshohor'
+        city:
+          type: string
+          example: chittagong
+        state:
+          type: string
+          example: chittagong
+        pinCode:
+          type: integer
+          example: 4333
+    ContactInfo:
+      type: object
+      properties:
+        phone1:
+          type: string
+          example: +8801000000000
+    Success:
+      type: boolean
+      example: true
+    Failure:
+      type: boolean
+      example: false
   securitySchemes:
     bearerAuth:
       type: http
