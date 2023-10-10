@@ -901,71 +901,103 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
   - name - string
   - email - string
   - password - string
-  - avatar
-    - public_id
-    - url
+  - avatar_public_id
+  - avatar_url
   - role: enum - [user, admin] default - user
-  - resetPasswordToken: string - default: null
-  - resetPasswordExpire: Date
+  - token_version
+  - resetPasswordToken: string - default: null ❌
+  - resetPasswordExpire: Date ❌
   - timestamp
 - Product
   - id
   - name - string
   - description - text
   - price - float
-  - ratings: int - default: 0
-  - images: image []
-  - category: Category Id
+  - ratings: int - default: 0 → need to come back → make average of all reviews
+  - category_id: Fk
   - stock: int
-  - numOfReviews: int default: 0
-  - reviews: Review []
-  - addedBy: User
+  - discount - ( ≥0 and ≤1)
+  - added_by: User - Fk
   - timestamp
 - Review
-  id - int
-  comment - string
-  rating - int
-  Reviewer: User
+  - id - int
+  - comment - string
+  - rating - int
+  - product_id -Fk
+  - reviewer_id - Fk
+  - timestamp
 - Category
   - id
-  - name
-  - icon
+  - category_name
+  - description
+  - image_public_id
+  - image_url
+  - timestamp
 - Order
   - id
-  - orderDate
-  - probableDeliveryDate
-  - deliveredAt
-  - status: enum [pending, processing, shipping, deliverd] default - pending
-  - totalItems - Int
-  - ItemsPrice - Float
-  - shippingPrice - Float
-  - TotalPrice
+  - order_date
+  - probable_delivery_date
+  - delivered_at
+  - status: enum [pending, confirmed, canceled, processing, shipping, deliverd] default - pending
+  - total_items - Int
+  - items_price - Float
+  - shipping_price - Float
+  - total_price
   - comments
-  - customerId -Fk
-  - shippingInfo - Fk
-  - paymentInfo: enum [cod, paid]
+  - customer_id -Fk
+  - shipping_info_id - Fk
+  - payment_info_id : enum [cod, paid]
 - Ordered Items
-  - orderId - FK
-  - productId - FK
+  - id
+  - order_id - FK
+  - product_id - FK
   - quantity
   - subTotal
+- Cart
+  - id
+  - user_id - Fk
+  - timestamp
 - CartItems
-  - productId - Fk
-  - userId - Fk
-  - productId - Fk
+  - product_id - Fk
+  - cart_id - Fk
   - quantity
-- Shipping Info
+  - timestamp
+- Address
   - id
   - address - string
   - city - string
   - state - string
   - country - string
-  - pinCode - Int
-  - phoneNo - Int
-  - userId - Int
+  - pin_code - Int
+  - contact_info - Fk
+  - user_id - Fk
+- contact_info
+  - id
+  - phone_one
+  - phone_two
+  - email
+  - user_id - Fk
+  - timestamp
+- ProductImage
+  - id
+  - public_id
+  - url
+  - product_id
+  - timestamp
+- Payment ️
+  - id
+  - medium
+  - transaction_number
+  - amount - default ‘cod’
+  - payment_date
+  - status - enum [paid, unpaid] - default- unpaid
 
 # ER Diagram
 
-![ER-diagram.drawio.png](./ER-diagram.drawio.png)
+**Version 2.0**
+![ER-diagram.drawio.png](./ER-diagramV2.drawio.png)
+
+**Version 1.0**
+![ER-diagram.drawio.png](./ER-diagramV1.drawio.png)
 
 ## Swagger (OpenAPI specification)

@@ -1,5 +1,15 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Product } from 'src/product/entity/product.entity';
+import { Address } from 'src/Entity/address.entity';
+import { Category } from 'src/Entity/category/category.entity';
+import { ContactInfo } from 'src/Entity/contactInfo.entity';
+import { Payment } from 'src/Entity/payment.entity';
+import { ProductImage } from 'src/Entity/productImage.entity';
+import { Cart } from 'src/cart/entities/cart.entity';
+import { CartItem } from 'src/cart/entities/cartItem.entity';
+import { Order } from 'src/order/entities/order.entity';
+import { OrderedItem } from 'src/order/entities/orderedItems.entity';
+import { Product } from 'src/product/entities/product.entity';
+import { Review } from 'src/review/entities/review.entity';
 import { User } from 'src/user/entity/user.entity';
 
 export const ormConfig: TypeOrmModuleOptions = {
@@ -9,7 +19,20 @@ export const ormConfig: TypeOrmModuleOptions = {
   username: 'postgres',
   password: 'postgres',
   database: 'prodcom_e',
-  entities: [User, Product],
+  entities: [
+    User,
+    Product,
+    Category,
+    Cart,
+    CartItem,
+    Order,
+    OrderedItem,
+    Review,
+    Address,
+    Payment,
+    ContactInfo,
+    ProductImage,
+  ],
   synchronize: true,
   logging: true,
 };
