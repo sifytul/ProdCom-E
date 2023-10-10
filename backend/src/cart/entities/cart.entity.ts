@@ -1,6 +1,7 @@
 import { User } from 'src/user/entity/user.entity';
 import {
   CreateDateColumn,
+  Entity,
   JoinColumn,
   OneToMany,
   OneToOne,
@@ -9,6 +10,7 @@ import {
 } from 'typeorm';
 import { CartItem } from './cartItem.entity';
 
+@Entity()
 export class Cart {
   @PrimaryGeneratedColumn()
   id: number;

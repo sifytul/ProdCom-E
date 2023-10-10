@@ -39,7 +39,7 @@ export class Product {
   category: Category;
 
   @Column('decimal', { precision: 3, scale: 2, default: 0 })
-  @Check(`"discount" <= 1 AND "discount >= 0`)
+  @Check(`"discount" <= 1 AND "discount" >= 0`)
   discount: number;
 
   @Column()
