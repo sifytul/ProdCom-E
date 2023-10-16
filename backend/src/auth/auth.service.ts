@@ -29,7 +29,7 @@ export class AuthService {
       name: createdUser.name,
       email: createdUser.email,
       role: createdUser.role,
-      tokenVersion: createdUser.tokenVersion,
+      tokenVersion: createdUser.token_version,
     };
   }
 
