@@ -141,7 +141,10 @@ export class UserService {
   }
 
   async deleteUserById(userId: number) {
-    const deletedUser = await this.userRepo.delete({ id: userId });
-    return deletedUser;
+    const existingUser = await this.userRepo.findOne({ where: { id: userId } });
+    if (!existingUser) {
+      throw new BadRequestException('User not found');
+    }
+    return this.userRepo.remove(existingUser);
   }
 }
