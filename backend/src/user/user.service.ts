@@ -69,9 +69,10 @@ export class UserService {
     let { page, limit, sort_type, sort_by } = query;
 
     const queryBuilder = this.userRepo.createQueryBuilder();
-    if (page) {
+    if (page && page > 0) {
       queryBuilder.offset((page - 1) * limit);
     }
+
     if (limit) {
       queryBuilder.limit(limit);
     } else {
