@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getHello() {
+  getHealth() {
     return {
       success: true,
       message: 'Api is running',
