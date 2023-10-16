@@ -319,54 +319,16 @@ paths:
                       email:
                         type: string
                         example: sifytul@example.com
-                      address:
-                        type: object
-                        properties:
-                          id:
-                            type: integer
-                            example: 3
-                          address:
-                            type: string
-                            example: '204, sholoshohor'
-                          city:
-                            type: string
-                            example: chittagong
-                          state:
-                            type: string
-                            example: chittagong
-                          pinCode:
-                            type: integer
-                            example: 4333
-                          phoneNo:
-                            type: string
-                            example: +8801000000000
                       avatar:
                         type: string
                         example: s3.avatar.jpeg
-                      orderDetails:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
-                              example: 3
-                            orderDate:
-                              type: string
-                              example: 2023-09-26 03:03:00
-                            status:
-                              type: string
-                              example: processing
-                            itemsPrice:
-                              type: integer
-                              example: 345.34
-                            links:
-                              type: object
-                              properties:
-                                self:
-                                  type: string
-                                  example: /orders/3
-  '/password/update':
+                      role:
+                        type: string
+                        example: user
+                      userSince:
+                        type: string
+                        example: 2023-10-13T09:25:14.836Z
+  '/me/password/update':
     patch:
       tags: [User]
       security:
@@ -386,9 +348,12 @@ paths:
                   type: string
                   example: newpassword123
                   minLength: 8
+                wantToLogOutFromOtherDevices:
+                  type: boolean
+                  example: false
               required: [oldPassword, newPassword]
       responses:
-        '204':
+        '200':
           description: success response
           content:
             'application/json':
@@ -646,6 +611,22 @@ paths:
                   message:
                     type: string
                     example: successfully deleted user with id 2
+        '400':
+          description: not found error
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+                  error:
+                    type: string
+                    example: Bad Request
+                  statusCode:
+                    type: integer
+                    example: 400
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -1842,8 +1823,8 @@ components:
       description: by which field the users will be sorted(by createdAt or name)
       schema:
         type: string
-        enum: [createdAt, name]
-        example: createdAt
+        enum: [created_at, name]
+        example: created_at
     searchParam:
       in: query
       name: search
