@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
 import { TRegisterProps } from 'src/auth/auth.service';
+import { hashPassword } from 'src/utils/hashPassword';
 import { Repository } from 'typeorm';
 import { User } from './entity/user.entity';
 
@@ -18,12 +18,10 @@ export class UserService {
     if (isUserExist) {
       throw new ConflictException('Email already in use.');
     }
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
     const createdUser = this.userRepo.create({
       name,
       email,
-      password: hashedPassword,
+      password: await hashPassword(password),
     });
     return await this.userRepo.save(createdUser);
   }

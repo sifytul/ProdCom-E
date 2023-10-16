@@ -12,7 +12,6 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { genSalt, hash } from 'bcrypt';
 import { Request, Response } from 'express';
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { UserService } from 'src/user/user.service';
@@ -184,11 +183,9 @@ export class AuthController {
         message: 'Token expired. Please get a new one.',
       });
     }
-    const salt = await genSalt(12);
-    const hashedPassword = await hash(password, salt);
     let updatedUser = await this.userService.resetUserPassword(
       payload.email,
-      hashedPassword,
+      password,
       wantToLogOutFromOtherDevices,
     );
     let tokenPayload = {

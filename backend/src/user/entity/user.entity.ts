@@ -1,5 +1,4 @@
 import { Address } from 'src/Entity/address.entity';
-import { ContactInfo } from 'src/Entity/contactInfo.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { Review } from 'src/review/entities/review.entity';
 import {
@@ -30,10 +29,10 @@ export class User {
   @Index({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatar_public_id: string;
 
   @Column({
@@ -45,7 +44,7 @@ export class User {
   role: UserType;
 
   @Column({ default: 0 })
-  tokenVersion: number;
+  token_version: number;
 
   @OneToMany(() => Address, (address) => address.user)
   address: Address;
@@ -63,8 +62,8 @@ export class User {
   reviews: Review[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 }
