@@ -196,7 +196,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
 
   ### Me Route
 
-  - [ ] GET - [private] - /me
+  - [x] GET - [private] - /me
   - Fetch the user details
 
     Method: Get
@@ -228,7 +228,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
       - message: "Unauthorized"
       - code: 401
 
-  - [ ] PATCH- [private] - /password/update
+  - [x] PATCH- [private] - /password/update
   - update password
 
     Method: PATCH
@@ -253,7 +253,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     - 401:
       - message: unauthorized
 
-  - [ ] PATCH- [private] - /me/update
+  - [x] PATCH- [private] - /me/update
   - Update the user profile
     Method: PATCH
     Access: Private
@@ -272,7 +272,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
 
   ### Role-based routes (Admin)
 
-  - [ ] GET - [private] - /admin/users?query=params
+  - [x] GET - [private] - /admin/users?query=params
   - Get all Users
 
     Method: GET
@@ -310,7 +310,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     - 403:
       - message
 
-  - [ ] GET - [private] - /admin/users/:id
+  - [x] GET - [private] - /admin/users/:id
   - Get an individual user by ID
 
     Method: GET
@@ -338,7 +338,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     - 404:
       - message
 
-  - [ ] PATCH- [private] - /admin/users/:id
+  - [x] PATCH- [private] - /admin/users/:id
   - Update user role
 
     Method: PATCH
@@ -366,7 +366,7 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     - 404:
       - message
 
-  - [ ] DELETE- [private] - /admin/users/:id
+  - [x] DELETE- [private] - /admin/users/:id
   - Delete a user
     Method: DELETE
     Access: private (admin)
