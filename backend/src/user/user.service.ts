@@ -69,6 +69,15 @@ export class UserService {
     let { page, limit, sort_type, sort_by } = query;
 
     const queryBuilder = this.userRepo.createQueryBuilder();
+
+    if (sort_type && sort_by) {
+      queryBuilder.orderBy(sort_by, sort_type.toUpperCase());
+    } else if (sort_by) {
+      queryBuilder.orderBy(sort_by);
+    } else if (sort_type) {
+      queryBuilder.orderBy('id', sort_type.toUpperCase());
+    }
+
     if (page && page > 0) {
       queryBuilder.offset((page - 1) * limit);
     }
@@ -77,13 +86,6 @@ export class UserService {
       queryBuilder.limit(limit);
     } else {
       queryBuilder.limit(10);
-    }
-    if (sort_type && sort_by) {
-      queryBuilder.orderBy(sort_by, sort_type.toUpperCase());
-    } else if (sort_by) {
-      queryBuilder.orderBy(sort_by);
-    } else if (sort_type) {
-      queryBuilder.orderBy('id', sort_type.toUpperCase());
     }
     return queryBuilder.getMany();
   }
