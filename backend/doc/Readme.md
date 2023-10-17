@@ -884,9 +884,14 @@ Notion: https://smoggy-larch-f18.notion.site/E-commerce-project-1d4d31ef332f433c
     - 403:
       - message
 
+- Category ✔️
+  - [x] GET - [public] - /categories
+  - [x] POST - [private] - /admin/categories
+  - [x] PATCH - [private] - /admin/categoris/:id
+  - [x] DELETE - [private] - /admin/categories/:id
+
 //Need to implement in future
 
-- Category
 - Cart
   - [ ] GET - [private] - /cart
   - [ ] PUT - [private] - /cart

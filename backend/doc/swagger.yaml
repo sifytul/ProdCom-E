@@ -639,6 +639,7 @@ paths:
       tags:
         - Products
       parameters:
+        - $ref: '#/components/parameters/categoryParam'
         - $ref: '#/components/parameters/pageParam'
         - $ref: '#/components/parameters/limitParam'
         - $ref: '#/components/parameters/sordTypeParam'
@@ -882,6 +883,143 @@ paths:
         '500':
           $ref: '#/components/responses/500'
 
+  # Category
+  '/categories':
+    get:
+      description: This route will retrieve all the categories
+      tags:
+        - Category
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  categories:
+                    type: array
+                    items:
+                      allOf:
+                        - type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            category_name:
+                              type: string
+                              example: phone
+                            description:
+                              type: string
+                              example: This is a phone category.
+                            image_url:
+                              type: string
+                              example: s3.categoryimage.jpeg
+                        - $ref: '#/components/schemas/Timestamp'
+                          links:
+                            type: object
+                            properties:
+                              self:
+                                type: string
+                                example: /categories/1
+        '500':
+          $ref: '#/components/responses/500'
+
+  # Category - Admin Endpoints
+  '/admin/categories':
+    post:
+      tags:
+        - Category
+      description: This route will create a category with provided payload.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: category payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                category_name:
+                  type: string
+                  example: phone
+                description:
+                  type: string
+                  example: This is a phone category.
+              required:
+                - category_name
+      responses:
+        '201':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: category successfully created
+
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+  '/admin/categories/{id}':
+    patch:
+      tags:
+        - Category
+      description: This route will update a category based on categoryId
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/categoryIdParam'
+      requestBody:
+        description: category update payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                category_name:
+                  type: string
+                  example: phone
+                description:
+                  type: string
+                  example: This is a phone category.
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      tags:
+        - Category
+      description: This route will delete a category based on categoryId
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/categoryIdParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
   # Reviews Endpoints
   '/products/{id}/reviews':
     get:
@@ -1791,6 +1929,14 @@ components:
       schema:
         type: string
         example: '6b9d1701-2ff6-4fa2-ac7d-108b196d475f'
+    categoryParam:
+      in: query
+      name: category
+      required: false
+      description: category
+      schema:
+        type: string
+        example: gadgets
     pageParam:
       in: query
       name: page
@@ -1837,6 +1983,15 @@ components:
       name: id
       required: true
       description: product ID
+      schema:
+        type: integer
+        format: int32
+        example: 2
+    categoryIdParam:
+      in: path
+      name: id
+      required: true
+      description: category ID
       schema:
         type: integer
         format: int32
