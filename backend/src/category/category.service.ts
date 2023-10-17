@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/Entity/category/category.entity';
 import { Repository } from 'typeorm';
@@ -41,9 +41,18 @@ export class CategoryService {
     if (!category) {
       return null;
     }
+
+    if (category_name === category.category_name && !description) {
+      throw new ConflictException({
+        success: false,
+        message: 'No data to update',
+      });
+    }
+
     category.category_name = category_name.toLowerCase();
     category.description = description;
-    return this.categoryRepository.save(category);
+    const updatedCategory = await this.categoryRepository.save(category);
+    return updatedCategory;
   }
 
   async remove(id: number) {

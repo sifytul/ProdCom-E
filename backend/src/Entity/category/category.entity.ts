@@ -13,16 +13,16 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   category_name: string;
 
   @Column({ nullable: true })
   description: string;
 
-  @Column()
+  @Column({ nullable: true })
   image_public_id: string;
 
-  @Column()
+  @Column({ nullable: true })
   image_url: string;
 
   @OneToMany(() => Product, (prod) => prod.category)
