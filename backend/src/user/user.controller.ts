@@ -7,13 +7,9 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Public } from 'src/auth/decorators/public.decorator';
 import { Role, Roles } from 'src/auth/decorators/roles.decorator';
-import { UploadImages } from 'src/utils/uploadImage';
+// import { UploadImages } from 'src/utils/uploadImage';
 import { User } from './decorator/user.decorator';
 import { RegisterUserDto } from './dto/registerUserDto';
 import { UpdatePasswordDto } from './dto/upadte-password.dto';
@@ -56,14 +52,14 @@ export class UserController {
     return updatedUser;
   }
 
-  //TODO: need to implement file upload method in cloudinary
-  @Public()
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const file_data = await UploadImages(file);
-    console.log(file_data);
-  }
+  // //TODO: need to implement file upload method in cloudinary
+  // @Public()
+  // @Post('upload')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  //   const file_data = await UploadImages(file);
+  //   console.log(file_data);
+  // }
 
   @Roles(Role.ADMIN)
   @Get('admin/users')
