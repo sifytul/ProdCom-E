@@ -22,6 +22,9 @@ export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ unique: true })
+  sku: string;
+
   @Column()
   name: string;
 
