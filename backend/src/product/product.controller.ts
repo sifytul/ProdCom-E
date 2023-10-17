@@ -19,7 +19,13 @@ export class ProductController {
 
   @Public()
   @Get('products')
-  async findAllProducts() {}
+  async findAllProducts() {
+    const allProducts = await this.productService.findAll();
+    return {
+      success: true,
+      products: allProducts,
+    };
+  }
 
   @Public()
   @Get('products/:id')
