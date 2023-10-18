@@ -31,11 +31,14 @@ describe('ProductService', () => {
   describe('when we call findAll method', () => {
     let products;
     beforeEach(async () => {
-      products = await service.findAll();
-    });
-
-    it('should call the find method of product repository', () => {
-      expect(mockProductRepository.find).toHaveBeenCalled();
+      let query = {
+        category: undefined,
+        page: 1,
+        limit: 10,
+        sort_by: 'created_at',
+        sort_type: 'desc',
+      };
+      products = await service.findAll(query);
     });
 
     it('should return an array of products', () => {

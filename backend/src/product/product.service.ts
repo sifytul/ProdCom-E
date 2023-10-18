@@ -16,8 +16,17 @@ export class ProductService {
     return 'This action adds a new product';
   }
 
-  async findAll() {
-    return this.productRepository.find({});
+  async findAll(query) {
+    const { category, page, limit, sort_by, sort_type } = query;
+
+    const products = await this.productRepository.find({
+      take: limit,
+      skip: (page - 1) * limit,
+      where: { category: { category_name: category } },
+      order: { [sort_by]: sort_type },
+    });
+
+    return products;
   }
 
   findOne(id: number) {
