@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   DefaultValuePipe,
@@ -13,6 +14,8 @@ import {
 import { Public } from 'src/auth/decorators/public.decorator';
 import { Role, Roles } from 'src/auth/decorators/roles.decorator';
 import { CategoryService } from 'src/category/category.service';
+import { User } from 'src/user/decorator/user.decorator';
+import { UserService } from 'src/user/user.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
@@ -22,6 +25,7 @@ export class ProductController {
   constructor(
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService,
+    private readonly userService: UserService,
   ) {}
 
   @Public()
@@ -70,7 +74,24 @@ export class ProductController {
 
   @Roles(Role.ADMIN)
   @Post('admin/products/new')
-  createProduct(@Body() createProductDto: CreateProductDto) {}
+  async createProduct(
+    @Body() createProductDto: CreateProductDto,
+    @User() user,
+  ) {
+    console.log('User: ', user);
+    const { category, ...dto } = createProductDto;
+    const categoryExist =
+      await this.categoryService.findCategoryByName(category);
+
+    if (!categoryExist && category !== 'other') {
+      throw new BadRequestException({
+        success: false,
+        message: 'Category not found',
+      });
+    }
+    const existedUser = await this.userService.findOneByEmail(user.email);
+    return this.productService.create(dto, existedUser, categoryExist);
+  }
 
   @Roles(Role.ADMIN)
   @Patch('admin/products/:id')
