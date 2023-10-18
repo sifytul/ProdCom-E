@@ -34,7 +34,7 @@ export class Product {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
-  @Column('decimal', { precision: 3, scale: 1 })
+  @Column('decimal', { precision: 3, scale: 1, default: 0 })
   ratings: number;
 
   @ManyToOne(() => Category, (category) => category.products)
@@ -45,7 +45,7 @@ export class Product {
   @Check(`"discount" <= 1 AND "discount" >= 0`)
   discount: number;
 
-  @Column()
+  @Column({ default: 0 })
   stock: number;
 
   @OneToMany(() => ProductImage, (image) => image.product, {
