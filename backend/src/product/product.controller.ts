@@ -70,7 +70,19 @@ export class ProductController {
 
   @Public()
   @Get('products/:id')
-  findOneProductById(@Param('id') id: string) {}
+  async findOneProductById(@Param('id', ParseIntPipe) id: number) {
+    const product = await this.productService.findOneById(id);
+    if (!product) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+    return {
+      success: true,
+      product,
+    };
+  }
 
   @Roles(Role.ADMIN)
   @Post('admin/products/new')
