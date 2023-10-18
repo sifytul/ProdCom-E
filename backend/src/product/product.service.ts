@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CategoryService } from 'src/category/category.service';
 import { Repository } from 'typeorm';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -9,6 +10,7 @@ export class ProductService {
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
+    private categoryService: CategoryService,
   ) {}
 
   async create(createProductDto, user, category) {
@@ -42,8 +44,37 @@ export class ProductService {
     return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if (!product) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    const categoryExist = await this.categoryService.findCategoryByName(
+      updateProductDto.category,
+    );
+    if (!categoryExist) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Category not found',
+      });
+    }
+
+    if (updateProductDto.category !== product.category.category_name) {
+      product.category = categoryExist;
+    }
+
+    product.name = updateProductDto.name;
+    product.description = updateProductDto.description;
+    product.price = updateProductDto.price;
+    product.stock = updateProductDto.stock;
+    product.discount = updateProductDto.discount;
+
+    console.log('Product: ', product);
+    return this.productRepository.save(product);
   }
 
   remove(id: number) {

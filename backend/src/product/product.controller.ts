@@ -107,10 +107,19 @@ export class ProductController {
 
   @Roles(Role.ADMIN)
   @Patch('admin/products/:id')
-  updateProductById(
-    @Param('id') id: string,
+  async updateProductById(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateProductDto: UpdateProductDto,
-  ) {}
+  ) {
+    const updatedProduct = await this.productService.update(
+      id,
+      updateProductDto,
+    );
+    return {
+      success: true,
+      updatedProduct,
+    };
+  }
 
   @Roles(Role.ADMIN)
   @Delete('admin/products/:id')
