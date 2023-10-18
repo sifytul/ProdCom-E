@@ -12,7 +12,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -37,7 +36,9 @@ export class Product {
   @Column('decimal', { precision: 3, scale: 1, default: 0 })
   ratings: number;
 
-  @ManyToOne(() => Category, (category) => category.products)
+  @ManyToOne(() => Category, (category) => category.products, {
+    eager: true,
+  })
   @JoinColumn({ name: 'category_id' })
   category: Category;
 
@@ -49,22 +50,22 @@ export class Product {
   stock: number;
 
   @OneToMany(() => ProductImage, (image) => image.product, {
-    cascade: true,
+    cascade: ['remove'],
     eager: true,
   })
   image_urls: ProductImage[];
 
-  @OneToMany(() => CartItem, (cartItem) => cartItem.product, { cascade: true })
+  @OneToMany(() => CartItem, (cartItem) => cartItem.product)
   cart_items: CartItem[];
 
-  @OneToMany(() => OrderedItem, (ordItm) => ordItm.product, { cascade: true })
+  @OneToMany(() => OrderedItem, (ordItm) => ordItm.product)
   ordered_items: OrderedItem[];
 
   @OneToMany(() => Review, (review) => review.product)
   reviews: Review[];
 
-  @OneToOne(() => User, { eager: true })
-  @JoinColumn()
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'added_by_id' })
   added_by: User;
 
   @CreateDateColumn()
