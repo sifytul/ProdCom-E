@@ -8,6 +8,7 @@ import {
   Check,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -73,4 +74,7 @@ export class Product {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn({ nullable: true })
+  deleted_at?: Date;
 }

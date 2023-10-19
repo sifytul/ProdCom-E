@@ -1,7 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryService } from 'src/category/category.service';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 
@@ -77,7 +81,28 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async softRemove(id: number) {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+    const softRemovedProduct = await this.productRepository.softRemove(product);
+    return softRemovedProduct;
+  }
+
+  async getSoftRemovedProducts() {
+    const softRemovedProducts = await this.productRepository.find({
+      withDeleted: true,
+      where: { deleted_at: Not(IsNull()) },
+    });
+    return softRemovedProducts;
+  }
+
+  async restore(id: number) {
+    const restoredProduct = await this.productRepository.restore(id);
+    return restoredProduct;
   }
 }

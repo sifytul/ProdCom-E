@@ -5,6 +5,7 @@ import {
   DefaultValuePipe,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Patch,
@@ -123,5 +124,39 @@ export class ProductController {
 
   @Roles(Role.ADMIN)
   @Delete('admin/products/:id')
-  deleteProductById(@Param('id') id: string) {}
+  softRemoveProductById(@Param('id', ParseIntPipe) id: number) {
+    const softRemovedProduct = this.productService.softRemove(id);
+    return {
+      success: true,
+      softRemovedProduct,
+    };
+  }
+
+  @Roles(Role.ADMIN)
+  @Get('admin/products/soft-deleted')
+  async getSoftRemovedProducts() {
+    const softRemovedProducts =
+      await this.productService.getSoftRemovedProducts();
+    return {
+      success: true,
+      softRemovedProducts,
+    };
+  }
+
+  @Roles(Role.ADMIN)
+  @Patch('admin/products/:id/restore')
+  async restoreSoftRemovedProductById(@Param('id', ParseIntPipe) id: number) {
+    const restoredProduct = await this.productService.restore(id);
+    if (restoredProduct.affected === 0) {
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'Product could not be restored. Please try again later',
+      });
+    }
+
+    return {
+      success: true,
+      message: 'Product restored successfully',
+    };
+  }
 }
