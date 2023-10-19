@@ -159,4 +159,21 @@ export class ProductController {
       message: 'Product restored successfully',
     };
   }
+
+  @Roles(Role.ADMIN)
+  @Delete('admin/products/:id/hard-delete')
+  async hardRemoveProductById(@Param('id', ParseIntPipe) id: number) {
+    const hardRemovedProduct = await this.productService.hardDelete(id);
+    if (!hardRemovedProduct) {
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'Product could not be deleted. Please try again later',
+      });
+    }
+
+    return {
+      success: true,
+      message: 'Product deleted permanently',
+    };
+  }
 }

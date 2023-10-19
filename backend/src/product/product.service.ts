@@ -105,4 +105,24 @@ export class ProductService {
     const restoredProduct = await this.productRepository.restore(id);
     return restoredProduct;
   }
+
+  async hardDelete(id: number) {
+    const product = await this.productRepository.findOne({
+      withDeleted: true,
+      where: { id },
+    });
+    if (!product) {
+      throw new NotFoundException({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    try {
+      await this.productRepository.remove(product);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
 }
