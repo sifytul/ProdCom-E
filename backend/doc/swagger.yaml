@@ -866,7 +866,7 @@ paths:
         '500':
           $ref: '#/components/responses/500'
     delete:
-      description: This route will delete a product based on productId
+      description: This route will remove temporarily a product based on productId
       tags:
         - Products
       security:
@@ -876,6 +876,123 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/204'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+  '/admin/products/soft-deleted':
+    get:
+      description: This route will retrieve all the soft deleted products.
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: retrieve all soft deleted products
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        sku:
+                          type: string
+                          example: abccd-11
+                        name:
+                          type: string
+                          example: Macbook Pro
+                        description:
+                          type: string
+                          example: This is an awesome product
+                        variant:
+                          type: string
+                          example: China
+                        image_urls:
+                          type: array
+                          example:
+                            - s3.productimage.jpeg
+                            - s3.secondimage.jpeg
+                        price:
+                          type: number
+                          example: 499.99
+                        ratings:
+                          type: number
+                          example: 4.8
+                        stock:
+                          type: integer
+                          example: 20
+                        category:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            category_name:
+                              type: string
+                              example: phone
+                            description:
+                              type: string
+                              example: This is a phone category.
+                            image_url:
+                              type: string
+                              example: s3.categoryimage.jpeg
+                        deleted_at:
+                          type: string
+                          example: 2023-10-13T09:25:14.836Z
+                        created_at:
+                          type: string
+                          example: 2023-10-13T09:25:14.836Z
+                        updated_at:
+                          type: string
+                          example: 2023-10-13T09:25:14.836Z
+                        links:
+                          type: object
+                          properties:
+                            self:
+                              type: string
+                              example: /products/2
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+  '/admin/products/{id}/restore':
+    patch:
+      description: This route will restore a soft deleted product based on productId.
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
+      responses:
+        '200':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: successfully restored
         '401':
           $ref: '#/components/responses/401'
         '403':
