@@ -124,8 +124,8 @@ export class ProductController {
 
   @Roles(Role.ADMIN)
   @Delete('admin/products/:id')
-  softRemoveProductById(@Param('id', ParseIntPipe) id: number) {
-    const softRemovedProduct = this.productService.softRemove(id);
+  async softRemoveProductById(@Param('id', ParseIntPipe) id: number) {
+    const softRemovedProduct = await this.productService.softRemove(id);
     return {
       success: true,
       softRemovedProduct,
