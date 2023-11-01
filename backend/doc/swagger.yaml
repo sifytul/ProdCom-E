@@ -1290,7 +1290,7 @@ paths:
           $ref: '#/components/responses/500'
 
   # Orders Endpoints
-  '/orders/myOrders':
+  '/orders/my-orders':
     get:
       tags:
         - Orders
@@ -1351,7 +1351,7 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
-  '/orders/myOrders/{id}':
+  '/orders/my-orders/{id}':
     get:
       tags:
         - Orders
@@ -1492,7 +1492,7 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
-  '/orders/myOrders/{id}/reorder':
+  '/orders/my-orders/{id}/reorder':
     put:
       tags:
         - Orders
@@ -1823,7 +1823,7 @@ paths:
           $ref: '#/components/responses/500'
 
   # Cart Endpoints
-  '/carts/myCart':
+  '/carts/my-cart':
     get:
       tags:
         - Cart
@@ -1868,7 +1868,6 @@ paths:
           $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
-  '/carts/myCarts/{id}':
     put:
       tags:
         - Cart
