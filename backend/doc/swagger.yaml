@@ -1290,7 +1290,7 @@ paths:
           $ref: '#/components/responses/500'
 
   # Orders Endpoints
-  '/me/orders':
+  '/orders/myOrders':
     get:
       tags:
         - Orders
@@ -1351,7 +1351,7 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
-  '/me/orders/{id}':
+  '/orders/myOrders/{id}':
     get:
       tags:
         - Orders
@@ -1492,7 +1492,7 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
-  '/me/orders/{id}/reorder':
+  '/orders/myOrders/{id}/reorder':
     put:
       tags:
         - Orders
@@ -1571,6 +1571,31 @@ paths:
                       quantity:
                         type: integer
                         example: 2
+                coupon:
+                  type: string
+                  example: sifat324d
+                shipping_info:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                      example: 123, abc road, dhaka
+                    city:
+                      type: string
+                      example: dhaka
+                    postal_code:
+                      type: string
+                      example: 1207
+                    country:
+                      type: string
+                      example: Bangladesh
+                    contact:
+                      type: object
+                      properties:
+                        phone:
+                          type: string
+                          example: +8801700000000
+
       responses:
         '201':
           description: success response
@@ -1798,7 +1823,7 @@ paths:
           $ref: '#/components/responses/500'
 
   # Cart Endpoints
-  '/me/carts':
+  '/carts/myCart':
     get:
       tags:
         - Cart
@@ -1843,7 +1868,7 @@ paths:
           $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
-  '/me/carts/{id}':
+  '/carts/myCarts/{id}':
     put:
       tags:
         - Cart
