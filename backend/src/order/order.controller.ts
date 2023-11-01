@@ -1,15 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { OrderService } from './order.service';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
+import { User } from 'src/user/decorator/user.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderService } from './order.service';
 
-@Controller('order')
+@Controller()
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Post('orders/new')
+  async create(@Body() createOrderDto: CreateOrderDto, @User() user) {
+    const createdOrder = await this.orderService.create(createOrderDto, user);
+    return {
+      success: true,
+      message: 'Order created successfully',
+      data: createdOrder,
+    };
   }
 
   @Get()
