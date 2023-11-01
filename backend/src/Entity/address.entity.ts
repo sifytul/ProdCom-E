@@ -5,7 +5,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -23,19 +22,16 @@ export class Address {
   city: string;
 
   @Column()
-  state: string;
-
-  @Column()
   country: string;
 
   @Column()
-  pin_code: number;
+  postal_code: number;
 
-  @OneToOne(() => ContactInfo, { eager: true, cascade: true })
+  @ManyToOne(() => ContactInfo, { eager: true, cascade: true })
   @JoinColumn({ name: 'contact_id' })
   contact: ContactInfo;
 
-  @ManyToOne(() => User, (user) => user.address)
+  @ManyToOne(() => User, (user) => user.address, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
