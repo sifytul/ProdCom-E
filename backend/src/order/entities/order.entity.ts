@@ -14,7 +14,7 @@ import {
 import { Address } from '../../Entity/address.entity';
 import { OrderedItem } from './orderedItems.entity';
 
-enum StatusEnum {
+export enum StatusEnum {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',
   CANCELED = 'canceled',
@@ -31,29 +31,33 @@ export class Order {
   @Column({ type: 'enum', enum: StatusEnum, default: StatusEnum.PENDING })
   status: StatusEnum;
 
-  @Column()
+  @Column({ default: 0 })
   total_items: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
   items_price: number;
 
-  @Column('decimal', { precision: 4, scale: 2 })
+  @Column('decimal', { precision: 4, scale: 2, default: 60 })
   shipping_price: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
   total_price: number;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   comment: string;
 
   @OneToOne(() => Address, {
-    cascade: true,
+    onDelete: 'SET NULL',
     eager: true,
   })
   @JoinColumn({ name: 'shipping_info_id' })
   shipping_info: Address;
 
-  @OneToOne(() => Payment, { eager: true })
+  @OneToOne(() => Payment, {
+    eager: true,
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'payment_info_id' })
   payment_info: Payment;
 
@@ -62,12 +66,11 @@ export class Order {
   user: User;
 
   @OneToMany(() => OrderedItem, (ordItem) => ordItem.order, {
-    cascade: true,
     eager: true,
   })
   ordered_items: OrderedItem[];
 
-  @Column()
+  @Column({ nullable: true })
   probable_delivery_date: Date;
 
   @Column({ nullable: true })
