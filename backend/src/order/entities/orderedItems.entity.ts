@@ -13,17 +13,21 @@ export class OrderedItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Product, (prod) => prod.ordered_items)
+  @ManyToOne(() => Product, (prod) => prod.ordered_items, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => Order, (order) => order.ordered_items)
+  @ManyToOne(() => Order, (order) => order.ordered_items, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'order_id' })
   order: Order;
 
   @Column()
   quantity: number;
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   sub_total: number;
 }
