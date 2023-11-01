@@ -4,10 +4,12 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Address } from './address.entity';
 
 @Entity()
 export class ContactInfo {
@@ -17,12 +19,15 @@ export class ContactInfo {
   @Column()
   phone_one: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone_two: string;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @OneToMany(() => Address, (address) => address.contact)
+  address: Address[];
 
   @CreateDateColumn()
   created_at: Date;
