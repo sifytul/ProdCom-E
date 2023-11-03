@@ -7,8 +7,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
+import { Role, Roles } from 'src/auth/decorators/roles.decorator';
 import { User } from 'src/user/decorator/user.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -83,9 +85,42 @@ export class OrderController {
     };
   }
 
-  @Get()
-  findAll() {
-    return this.orderService.findAll();
+  @Roles(Role.ADMIN)
+  @Get('admin/orders')
+  findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('status') status: string,
+    @Query('paymentStatus') paymentStatus: string,
+    @Query('sortBy') sortBy: string,
+    @Query('sortType') sortType: 'ASC' | 'DESC',
+    @Query('searchTerm') searchTerm: string,
+  ) {
+    if (status === 'all') {
+      status = null;
+    }
+
+    if (paymentStatus === 'all') {
+      paymentStatus = null;
+    }
+
+    if (sortBy === 'none') {
+      sortBy = null;
+    }
+
+    if (searchTerm === 'none') {
+      searchTerm = null;
+    }
+
+    return this.orderService.findAll(
+      page,
+      limit,
+      status,
+      paymentStatus,
+      sortBy,
+      sortType,
+      searchTerm,
+    );
   }
 
   @Get(':id')

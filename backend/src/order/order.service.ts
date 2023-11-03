@@ -352,8 +352,96 @@ export class OrderService {
     return;
   }
 
-  findAll() {
-    return `This action returns all order`;
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    status: string,
+    paymentStatus: string,
+    sortBy: string,
+    sortType: 'ASC' | 'DESC',
+    searchTerm: string,
+  ) {
+    let orderQuery = this.OrderRepository.createQueryBuilder('order');
+
+    if (status) {
+      orderQuery = orderQuery.andWhere('order.status = :status', { status });
+    }
+
+    if (paymentStatus) {
+      orderQuery = orderQuery.andWhere(
+        'order.payment_info.status = :paymentStatus',
+        { paymentStatus },
+      );
+    }
+
+    if (searchTerm) {
+      orderQuery = orderQuery.andWhere(
+        'order.shipping_info.address LIKE :searchTerm OR order.shipping_info.city LIKE :searchTerm OR order.shipping_info.country LIKE :searchTerm OR order.shipping_info.postal_code LIKE :searchTerm OR order.shipping_info.contact.phone_one LIKE :searchTerm OR order.shipping_info.contact.phone_two LIKE :searchTerm',
+        { searchTerm: `%${searchTerm}%` },
+      );
+    }
+
+    if (sortBy && sortType) {
+      orderQuery = orderQuery.orderBy(`order.${sortBy}`, sortType);
+    }
+
+    const orders = await orderQuery
+      .leftJoinAndSelect('order.shipping_info', 'shipping_info')
+      .leftJoinAndSelect('shipping_info.contact', 'contact')
+      .leftJoinAndSelect('order.payment_info', 'payment_info')
+      .leftJoinAndSelect('order.ordered_items', 'ordered_items')
+      .leftJoinAndSelect('ordered_items.product', 'product')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+
+    let orderResponse = [];
+    for (const order of orders) {
+      orderResponse.push({
+        id: order.id,
+        itemsPrice: order.items_price,
+        totalItems: order.total_items,
+        totalPrice: order.total_price,
+        shippingPrice: order.shipping_price,
+        status: order.status,
+        probableDeliveryDate: order.probable_delivery_date,
+        deliveredAt: order.delivered_at,
+        paymentInfo: order.payment_info?.medium,
+        shippingInfo: {
+          address: order.shipping_info.address
+            ? order.shipping_info.address
+            : null,
+          city: order.shipping_info.city ? order.shipping_info.city : null,
+          country: order.shipping_info.country
+            ? order.shipping_info.country
+            : null,
+          postalCode: order.shipping_info.postal_code
+            ? order.shipping_info.postal_code
+            : null,
+          contact: {
+            phoneOne: order.shipping_info.contact.phone_one
+              ? order.shipping_info.contact.phone_one
+              : null,
+            phoneTwo: order.shipping_info.contact.phone_two
+              ? order.shipping_info.contact.phone_two
+              : null,
+          },
+        },
+        orderedItems: order.ordered_items.map((item) => {
+          return {
+            productId: item.product.id,
+            name: item.product.name,
+            image: item.product?.image_urls?.[0] ?? null,
+            price: item.product.price,
+            discount: item.product.discount,
+            quantity: item.quantity,
+            subTotal: item.sub_total,
+            category: item.product.category?.category_name,
+          };
+        }),
+      });
+    }
+    return orderResponse;
   }
 
   findOne(id: number) {
