@@ -329,6 +329,29 @@ export class OrderService {
     return { status: 'confirmed' };
   }
 
+  async deleteMyOrder(orderId: number) {
+    const order = await this.OrderRepository.findOne({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      throw new HttpException(
+        `There is no such order with ID:${orderId}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (order.created_at < new Date(Date.now() - 24 * 60 * 60 * 1000)) {
+      throw new HttpException(
+        `You can not delete an order after 24 hours. please contact with our customer service`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await this.OrderRepository.delete(orderId);
+    return;
+  }
+
   findAll() {
     return `This action returns all order`;
   }

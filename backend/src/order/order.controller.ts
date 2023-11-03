@@ -73,6 +73,16 @@ export class OrderController {
       message: 'Order updated successfully',
     };
   }
+
+  @Delete('orders/my-orders/:id')
+  async deleteMyOrder(@Param('id') orderId: number) {
+    await this.orderService.deleteMyOrder(orderId);
+    return {
+      success: true,
+      message: 'Order deleted successfully',
+    };
+  }
+
   @Get()
   findAll() {
     return this.orderService.findAll();
