@@ -29,6 +29,18 @@ export class OrderController {
     };
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('orders/my-orders')
+  async findMyOrders(@User() user) {
+    const orders = await this.orderService.findMyOrders(user);
+    return {
+      success: true,
+      message: 'Orders fetched successfully',
+      totalOrders: orders.length,
+      data: orders,
+    };
+  }
+
   @Get()
   findAll() {
     return this.orderService.findAll();

@@ -184,6 +184,50 @@ export class OrderService {
     return transactionResult;
   }
 
+  async findMyOrders(user: any) {
+    const orders = await this.OrderRepository.find({
+      where: { user: { id: user.userId } },
+      relations: ['shipping_info', 'ordered_items', 'ordered_items.product'],
+    });
+
+    let orderResponse = [];
+    for (const order of orders) {
+      orderResponse.push({
+        id: order.id,
+        itemsPrice: order.items_price,
+        totalItems: order.total_items,
+        totalPrice: order.total_price,
+        shippingPrice: order.shipping_price,
+        status: order.status,
+        probableDeliveryDate: order.probable_delivery_date,
+        deliveredAt: order.delivered_at,
+        shippingInfo: {
+          address: order.shipping_info.address,
+          city: order.shipping_info.city,
+          country: order.shipping_info.country,
+          postalCode: order.shipping_info.postal_code,
+          contact: {
+            phoneOne: order.shipping_info.contact.phone_one,
+            phoneTwo: order.shipping_info.contact.phone_two,
+          },
+        },
+        orderedItems: order.ordered_items.map((item) => {
+          return {
+            productId: item.product.id,
+            name: item.product.name,
+            image: item.product.image_urls[0],
+            price: item.product.price,
+            discount: item.product.discount,
+            quantity: item.quantity,
+            subTotal: item.sub_total,
+            category: item.product.category.category_name,
+          };
+        }),
+      });
+    }
+    return orderResponse;
+  }
+
   findAll() {
     return `This action returns all order`;
   }
