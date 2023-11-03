@@ -22,7 +22,7 @@ export class Payment {
   @Column({ default: 'cod' })
   medium: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
   amount: number;
 
   @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.UNPAID })
