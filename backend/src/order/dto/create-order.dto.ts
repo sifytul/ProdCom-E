@@ -21,7 +21,7 @@ class ContactInfo {
   phone_two?: string;
 }
 
-class ShippingInfo {
+export class ShippingInfo {
   @IsNotEmpty()
   @IsString()
   address: string;
@@ -44,7 +44,7 @@ class ShippingInfo {
   contact: ContactInfo;
 }
 
-class ProductDetails {
+export class ProductDetails {
   @IsNotEmpty()
   @IsNumber()
   product_id: number;

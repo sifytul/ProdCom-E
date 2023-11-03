@@ -51,6 +51,28 @@ export class OrderController {
     };
   }
 
+  @Patch('orders/my-orders/:id')
+  async updateMyOrder(
+    @Param('id') orderId: number,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    const updatedOrder = await this.orderService.confirmOrCancelOrder(
+      orderId,
+      updateOrderDto,
+    );
+
+    if (updatedOrder.status === 'canceled') {
+      return {
+        success: true,
+        message: 'Order canceled successfully',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Order updated successfully',
+    };
+  }
   @Get()
   findAll() {
     return this.orderService.findAll();

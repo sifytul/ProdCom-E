@@ -5,14 +5,15 @@ import { ContactInfo } from 'src/Entity/contactInfo.entity';
 import { Product } from 'src/product/entities/product.entity';
 // import { User } from 'src/user/entity/user.entity';
 import { HttpStatus } from '@nestjs/common';
-import { DataSource, In, Repository } from 'typeorm';
+import { Payment, PaymentStatus } from 'src/Entity/payment.entity';
+import { DataSource, DeepPartial, In, Repository } from 'typeorm';
 import {
   OrderResponseDto,
   OrderedItemsResponseDto,
 } from './dto/create-order-response.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { Order } from './entities/order.entity';
+import { Order, StatusEnum } from './entities/order.entity';
 import { OrderedItem } from './entities/orderedItems.entity';
 
 @Injectable()
@@ -28,6 +29,8 @@ export class OrderService {
     private readonly AddressRepository: Repository<Address>,
     @InjectRepository(ContactInfo)
     private readonly ContactInfoRepository: Repository<ContactInfo>,
+    @InjectRepository(Payment)
+    private readonly PaymentRepository: Repository<Payment>,
     @InjectDataSource()
     private dataSource: DataSource,
   ) {}
@@ -275,6 +278,57 @@ export class OrderService {
       }),
     };
   }
+
+  async confirmOrCancelOrder(orderId: number, updateOrderDto: UpdateOrderDto) {
+    let existedOrder = await this.OrderRepository.findOne({
+      where: { id: orderId },
+    });
+
+    if (!existedOrder) {
+      throw new HttpException(
+        `There is no such order with ID:${orderId}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (updateOrderDto.status === 'canceled') {
+      existedOrder.status = updateOrderDto.status as StatusEnum;
+      const order = await this.OrderRepository.save(existedOrder);
+      return { status: 'canceled' };
+    }
+
+    let payment;
+    if (
+      updateOrderDto.paymentStatus === 'paid' &&
+      updateOrderDto.paymentInfo !== 'cod'
+    ) {
+      const { paymentInfo } = updateOrderDto;
+      const { medium, transactionId, paidAt, amount } = paymentInfo;
+
+      payment = await this.PaymentRepository.create({
+        medium,
+        transaction_id: transactionId,
+        paid_at: paidAt,
+        amount,
+        status: PaymentStatus.UNPAID,
+      } as DeepPartial<Payment>);
+
+      payment = await this.PaymentRepository.save(payment);
+    } else {
+      payment = this.PaymentRepository.create({
+        medium: 'cod',
+        status: PaymentStatus.UNPAID,
+      } as DeepPartial<Payment>);
+      payment = await this.PaymentRepository.save(payment);
+    }
+
+    existedOrder.payment_info = payment;
+    existedOrder.status = updateOrderDto.status as StatusEnum;
+
+    let order = await this.OrderRepository.save(existedOrder);
+
+    return { status: 'confirmed' };
+  }
+
   findAll() {
     return `This action returns all order`;
   }
