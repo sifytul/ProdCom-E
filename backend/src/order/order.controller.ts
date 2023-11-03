@@ -41,6 +41,16 @@ export class OrderController {
     };
   }
 
+  @Get('orders/my-orders/:id')
+  async findMyOrder(@Param('id') id: number, @User() user) {
+    const order = await this.orderService.findMyOrder(id, user);
+    return {
+      success: true,
+      message: 'Order fetched successfully',
+      data: order,
+    };
+  }
+
   @Get()
   findAll() {
     return this.orderService.findAll();
