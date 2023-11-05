@@ -23,16 +23,11 @@ export class ReviewController {
     @Param('productId', ParseIntPipe) productId: number,
     @User() user,
   ) {
-    const data = await this.reviewService.create(
-      createReviewDto,
-      productId,
-      user,
-    );
+    await this.reviewService.create(createReviewDto, productId, user);
 
     return {
       success: true,
       message: 'Review posted successfully',
-      data,
     };
   }
 
