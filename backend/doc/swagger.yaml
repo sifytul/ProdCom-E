@@ -1168,6 +1168,8 @@ paths:
       description: Post a review on individual product
       security:
         - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
       requestBody:
         description: review payload
         content:
