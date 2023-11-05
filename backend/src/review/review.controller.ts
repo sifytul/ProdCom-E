@@ -1,15 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ReviewService } from './review.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { User } from 'src/user/decorator/user.decorator';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { ReviewService } from './review.service';
 
-@Controller('review')
+@Controller()
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Post()
-  create(@Body() createReviewDto: CreateReviewDto) {
-    return this.reviewService.create(createReviewDto);
+  @Post('products/:productId/reviews')
+  async create(
+    @Body() createReviewDto: CreateReviewDto,
+    @Param('productId', ParseIntPipe) productId: number,
+    @User() user,
+  ) {
+    const data = await this.reviewService.create(
+      createReviewDto,
+      productId,
+      user,
+    );
+
+    return {
+      success: true,
+      message: 'Review posted successfully',
+      data,
+    };
   }
 
   @Get()
