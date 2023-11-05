@@ -13,7 +13,7 @@ import {
 import { Role, Roles } from 'src/auth/decorators/roles.decorator';
 import { User } from 'src/user/decorator/user.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateOrderDto, UpdateOrderDtoForAdmin } from './dto/update-order.dto';
 import { OrderService } from './order.service';
 
 @Controller()
@@ -128,9 +128,12 @@ export class OrderController {
     return this.orderService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
+  @Patch('/admin/orders/:id')
+  updateOrderByAdmin(
+    @Param('id') id: number,
+    @Body() updateOrderDto: UpdateOrderDtoForAdmin,
+  ) {
+    return this.orderService.updateOrderServiceByAdmin(id, updateOrderDto);
   }
 
   @Delete(':id')

@@ -30,3 +30,28 @@ export class UpdateOrderDto {
   @IsString()
   status: 'confirmed' | 'canceled';
 }
+
+export class UpdateOrderDtoForAdmin {
+  @IsNotEmpty()
+  @IsOptional()
+  paymentStatus?: 'paid' | 'unpaid';
+
+  @IsNotEmpty()
+  @IsOptional()
+  probableDeliveryDate?: Date;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  status?: 'processing' | 'shipping' | 'delivered' | 'canceled';
+
+  @IsNotEmpty()
+  @IsOptional()
+  paymentInfo?: paymentInfo | 'cod';
+
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @ValidateNested({ each: true })
+  // @Type(() => ProductDetails)
+  // product: ProductDetails[];
+}

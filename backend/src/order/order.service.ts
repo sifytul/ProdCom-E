@@ -12,7 +12,7 @@ import {
   OrderedItemsResponseDto,
 } from './dto/create-order-response.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateOrderDto, UpdateOrderDtoForAdmin } from './dto/update-order.dto';
 import { Order, StatusEnum } from './entities/order.entity';
 import { OrderedItem } from './entities/orderedItems.entity';
 
@@ -442,6 +442,38 @@ export class OrderService {
       });
     }
     return orderResponse;
+  }
+
+  async updateOrderServiceByAdmin(
+    orderId: number,
+    updateOrderDto: UpdateOrderDtoForAdmin,
+  ) {
+    let existedOrder = await this.OrderRepository.findOne({
+      where: { id: orderId },
+    });
+
+    if (!existedOrder) {
+      throw new HttpException(
+        `There is no such order with ID:${orderId}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (updateOrderDto.status) {
+      existedOrder.status = updateOrderDto.status as StatusEnum;
+    }
+
+    if (updateOrderDto.paymentStatus) {
+      existedOrder.payment_info.status =
+        updateOrderDto.paymentStatus as PaymentStatus;
+    }
+
+    if (updateOrderDto.probableDeliveryDate) {
+      existedOrder.probable_delivery_date = updateOrderDto.probableDeliveryDate;
+    }
+
+    await this.OrderRepository.save(existedOrder);
+    return { success: true, message: 'Order updated successfully' };
   }
 
   findOne(id: number) {
