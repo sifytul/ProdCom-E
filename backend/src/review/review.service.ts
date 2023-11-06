@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductService } from 'src/product/product.service';
+import { ReviewerResponseDto } from 'src/user/dto/userResponse.dto';
 import { DeepPartial, Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -42,8 +43,18 @@ export class ReviewService {
     return this.reviewRepository.save(review);
   }
 
-  findAll() {
-    return `This action returns all review`;
+  async findAll(productId: number) {
+    const reviews = await this.reviewRepository.find({
+      where: { product: { id: productId } },
+    });
+    let response = [];
+    for (let review of reviews) {
+      response.push({
+        ...review,
+        reviewer: new ReviewerResponseDto(review.reviewer),
+      });
+    }
+    return response;
   }
 
   findOne(id: number) {

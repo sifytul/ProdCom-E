@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -7,7 +8,9 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { User } from 'src/user/decorator/user.decorator';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -31,9 +34,16 @@ export class ReviewController {
     };
   }
 
-  @Get()
-  findAll() {
-    return this.reviewService.findAll();
+  @Public()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('products/:productId/reviews')
+  async findAll(@Param('productId', ParseIntPipe) productId: number) {
+    const data = await this.reviewService.findAll(productId);
+    return {
+      success: true,
+      message: 'Reviews fetched successfully',
+      data,
+    };
   }
 
   @Get(':id')
