@@ -1,6 +1,6 @@
-import { Category } from 'src/Entity/category/category.entity';
 import { ProductImage } from 'src/Entity/productImage.entity';
 import { CartItem } from 'src/cart/entities/cartItem.entity';
+import { Category } from 'src/category/entities/category.entity';
 import { OrderedItem } from 'src/order/entities/orderedItems.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { User } from 'src/user/entity/user.entity';

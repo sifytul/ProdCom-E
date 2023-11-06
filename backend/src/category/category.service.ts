@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from 'src/Entity/category/category.entity';
+import { Category } from 'src/category/entities/category.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

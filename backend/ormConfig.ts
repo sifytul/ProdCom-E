@@ -1,11 +1,11 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Address } from 'src/Entity/address.entity';
-import { Category } from 'src/Entity/category/category.entity';
 import { ContactInfo } from 'src/Entity/contactInfo.entity';
 import { Payment } from 'src/Entity/payment.entity';
 import { ProductImage } from 'src/Entity/productImage.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { CartItem } from 'src/cart/entities/cartItem.entity';
+import { Category } from 'src/category/entities/category.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { OrderedItem } from 'src/order/entities/orderedItems.entity';
 import { Product } from 'src/product/entities/product.entity';
