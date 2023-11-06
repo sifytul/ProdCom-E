@@ -83,7 +83,18 @@ export class ReviewService {
     return this.reviewRepository.save(review);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
+  async deleteReviewService(reviewId: number, userId: number) {
+    const review = await this.reviewRepository.findOne({
+      where: { id: reviewId, reviewer: { id: userId } },
+    });
+
+    if (!review) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Bad Request',
+      });
+    }
+
+    return this.reviewRepository.remove(review);
   }
 }

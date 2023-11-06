@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Patch,
@@ -65,8 +66,15 @@ export class ReviewController {
     };
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewService.remove(+id);
+  @HttpCode(204)
+  @Delete('reviews/:id')
+  async deleteReview(
+    @Param('id', ParseIntPipe) reviewId: number,
+    @User() user,
+  ) {
+    const { userId } = user;
+
+    await this.reviewService.deleteReviewService(reviewId, userId);
+    return;
   }
 }
