@@ -5,6 +5,7 @@ import {
   IsString,
   Validate,
 } from 'class-validator';
+import { IsRatingValidator } from './IsRatingValidator';
 
 export class CreateReviewDto {
   @IsOptional()
@@ -14,6 +15,6 @@ export class CreateReviewDto {
 
   @IsNumber()
   @IsNotEmpty()
-  @Validate((value) => value > 0 && value <= 5)
+  @Validate(IsRatingValidator)
   rating: number;
 }
