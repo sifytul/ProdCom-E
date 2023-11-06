@@ -51,9 +51,18 @@ export class ReviewController {
     return this.reviewService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewService.update(+id, updateReviewDto);
+  @Patch('reviews/:id')
+  async updateReview(
+    @Param('id', ParseIntPipe) reviewId: number,
+    @Body() updateReviewDto: UpdateReviewDto,
+    @User() user,
+  ) {
+    const { userId } = user;
+    await this.reviewService.updateReview(reviewId, updateReviewDto, userId);
+    return {
+      success: true,
+      message: 'Review updated successfully',
+    };
   }
 
   @Delete(':id')

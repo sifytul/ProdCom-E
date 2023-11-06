@@ -61,8 +61,26 @@ export class ReviewService {
     return `This action returns a #${id} review`;
   }
 
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
+  async updateReview(
+    reviewId: number,
+    updateReviewDto: UpdateReviewDto,
+    userId: number,
+  ) {
+    const review = await this.reviewRepository.findOne({
+      where: { id: reviewId, reviewer: { id: userId } },
+    });
+
+    if (!review) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Bad Request',
+      });
+    }
+
+    review.comment = updateReviewDto.comment;
+    review.rating = updateReviewDto.rating;
+
+    return this.reviewRepository.save(review);
   }
 
   remove(id: number) {
