@@ -23,7 +23,6 @@ export class Review {
 
   @ManyToOne(() => Product, (product) => product.reviews, {
     cascade: true,
-    eager: true,
   })
   @JoinColumn({ name: 'product_id' })
   product: Product;
