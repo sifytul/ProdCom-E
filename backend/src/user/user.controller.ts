@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -85,11 +86,16 @@ export class UserController {
     } else {
       uploadedAvatar = null;
     }
-
+    if (!uploadedAvatar) {
+      throw new BadRequestException('Please upload a valid image file.');
+    }
     await this.userService.updateUserAvatar(user.email, uploadedAvatar);
     return {
       success: true,
       message: 'Avatar successfully updated.',
+      data: {
+        avatarUrl: uploadedAvatar?.url,
+      },
     };
   }
 
