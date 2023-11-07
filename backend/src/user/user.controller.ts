@@ -54,8 +54,11 @@ export class UserController {
 
   @Patch('me/update')
   async updateMe(@User() user, @Body() body: UpdateUserDto) {
-    const updatedUser = await this.userService.updateUser(user.email, body);
-    return updatedUser;
+    await this.userService.updateUser(user.email, body);
+    return {
+      success: true,
+      message: 'User successfully updated.',
+    };
   }
 
   @Patch('me/update/avatar')
