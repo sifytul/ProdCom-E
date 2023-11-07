@@ -1,38 +1,28 @@
-// import * as cloudinary from 'cloudinary';
+import { HttpException } from '@nestjs/common';
+import * as cloudinary from 'cloudinary';
+import * as path from 'path';
 
-// export const uploadimages = async (file) => {
-//   try {
-//     cloudinary.v2.config({
-//       cloud_name: process.env.cloudinary_name,
-//       api_key: process.env.cloudinary_api_key,
-//       api_secret: process.env.cloudinary_api_secret,
-//     });
-//     let cld_upload_stream: any = cloudinary.v2.uploader
-//       .upload_stream({ folder: 'avatar' }, (err, result) => {
-//         if (err) {
-//           console.log(err);
-//           return;
-//         }
-//         console.log('file data: ', result);
-//         // if (result) {
-//         //   return {
-//         //     public_id: result.public_id,
-//         //     url: result.secure_url,
-//         //   };
-//         // }
-//       })
-//       .end(file.buffer);
-//     // console.log(cld_upload_stram);
-//     // const uploadedfiles = [];
-//     // for (const file of object.values(files)) {
-//     //   console.log('uploading file => ', file.name);
-//     //   const result = await cloudinary.v2.uploader.upload(file.tempfilepath);
-//     //   uploadedfiles.push(result.secure_url);
-//     // }
-//     // return uploadedfiles;
-//     // console.log(cld_upload_stream);
-//   } catch (err) {
-//     console.log(err);
-//     return null;
-//   }
-// };
+export const uploadImage = async (imageFile) => {
+  const imageBase64 = imageFile.buffer.toString('base64');
+
+  const imageDataUri = `data:image/${path
+    .extname(imageFile.originalname)
+    .slice(1)};base64,${imageBase64}`;
+
+  const options = {
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true,
+  };
+
+  try {
+    const result = await cloudinary.v2.uploader.upload(imageDataUri, options);
+    return {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+  } catch (error) {
+    console.error(error);
+    throw new HttpException('Upload image failed', 500);
+  }
+};

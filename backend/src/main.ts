@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
+import * as cloudinary from 'cloudinary';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
@@ -24,6 +25,14 @@ async function bootstrap() {
     console.log('yaml read error: ', e);
   }
   SwaggerModule.setup('api', app, document);
+
+  // cloudinary config
+  cloudinary.v2.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
   await app.listen(4000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

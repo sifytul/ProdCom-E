@@ -3,13 +3,19 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Role, Roles } from 'src/auth/decorators/roles.decorator';
 // import { UploadImages } from 'src/utils/uploadImage';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { uploadImage } from 'src/utils/uploadImage';
 import { User } from './decorator/user.decorator';
 import { RegisterUserDto } from './dto/registerUserDto';
 import { UpdatePasswordDto } from './dto/upadte-password.dto';
@@ -52,14 +58,37 @@ export class UserController {
     return updatedUser;
   }
 
-  // //TODO: need to implement file upload method in cloudinary
-  // @Public()
-  // @Post('upload')
-  // @UseInterceptors(FileInterceptor('file'))
-  // async uploadFile(@UploadedFile() file: Express.Multer.File) {
-  //   const file_data = await UploadImages(file);
-  //   console.log(file_data);
-  // }
+  @Patch('me/update/avatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateMyAvatar(
+    @User() user,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /jpeg|jpg|png/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 1024 * 1024 * 1,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    avatar?: Express.Multer.File,
+  ) {
+    let uploadedAvatar;
+    if (avatar) {
+      uploadedAvatar = await uploadImage(avatar);
+    } else {
+      uploadedAvatar = null;
+    }
+
+    await this.userService.updateUserAvatar(user.email, uploadedAvatar);
+    return {
+      success: true,
+      message: 'Avatar successfully updated.',
+    };
+  }
 
   @Roles(Role.ADMIN)
   @Get('admin/users')

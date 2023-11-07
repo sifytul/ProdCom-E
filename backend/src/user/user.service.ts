@@ -135,6 +135,21 @@ export class UserService {
     return this.userRepo.save(existingUser);
   }
 
+  async updateUserAvatar(email: string, uploadedAvatar) {
+    const existingUser = await this.findOneByEmail(email);
+
+    if (!existingUser) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (uploadedAvatar) {
+      existingUser.avatar_url = uploadedAvatar.url;
+      existingUser.avatar_public_id = uploadedAvatar.public_id;
+      return this.userRepo.save(existingUser);
+    }
+
+    return;
+  }
   async updateUserById(userId: number, body: UpdateUserDto) {
     const existingUser = await this.userRepo.findOne({ where: { id: userId } });
     existingUser.name = body.name;
