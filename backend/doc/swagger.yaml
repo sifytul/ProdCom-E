@@ -418,6 +418,42 @@ paths:
         '401':
           $ref: '#/components/responses/401'
 
+  '/me/update/avatar':
+    post:
+      tags: [User]
+      security:
+        - bearerAuth: []
+      description: This route will update the avatar of the user.
+      requestBody:
+        content:
+          'multipart/form-data':
+            schema:
+              type: object
+              properties:
+                avatar:
+                  description: only jpg, jpeg, png and file less than 1mb is allowed
+                  type: string
+                  format: binary
+      responses:
+        '204':
+          description: success response
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: avatar successfully updated.
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
   # User - Admin endpoints
   '/admin/users':
     get:
