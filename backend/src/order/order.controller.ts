@@ -123,21 +123,11 @@ export class OrderController {
     );
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
-  }
-
   @Patch('/admin/orders/:id')
   updateOrderByAdmin(
     @Param('id') id: number,
     @Body() updateOrderDto: UpdateOrderDtoForAdmin,
   ) {
     return this.orderService.updateOrderServiceByAdmin(id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
   }
 }

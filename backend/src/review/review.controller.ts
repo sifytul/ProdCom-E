@@ -47,11 +47,6 @@ export class ReviewController {
     };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reviewService.findOne(+id);
-  }
-
   @Patch('reviews/:id')
   async updateReview(
     @Param('id', ParseIntPipe) reviewId: number,

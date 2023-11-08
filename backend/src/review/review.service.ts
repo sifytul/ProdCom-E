@@ -57,10 +57,6 @@ export class ReviewService {
     return response;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} review`;
-  }
-
   async updateReview(
     reviewId: number,
     updateReviewDto: UpdateReviewDto,
