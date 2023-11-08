@@ -68,3 +68,12 @@ export const uploadMultipleImages = async (
   }
   return images;
 };
+
+export const deleteImage = async (public_id: string) => {
+  try {
+    await cloudinary.v2.uploader.destroy(public_id);
+  } catch (error) {
+    console.error(error);
+    throw new HttpException('Delete image failed', 500);
+  }
+};

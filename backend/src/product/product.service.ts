@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductImage } from 'src/Entity/productImage.entity';
 import { CategoryService } from 'src/category/category.service';
+import { deleteImage } from 'src/utils/uploadImage';
 import { IsNull, Not, Repository } from 'typeorm';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -135,6 +136,17 @@ export class ProductService {
   }
 
   async hardDelete(id: number) {
+    const images = await this.imageRepository.find({
+      where: { product: { id: id } },
+    });
+
+    if (images && images.length > 0) {
+      images.forEach(async (image) => {
+        await deleteImage(image.public_id);
+        await this.imageRepository.remove(image);
+      });
+    }
+
     const product = await this.productRepository.findOne({
       withDeleted: true,
       where: { id },
