@@ -11,12 +11,16 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { Role, Roles } from 'src/auth/decorators/roles.decorator';
 import { CategoryService } from 'src/category/category.service';
 import { User } from 'src/user/decorator/user.decorator';
 import { UserService } from 'src/user/user.service';
+import { uploadMultipleImages } from 'src/utils/uploadImage';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
@@ -86,13 +90,14 @@ export class ProductController {
   }
 
   @Roles(Role.ADMIN)
+  @UseInterceptors(FilesInterceptor('images'))
   @Post('admin/products/new')
   async createProduct(
     @Body() createProductDto: CreateProductDto,
     @User() user,
+    @UploadedFiles() images?: Express.Multer.File[],
   ) {
-    console.log('User: ', user);
-    const { category, ...dto } = createProductDto;
+    const { category, ...productDto } = createProductDto;
     const categoryExist =
       await this.categoryService.findCategoryByName(category);
 
@@ -102,8 +107,29 @@ export class ProductController {
         message: 'Category not found',
       });
     }
-    const existedUser = await this.userService.findOneByEmail(user.email);
-    return this.productService.create(dto, existedUser, categoryExist);
+
+    let uploadedImages = [];
+    if (images && images.length > 0) {
+      uploadedImages = await Promise.all(await uploadMultipleImages(images));
+
+      //TODO: check if all images were uploaded successfully, if not, manage the error
+      // const hasUploadFailed = uploadedImages.some(
+      //   (image) => image.success === false,
+      // );
+
+      // if (hasUploadFailed) {
+      // }
+    }
+    await this.productService.create(
+      productDto,
+      user,
+      categoryExist,
+      uploadedImages,
+    );
+    return {
+      success: true,
+      message: 'Product created successfully',
+    };
   }
 
   @Roles(Role.ADMIN)

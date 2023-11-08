@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ProductImage } from 'src/Entity/productImage.entity';
 import { CategoryService } from 'src/category/category.service';
 import { IsNull, Not, Repository } from 'typeorm';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -15,16 +16,43 @@ export class ProductService {
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     private categoryService: CategoryService,
+    @InjectRepository(ProductImage)
+    private imageRepository: Repository<ProductImage>,
   ) {}
 
-  async create(createProductDto, user, category) {
+  async create(createProductDto, user, category, images) {
     const product = this.productRepository.create({
       ...createProductDto,
-      added_by: user,
+      added_by: { id: user.userId },
       category,
     });
 
-    return this.productRepository.save(product);
+    const savedProduct = await this.productRepository.save(product);
+
+    let savedProductImages;
+    if (images.length > 0) {
+      const ImagesPayload = images.map((image) => {
+        if (image.success) {
+          return {
+            product: savedProduct,
+            url: image.url,
+            public_id: image.public_id,
+          };
+        }
+      });
+
+      const savedImages = this.imageRepository.create(ImagesPayload);
+      savedProductImages = await this.imageRepository.save(savedImages);
+    } else {
+      savedProductImages = [];
+    }
+
+    return {
+      product: {
+        ...product,
+        images: savedProductImages,
+      },
+    };
   }
 
   async findAll(query) {
