@@ -14,7 +14,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { Role, Roles } from 'src/auth/decorators/roles.decorator';
-import { uploadImage } from 'src/utils/uploadImage';
+import { deleteImage, uploadImage } from 'src/utils/uploadImage';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -133,12 +133,18 @@ export class CategoryController {
   @Delete('admin/categories/:id')
   async deleteCategory(@Param('id') id: number) {
     const deletedCategory = await this.categoryService.remove(id);
+
     if (!deletedCategory) {
       return {
         success: false,
         message: 'Category not found',
       };
     }
+
+    if (deletedCategory.image_public_id) {
+      await deleteImage(deletedCategory.image_public_id);
+    }
+
     return {
       success: true,
       category: `${deletedCategory.category_name} category has been deleted`,
