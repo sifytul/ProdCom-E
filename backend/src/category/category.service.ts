@@ -23,16 +23,21 @@ export class CategoryService {
     return categories;
   }
 
-  async create({
-    category_name,
-    description,
-  }: {
-    category_name: string;
-    description?: string;
-  }) {
+  async create(
+    {
+      category_name,
+      description,
+    }: {
+      category_name: string;
+      description?: string;
+    },
+    image: any,
+  ) {
     const category = this.categoryRepository.create({
       category_name: category_name.toLowerCase(),
       description,
+      image_public_id: image?.public_id || null,
+      image_url: image?.url || null,
     });
     return this.categoryRepository.save(category);
   }

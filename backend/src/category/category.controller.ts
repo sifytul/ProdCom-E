@@ -35,9 +35,32 @@ export class CategoryController {
 
   @Roles(Role.ADMIN)
   @Post('admin/categories')
-  async createCategory(@Body() body: CreateCategoryDto) {
+  @UseInterceptors(FileInterceptor('categoryImage'))
+  async createCategory(
+    @Body() body: CreateCategoryDto,
+    @UploadedFile() categoryImage?: Express.Multer.File,
+  ) {
     try {
-      const category = await this.categoryService.create(body);
+      let isCategoryExist = await this.categoryService.findCategoryByName(
+        body.category_name,
+      );
+
+      if (isCategoryExist) {
+        throw new ConflictException({
+          success: false,
+          message: 'Category already exists 🚫',
+        });
+      }
+
+      let image = null;
+      if (categoryImage) {
+        const uploadedImgFile = await uploadImage(categoryImage, 'categories');
+
+        if (uploadedImgFile.success) {
+          image = uploadedImgFile;
+        }
+      }
+      const category = await this.categoryService.create(body, image);
       return {
         success: true,
         category,
