@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/category/entities/category.entity';
+import { deleteImage } from 'src/utils/uploadImage';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -36,13 +37,21 @@ export class CategoryService {
     return this.categoryRepository.save(category);
   }
 
-  async update(id: number, { category_name, description }: any) {
+  async update(id: number, { category_name, description }: any, image: any) {
     const category = await this.categoryRepository.findOne({ where: { id } });
     if (!category) {
       return null;
     }
 
-    if (category_name === category.category_name && !description) {
+    if (image && image.success) {
+      if (category.image_public_id) {
+        await deleteImage(category.image_public_id);
+      }
+      category.image_public_id = image.public_id;
+      category.image_url = image.url;
+    }
+
+    if (category_name === category.category_name && !description && !image) {
       throw new ConflictException({
         success: false,
         message: 'No data to update',

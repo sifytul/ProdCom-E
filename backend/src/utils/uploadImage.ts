@@ -2,7 +2,10 @@ import { HttpException } from '@nestjs/common';
 import * as cloudinary from 'cloudinary';
 import * as path from 'path';
 
-export const uploadImage = async (imageFile: Express.Multer.File) => {
+export const uploadImage = async (
+  imageFile: Express.Multer.File,
+  folder?: string,
+) => {
   const imageBase64 = imageFile.buffer.toString('base64');
 
   const imageDataUri = `data:image/${path
@@ -13,17 +16,23 @@ export const uploadImage = async (imageFile: Express.Multer.File) => {
     use_filename: true,
     unique_filename: false,
     overwrite: true,
+    folder: folder || 'avatar',
   };
 
   try {
     const result = await cloudinary.v2.uploader.upload(imageDataUri, options);
     return {
+      success: true,
       public_id: result.public_id,
       url: result.secure_url,
     };
   } catch (error) {
     console.error(error);
-    throw new HttpException('Upload image failed', 500);
+    return {
+      success: false,
+      error: error.message,
+    };
+    // throw new HttpException('Upload image failed', 500);
   }
 };
 
@@ -31,6 +40,7 @@ type TImage = {
   success: boolean;
   public_id?: string;
   url?: string;
+  error?: string;
 };
 
 export const uploadMultipleImages = async (
@@ -63,6 +73,7 @@ export const uploadMultipleImages = async (
       console.error(error);
       images.push({
         success: false,
+        error: error.message,
       });
     }
   }

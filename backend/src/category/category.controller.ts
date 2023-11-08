@@ -8,9 +8,13 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { Role, Roles } from 'src/auth/decorators/roles.decorator';
+import { uploadImage } from 'src/utils/uploadImage';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -50,10 +54,12 @@ export class CategoryController {
   }
 
   @Roles(Role.ADMIN)
+  @UseInterceptors(FileInterceptor('image'))
   @Patch('admin/categories/:id')
   async updateCategory(
     @Param('id') id: number,
     @Body() body: UpdateCategoryDto,
+    @UploadedFile() image: Express.Multer.File,
   ) {
     if (!body.category_name && !body.description) {
       throw new BadRequestException({
@@ -67,8 +73,17 @@ export class CategoryController {
         message: 'Category name cannot be empty',
       });
     }
+
+    let uploadedImgFile = null;
+    if (image) {
+      uploadedImgFile = await uploadImage(image, 'categories');
+    }
     try {
-      const updatedCategory = await this.categoryService.update(id, body);
+      const updatedCategory = await this.categoryService.update(
+        id,
+        body,
+        uploadedImgFile,
+      );
       if (!updatedCategory) {
         throw new BadRequestException({
           success: false,
