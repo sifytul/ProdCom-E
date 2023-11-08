@@ -818,11 +818,6 @@ paths:
                 price:
                   type: number
                   example: 29.99
-                image_urls:
-                  type: array
-                  example:
-                    - s3.firstimage.jpeg
-                    - s3.secondimage.jpeg
                 category:
                   type: string
                   example: phone
@@ -835,7 +830,40 @@ paths:
                 - price
                 - image_urls
                 - category
-
+          'multipart/form-data':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: xiaomi airdot 6
+                description:
+                  type: string
+                  example: Details description of the product
+                price:
+                  type: number
+                  example: 29.99
+                images:
+                  description: only jpg, jpeg, png and file less than 1mb is allowed
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                category:
+                  type: string
+                  example: phone
+                stock:
+                  type: integer
+                  example: 30
+              required:
+                - name
+                - description
+                - price
+                - image_urls
+                - category
+            encoding:
+              images:
+                contentType: image/jpeg, image/png, image/jpg
       responses:
         '201':
           description: success response
@@ -903,6 +931,25 @@ paths:
           $ref: '#/components/responses/500'
     delete:
       description: This route will remove temporarily a product based on productId
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/productIdParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+
+  '/admin/products/{id}/hard-delete':
+    delete:
+      description: This route will permanently delete a product based on productId
       tags:
         - Products
       security:
