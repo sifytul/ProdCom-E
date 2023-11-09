@@ -32,8 +32,6 @@ paths:
   '/health':
     get:
       description: Check the health of api
-      security:
-        - bearerAuth: []
       responses:
         '200':
           description: success response
