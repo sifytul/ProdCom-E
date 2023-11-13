@@ -1,6 +1,7 @@
 import { ProductImage } from 'src/Entity/productImage.entity';
 import { CartItem } from 'src/cart/entities/cartItem.entity';
 import { Category } from 'src/category/entities/category.entity';
+import { SubCategory } from 'src/category/entities/subCategory.entity';
 import { OrderedItem } from 'src/order/entities/orderedItems.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { User } from 'src/user/entity/user.entity';
@@ -42,6 +43,12 @@ export class Product {
   })
   @JoinColumn({ name: 'category_id' })
   category: Category;
+
+  @ManyToOne(() => SubCategory, (subCategory) => subCategory.products, {
+    eager: true,
+  })
+  @JoinColumn({ name: 'sub_category_id' })
+  sub_category: SubCategory;
 
   @Column('decimal', { precision: 3, scale: 2, default: 0 })
   @Check(`"discount" <= 1 AND "discount" >= 0`)

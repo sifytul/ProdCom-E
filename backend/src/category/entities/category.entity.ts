@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { SubCategory } from './subCategory.entity';
 
 @Entity()
 export class Category {
@@ -24,6 +25,9 @@ export class Category {
 
   @Column({ nullable: true })
   image_url: string;
+
+  @OneToMany(() => SubCategory, (subCategory) => subCategory.category)
+  sub_categoris: SubCategory[];
 
   @OneToMany(() => Product, (prod) => prod.category)
   products: Product[];
