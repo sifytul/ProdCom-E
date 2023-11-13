@@ -1974,8 +1974,6 @@ paths:
       description: Add items to the cart
       security:
         - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/cartItemIdParam'
       requestBody:
         description: cart payload
         content:
@@ -1996,6 +1994,7 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+  '/carts/my-cart/{cartItemId}':
     delete:
       tags:
         - Cart
@@ -2255,7 +2254,7 @@ components:
         example: 32
     cartItemIdParam:
       in: path
-      name: id
+      name: cartItemId
       required: true
       description: cart Item ID
       schema:
