@@ -1,12 +1,13 @@
 import { Product } from 'src/product/entities/product.entity';
+import { User } from 'src/user/entity/user.entity';
 import {
+  Check,
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Cart } from './cart.entity';
 
 @Entity()
 export class CartItem {
@@ -17,10 +18,11 @@ export class CartItem {
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => Cart, (cart) => cart.items)
-  @JoinColumn({ name: 'cart_id' })
-  cart: Cart;
+  @ManyToOne(() => User, (user) => user.cartItems)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column()
+  @Check(`"quantity" > 0`)
   quantity: number;
 }
