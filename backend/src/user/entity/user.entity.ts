@@ -1,4 +1,5 @@
 import { Address } from 'src/Entity/address.entity';
+import { CartItem } from 'src/cart/entities/cartItem.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { Review } from 'src/review/entities/review.entity';
 import {
@@ -60,6 +61,9 @@ export class User {
 
   @OneToMany(() => Review, (review) => review.reviewer)
   reviews: Review[];
+
+  @OneToMany(() => CartItem, (cartItem) => cartItem.user)
+  cartItems: CartItem[];
 
   @CreateDateColumn()
   created_at: Date;
