@@ -5,6 +5,7 @@ import { Payment } from 'src/Entity/payment.entity';
 import { ProductImage } from 'src/Entity/productImage.entity';
 import { CartItem } from 'src/cart/entities/cartItem.entity';
 import { Category } from 'src/category/entities/category.entity';
+import { SubCategory } from 'src/category/entities/subCategory.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { OrderedItem } from 'src/order/entities/orderedItems.entity';
 import { Product } from 'src/product/entities/product.entity';
@@ -22,6 +23,7 @@ export const ormConfig: TypeOrmModuleOptions = {
     User,
     Product,
     Category,
+    SubCategory,
     CartItem,
     Order,
     OrderedItem,

@@ -18,7 +18,7 @@ export class SubCategory {
   @Column({ unique: true })
   sub_category_name: string;
 
-  @ManyToOne(() => Category, (category) => category.sub_categoris, {
+  @ManyToOne(() => Category, (category) => category.sub_categories, {
     eager: true,
   })
   category: Category;

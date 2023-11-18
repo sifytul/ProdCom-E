@@ -27,7 +27,7 @@ export class Category {
   image_url: string;
 
   @OneToMany(() => SubCategory, (subCategory) => subCategory.category)
-  sub_categoris: SubCategory[];
+  sub_categories: SubCategory[];
 
   @OneToMany(() => Product, (prod) => prod.category)
   products: Product[];
