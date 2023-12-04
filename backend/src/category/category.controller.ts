@@ -150,4 +150,23 @@ export class CategoryController {
       category: `${deletedCategory.category_name} category has been deleted`,
     };
   }
+
+  @Roles(Role.ADMIN)
+  @Get('admin/categories/:categoryName')
+  async findCategoryByName(@Param('categoryName') categoryName: string) {
+    const category =
+      await this.categoryService.findCategoryByName(categoryName);
+
+    if (!category) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Category not found',
+      });
+    }
+
+    return {
+      success: true,
+      category,
+    };
+  }
 }

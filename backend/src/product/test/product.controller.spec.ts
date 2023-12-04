@@ -3,13 +3,14 @@ import { CategoryService } from 'src/category/category.service';
 import { ProductController } from '../product.controller';
 import { ProductService } from '../product.service';
 import { categoryStub } from './stubs/category.stub';
-import { productStub } from './stubs/product.stub';
+import { productPayloadStub, productStub } from './stubs/product.stub';
 
 describe('ProductController', () => {
   let productController: ProductController;
 
   const mockProductService = {
     findAll: jest.fn().mockResolvedValue([productStub()]),
+    create: jest.fn().mockResolvedValue({ success: true }),
   };
 
   const mockCategoryService = {
@@ -45,6 +46,22 @@ describe('ProductController', () => {
       expect(response).toEqual({
         success: true,
         products: [productStub()],
+      });
+    });
+  });
+
+  //-------------------------------------------------//
+
+  describe('when we call createProduct method', () => {
+    let response;
+    let payload = productPayloadStub();
+    beforeEach(async () => {
+      response = await productController.createProduct(payload, 'user');
+    });
+
+    it('should return an object with success true', () => {
+      expect(response).toEqual({
+        success: true,
       });
     });
   });
