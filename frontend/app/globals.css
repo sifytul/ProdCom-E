@@ -7,6 +7,7 @@
     --neutral-black: 195, 9%, 9%;
     --neutral-white: 0 0% 100%;
     --neutral-white-100: 210, 20%, 96%;
+    --neutral-white-200: 204, 15%, 96%;
     --neutral-gray: 200, 4%, 44%;
 
     --background: 0 0% 100%;
@@ -78,6 +79,93 @@
     box-sizing: border-box;
   }
   body {
-    @apply bg-background text-foreground font-poppins;
+    @apply bg-white text-black font-poppins;
   }
+
+  table {
+    @apply border-collapse shadow-md w-full rounded-md;
+  }
+  thead {
+    @apply shadow-md h-12 px-2;
+  }
+  th {
+    @apply uppercase px-2 lg:px-3 lg:py-4 text-sm font-bold bg-white-200;
+  }
+
+  td:first-child {
+    @apply text-left;
+  }
+
+  td {
+    @apply lg:px-3 lg:py-6 px-2 py-3 text-center;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+}
+
+@layer components {
+  .carousel {
+    position: relative;
+  }
+  .carousel-images {
+    position: relative;
+    border-radius: 10px;
+    max-width: 1400px;
+    margin: auto;
+    overflow: hidden;
+  }
+  .carousel-images img {
+    width: 99%;
+    height: 99%;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+  .slide_direction {
+  }
+  .left,
+  .right {
+    background-color: #fb666675;
+    color: #fff;
+    /* padding: 10px 8px 8px 13px;
+    margin: 0 20px; */
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    margin: auto 10px;
+    height: 25px;
+    width: 25px;
+  }
+  .left {
+    left: 0;
+  }
+  .right {
+    right: 0;
+  }
+  .carousel-indicator {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  .dot {
+    background-color: #333;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+  }
+  .active {
+    background-color: #fa2020;
+  }
+
+  /* @layer utilities {
+    .countdown {
+      & > * {
+        &:before {
+          @apply text-center transition-all duration-1000 ease-in-out;
+        }
+      }
+    }
+  } */
 }

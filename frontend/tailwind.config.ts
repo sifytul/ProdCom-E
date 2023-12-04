@@ -8,32 +8,49 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    fontSize: {
-      xs: ".75rem",
-      sm: ".875rem",
-      base: "1rem",
-      lg: "1.125rem",
-      xl: "1.25rem",
-      "2xl": "1.5rem",
-      "3xl": "2.125rem",
-      "4xl": "2.5rem",
-    },
-    fontFamily: {
-      poppins: ["Poppins", "sans-serif"],
-      inter: ["Inter", "sans-serif"],
-    },
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
+    // fontSize: {
+    //   xs: ".75rem",
+    //   sm: ".875rem",
+    //   base: "1rem",
+    //   lg: "1.125rem",
+    //   xl: "1.25rem",
+    //   "2xl": "1.5rem",
+    //   "3xl": "2.125rem",
+    //   "4xl": "2.5rem",
+    // },
+    // fontFamily: {
+    //   poppins: ["Poppins", "sans-serif"],
+    //   inter: ["Inter", "sans-serif"],
+    // },
+    // container: {
+    //   center: true,
+    //   padding: "2rem",
+    //   screens: {
+    //     "2xl": "1400px",
+    //   },
+    // },
     extend: {
+      screens: {
+        xs: "568px",
+      },
+      fontSize: {
+        xs: ".75rem",
+        sm: ".875rem",
+        base: "1rem",
+        lg: "1.125rem",
+        xl: "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "2.125rem",
+        "4xl": "2.5rem",
+        "5xl": "3rem",
+        "6xl": "4rem",
+        "7xl": "5rem",
+      },
       colors: {
         white: {
           DEFAULT: "hsl(var(--neutral-white))",
           100: "hsl(var(--neutral-white-100))",
+          200: "hsl(var(--neutral-white-200))",
         },
         black: "hsl(var(--neutral-black))",
         gray: "hsl(var(--neutral-gray))",
@@ -70,6 +87,17 @@ module.exports = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+      },
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
+      },
+      container: {
+        center: true,
+        padding: "2rem",
+        screens: {
+          "2xl": "1400px",
         },
       },
       borderRadius: {
