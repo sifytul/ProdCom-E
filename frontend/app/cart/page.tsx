@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
-import { products } from "../page";
+import { products } from "@/public/demo/db";
 import Counter from "@/components/Counter";
 import { RxCross1 } from "react-icons/rx";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import Image from "next/image";
 
 type Props = {};
 
@@ -31,9 +32,11 @@ const Cart = (props: Props) => {
                   <td>
                     <div className="flex gap-1 items-center">
                       <div className="h-20 w-20 flex-shrink-0">
-                        <img
+                        <Image
                           src={product.image}
                           alt={product.title}
+                          height={100}
+                          width={100}
                           style={{
                             height: "100%",
                             width: "100%",
