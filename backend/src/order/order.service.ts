@@ -1,11 +1,11 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { Address } from 'src/Entity/address.entity';
-import { ContactInfo } from 'src/Entity/contactInfo.entity';
-import { Product } from 'src/product/entities/product.entity';
-// import { User } from 'src/user/entity/user.entity';
+import { Address } from '@/Entity/address.entity';
+import { ContactInfo } from '@/Entity/contactInfo.entity';
+import { Product } from '@/product/entities/product.entity';
+// import { User } from '@/user/entity/user.entity';
 import { HttpStatus } from '@nestjs/common';
-import { Payment, PaymentStatus } from 'src/Entity/payment.entity';
+import { Payment, PaymentStatus } from '@/Entity/payment.entity';
 import { DataSource, DeepPartial, In, Repository } from 'typeorm';
 import {
   OrderResponseDto,

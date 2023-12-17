@@ -14,10 +14,10 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
-import { UserService } from 'src/user/user.service';
-import { sendResetPasswordLinkEMail } from 'src/utils/sendEmail';
-import { sendRefreshToken } from 'src/utils/sendRefreshToken';
-import { createAccessToken } from 'src/utils/tokenCreator';
+import { UserService } from '@/user/user.service';
+import { sendResetPasswordLinkEMail } from '@/utils/sendEmail';
+import { sendRefreshToken } from '@/utils/sendRefreshToken';
+import { createAccessToken } from '@/utils/tokenCreator';
 import { AuthService } from './auth.service';
 import { Cookies } from './cookie.decorator';
 import { Public } from './decorators/public.decorator';

@@ -1,16 +1,16 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Address } from 'src/Entity/address.entity';
-import { ContactInfo } from 'src/Entity/contactInfo.entity';
-import { Payment } from 'src/Entity/payment.entity';
-import { ProductImage } from 'src/Entity/productImage.entity';
-import { CartItem } from 'src/cart/entities/cartItem.entity';
-import { Category } from 'src/category/entities/category.entity';
-import { SubCategory } from 'src/category/entities/subCategory.entity';
-import { Order } from 'src/order/entities/order.entity';
-import { OrderedItem } from 'src/order/entities/orderedItems.entity';
-import { Product } from 'src/product/entities/product.entity';
-import { Review } from 'src/review/entities/review.entity';
-import { User } from 'src/user/entity/user.entity';
+import { Address } from '@/Entity/address.entity';
+import { ContactInfo } from '@/Entity/contactInfo.entity';
+import { Payment } from '@/Entity/payment.entity';
+import { ProductImage } from '@/Entity/productImage.entity';
+import { CartItem } from '@/cart/entities/cartItem.entity';
+import { Category } from '@/category/entities/category.entity';
+import { SubCategory } from '@/category/entities/subCategory.entity';
+import { Order } from '@/order/entities/order.entity';
+import { OrderedItem } from '@/order/entities/orderedItems.entity';
+import { Product } from '@/product/entities/product.entity';
+import { Review } from '@/review/entities/review.entity';
+import { User } from '@/user/entity/user.entity';
 
 export const ormConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -18,7 +18,7 @@ export const ormConfig: TypeOrmModuleOptions = {
   port: 5432,
   username: 'postgres',
   password: 'postgres',
-  database: 'prodcom_e',
+  database: process.env.DB_NAME || 'prodcom_e',
   entities: [
     User,
     Product,
@@ -33,6 +33,7 @@ export const ormConfig: TypeOrmModuleOptions = {
     ContactInfo,
     ProductImage,
   ],
-  synchronize: true,
+  migrations: ['dist/src/db/migrations/*.js'],
+  // synchronize: true,
   logging: true,
 };

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductService } from 'src/product/product.service';
-import { ReviewerResponseDto } from 'src/user/dto/userResponse.dto';
+import { ProductService } from '@/product/product.service';
+import { ReviewerResponseDto } from '@/user/dto/userResponse.dto';
 import { DeepPartial, Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';

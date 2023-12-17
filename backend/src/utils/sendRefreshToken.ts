@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { UserType } from 'src/user/entity/user.entity';
+import { UserType } from '@/user/entity/user.entity';
 import { createRefreshToken } from './tokenCreator';
 
 export const sendRefreshToken = (

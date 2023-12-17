@@ -11,8 +11,8 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { User } from 'src/user/decorator/user.decorator';
+import { Public } from '@/auth/decorators/public.decorator';
+import { User } from '@/user/decorator/user.decorator';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewService } from './review.service';

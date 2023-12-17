@@ -1,7 +1,7 @@
-import { Address } from 'src/Entity/address.entity';
-import { CartItem } from 'src/cart/entities/cartItem.entity';
-import { Order } from 'src/order/entities/order.entity';
-import { Review } from 'src/review/entities/review.entity';
+import { Address } from '@/Entity/address.entity';
+import { CartItem } from '@/cart/entities/cartItem.entity';
+import { Order } from '@/order/entities/order.entity';
+import { Review } from '@/review/entities/review.entity';
 import {
   Column,
   CreateDateColumn,

@@ -4,9 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductImage } from 'src/Entity/productImage.entity';
-import { CategoryService } from 'src/category/category.service';
-import { deleteImage } from 'src/utils/uploadImage';
+import { ProductImage } from '@/Entity/productImage.entity';
+import { CategoryService } from '@/category/category.service';
+import { deleteImage } from '@/utils/uploadImage';
 import { IsNull, Not, Repository } from 'typeorm';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';

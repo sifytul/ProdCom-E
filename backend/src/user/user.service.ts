@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
-import { Address } from 'src/Entity/address.entity';
-import { ContactInfo } from 'src/Entity/contactInfo.entity';
-import { TRegisterProps } from 'src/auth/auth.service';
-import { Order } from 'src/order/entities/order.entity';
-import { hashPassword } from 'src/utils/hashPassword';
+import { Address } from '@/Entity/address.entity';
+import { ContactInfo } from '@/Entity/contactInfo.entity';
+import { TRegisterProps } from '@/auth/auth.service';
+import { Order } from '@/order/entities/order.entity';
+import { hashPassword } from '@/utils/hashPassword';
 import { Repository } from 'typeorm';
 import { UpdatePasswordDto } from './dto/upadte-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

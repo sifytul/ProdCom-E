@@ -10,8 +10,8 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import { Role, Roles } from 'src/auth/decorators/roles.decorator';
-import { User } from 'src/user/decorator/user.decorator';
+import { Role, Roles } from '@/auth/decorators/roles.decorator';
+import { User } from '@/user/decorator/user.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto, UpdateOrderDtoForAdmin } from './dto/update-order.dto';
 import { OrderService } from './order.service';

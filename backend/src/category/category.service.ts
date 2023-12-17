@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from 'src/category/entities/category.entity';
-import { deleteImage } from 'src/utils/uploadImage';
+import { Category } from '@/category/entities/category.entity';
+import { deleteImage } from '@/utils/uploadImage';
 import { Repository } from 'typeorm';
 
 @Injectable()

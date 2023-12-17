@@ -15,12 +15,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { Role, Roles } from 'src/auth/decorators/roles.decorator';
-import { CategoryService } from 'src/category/category.service';
-import { User } from 'src/user/decorator/user.decorator';
-import { UserService } from 'src/user/user.service';
-import { uploadMultipleImages } from 'src/utils/uploadImage';
+import { Public } from '@/auth/decorators/public.decorator';
+import { Role, Roles } from '@/auth/decorators/roles.decorator';
+import { CategoryService } from '@/category/category.service';
+import { User } from '@/user/decorator/user.decorator';
+import { UserService } from '@/user/user.service';
+import { uploadMultipleImages } from '@/utils/uploadImage';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';

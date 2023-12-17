@@ -1,5 +1,5 @@
-import { Payment } from 'src/Entity/payment.entity';
-import { User } from 'src/user/entity/user.entity';
+import { Payment } from '@/Entity/payment.entity';
+import { User } from '@/user/entity/user.entity';
 import {
   Column,
   CreateDateColumn,

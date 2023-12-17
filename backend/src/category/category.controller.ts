@@ -12,9 +12,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { Role, Roles } from 'src/auth/decorators/roles.decorator';
-import { deleteImage, uploadImage } from 'src/utils/uploadImage';
+import { Public } from '@/auth/decorators/public.decorator';
+import { Role, Roles } from '@/auth/decorators/roles.decorator';
+import { deleteImage, uploadImage } from '@/utils/uploadImage';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';

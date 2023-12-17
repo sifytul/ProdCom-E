@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { CategoryService } from 'src/category/category.service';
+import { CategoryService } from '@/category/category.service';
 import { ProductController } from '../product.controller';
 import { ProductService } from '../product.service';
 import { categoryStub } from './stubs/category.stub';

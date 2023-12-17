@@ -1,4 +1,4 @@
-import { CreateProductDto } from 'src/product/dto/create-product.dto';
+import { CreateProductDto } from '@/product/dto/create-product.dto';
 
 export const productStub = () => {
   return {

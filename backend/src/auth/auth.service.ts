@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '@/user/user.service';
 export type TRegisterProps = {
   name: string;
   email: string;
@@ -29,6 +29,7 @@ export class AuthService {
       name: createdUser.name,
       email: createdUser.email,
       role: createdUser.role,
+      avatar: createdUser.avatar_url,
       tokenVersion: createdUser.token_version,
     };
   }
@@ -70,6 +71,7 @@ export class AuthService {
       name: user.name,
       email: user.email,
       role: user.role,
+      avatar: user.avatar_url,
       tokenVersion: user.tokenVersion,
     };
   }

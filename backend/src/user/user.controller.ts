@@ -13,10 +13,10 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { Role, Roles } from 'src/auth/decorators/roles.decorator';
-// import { UploadImages } from 'src/utils/uploadImage';
+import { Role, Roles } from '@/auth/decorators/roles.decorator';
+// import { UploadImages } from '@/utils/uploadImage';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { uploadImage } from 'src/utils/uploadImage';
+import { uploadImage } from '@/utils/uploadImage';
 import { User } from './decorator/user.decorator';
 import { RegisterUserDto } from './dto/registerUserDto';
 import { UpdatePasswordDto } from './dto/upadte-password.dto';

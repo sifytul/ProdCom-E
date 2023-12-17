@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Address } from 'src/Entity/address.entity';
-import { ContactInfo } from 'src/Entity/contactInfo.entity';
-import { Payment } from 'src/Entity/payment.entity';
-import { Product } from 'src/product/entities/product.entity';
+import { Address } from '@/Entity/address.entity';
+import { ContactInfo } from '@/Entity/contactInfo.entity';
+import { Payment } from '@/Entity/payment.entity';
+import { Product } from '@/product/entities/product.entity';
 import { Order } from './entities/order.entity';
 import { OrderedItem } from './entities/orderedItems.entity';
 import { OrderController } from './order.controller';
