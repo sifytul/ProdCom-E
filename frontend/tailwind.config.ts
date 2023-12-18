@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require("tailwindcss/colors");
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -53,7 +54,10 @@ module.exports = {
           200: "hsl(var(--neutral-white-200))",
         },
         black: "hsl(var(--neutral-black))",
-        gray: "hsl(var(--neutral-gray))",
+        gray: {
+          DEFAULT: "hsl(var(--neutral-gray))",
+          ...colors.gray,
+        },
 
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
