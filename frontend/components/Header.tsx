@@ -26,11 +26,14 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import CartItemInSidebar from "./shared/card/CartItemInSidebar";
+import { useAppSelector } from "@/store";
+import { AccountMenu } from "./AccountMenu";
 
 type Props = {};
 
 const Header = (props: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const user = useAppSelector((state) => state.auth.user);
 
   return (
     <header className="h-16">
@@ -45,7 +48,8 @@ const Header = (props: Props) => {
 
         {/* right portion of header */}
         <div>
-          <ul className="flex gap-4 text-[24px]">
+          <ul className="flex items-center gap-4 text-[24px]">
+            {/* search icon  */}
             <Dialog>
               <DialogTrigger>
                 <li>
@@ -73,11 +77,9 @@ const Header = (props: Props) => {
               </DialogContent>
             </Dialog>
 
-            <li>
-              <Link href={"/user"} data-testid="user-icon">
-                <BsPerson className="hover:scale-110 duration-200" />
-              </Link>
-            </li>
+            {/* user icon */}
+            <AccountMenu user={user} />
+            {/* cart icon  */}
             <li>
               <>
                 <Sheet>

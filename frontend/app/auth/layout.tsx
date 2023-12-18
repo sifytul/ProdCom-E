@@ -6,9 +6,9 @@ type TProps = {
 
 const Auth = ({ children }: TProps) => {
   return (
-    <div className="max-w-screen-2xl mx-auto md:grid md:grid-cols-2 grid-col items-center h-screen">
+    <div className="max-w-screen-2xl mx-auto md:grid md:grid-cols-2 items-center">
       {/* left  section*/}
-      <div className="bg-neutral-white-dark md:h-screen h-[40%] w-full relative">
+      <div className="bg-neutral-white-dark md:h-screen h-80 w-full relative">
         {/* <h1 className="text-2xl absolute italic font-semibold text-primary ">
           ProdCom-E
         </h1>  */}
@@ -18,7 +18,7 @@ const Auth = ({ children }: TProps) => {
           height={500}
           alt="picture of the sofa"
           style={{
-            objectFit: "contain",
+            objectFit: "cover",
             height: "100%",
             width: "100%",
           }}

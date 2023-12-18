@@ -8,7 +8,6 @@ type Props = {
   placeholder: string;
   Icon?: React.FunctionComponent<{ className?: string }>;
   value: string;
-  changeHandler: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 /**
@@ -42,8 +41,8 @@ const InputField = ({
   placeholder,
   Icon,
   value,
-  changeHandler,
   passwordField,
+  ...props
 }: Props) => {
   const [passwordOpen, setPasswordOpen] = useState(false);
   return (
@@ -58,7 +57,8 @@ const InputField = ({
           placeholder={placeholder}
           type={passwordField ? (passwordOpen ? "text" : "password") : "text"}
           value={value}
-          onChange={changeHandler}
+          // onChange={changeHandler}
+          {...props}
         />
         {passwordField && (
           <div

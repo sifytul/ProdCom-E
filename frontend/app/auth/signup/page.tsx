@@ -1,37 +1,69 @@
 "use client";
-import Button from "@/components/shared/Button";
 import InputField from "@/components/shared/InputField";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useForm, SubmitHandler, Controller, set } from "react-hook-form";
+import { useAppDispatch } from "@/store";
+import { setAuth, setJid, setUser } from "@/store/slices/authSlice";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 type Props = {};
 
+type TFormData = {
+  name: string;
+  email: string;
+  password: string;
+  termsAccepted: boolean;
+};
+
 const SignUp = (props: Props) => {
-  const initialValue = {
-    name: "",
-    email: "",
-    password: "",
-    termsAccepted: false,
-  };
-  const [formState, setFormState] = useState({ ...initialValue });
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    formState: { errors },
+  } = useForm<TFormData>();
 
-  const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setFormState({
-      ...formState,
-      [e.target.name]: e.target.value || !e.target.checked,
-    });
-  };
-
-  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const submitHandler: SubmitHandler<TFormData> = async (data) => {
+    const success = () => toast.success("Account created successfully");
+    const failed = () => toast.error("Account creation failed");
     //TODO: Need to implement submission
-  };
+    try {
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_BACKEND_API + "/auth/register",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          mode: "cors",
+        }
+      );
 
-  const isSignUpButtonDisabled = () => {
-    const { name, email, password } = formState;
-    return !(name && email && password);
+      if (!res.ok) {
+        throw new Error("Something went wrong");
+      }
+
+      const resData = await res.json();
+      if (!resData.success) {
+        throw new Error(resData.message);
+      }
+      dispatch(setAuth(true));
+      dispatch(setJid(resData.accessToken));
+      dispatch(setUser(resData.data));
+      router.push("/");
+      success();
+    } catch (error) {
+      failed();
+      console.error(error);
+    }
   };
 
   return (
@@ -45,36 +77,53 @@ const SignUp = (props: Props) => {
         </span>
       </p>
       <form
-        onSubmit={submitHandler}
+        onSubmit={handleSubmit(submitHandler)}
         className="flex flex-col w-full space-y-8 font-inter"
       >
-        <InputField
+        <Controller
           name="name"
-          placeholder="Your name"
-          value={formState.name}
-          changeHandler={changeHandler}
+          control={control}
+          render={({ field }) => (
+            <InputField label="Name" placeholder="Your name" {...field} />
+          )}
         />
-        <InputField
+        <Controller
           name="email"
-          placeholder="Your email address"
-          // Icon={BsFillPersonFill}
-          value={formState.email}
-          changeHandler={changeHandler}
+          control={control}
+          render={({ field }) => (
+            <InputField
+              label="Email"
+              placeholder="Your email address"
+              {...field}
+            />
+          )}
         />
-        <InputField
+
+        <Controller
           name="password"
-          placeholder="password"
-          value={formState.password}
-          changeHandler={changeHandler}
-          passwordField
+          control={control}
+          render={({ field }) => (
+            <InputField
+              label="Password"
+              placeholder="password"
+              passwordField
+              {...field}
+            />
+          )}
         />
-        <div className="flex justify-between items-center">
-          <input
-            name="rememberMe"
-            checked={formState.termsAccepted}
-            type="checkbox"
-            onChange={changeHandler}
-            placeholder="terms & conditions"
+        <div className="flex items-center">
+          <Controller
+            name="termsAccepted"
+            control={control}
+            rules={{ required: true }}
+            defaultValue={false}
+            render={({ field }) => (
+              <Checkbox
+                placeholder="terms & conditions"
+                checked={field.value}
+                onCheckedChange={(value) => field.onChange(value)}
+              />
+            )}
           />
           <span className="text-neutral-gray pl-2">
             I agree with{" "}
@@ -87,11 +136,7 @@ const SignUp = (props: Props) => {
             </span>
           </span>
         </div>
-        <Button
-          text="Sign Up"
-          type="submit"
-          disabled={isSignUpButtonDisabled()}
-        />
+        <Button type="submit">Sign Up</Button>
       </form>
     </>
   );
