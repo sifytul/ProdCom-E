@@ -14,11 +14,10 @@ import { User } from '@/user/entity/user.entity';
 
 export const ormConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: 'postgres',
-  database: process.env.DB_NAME || 'prodcom_e',
+  url:
+    process.env.ENV === 'production'
+      ? process.env.INTERNAL_POSTGRES_DB_URI
+      : process.env.LOCAL_POSTGRES_DB_URI,
   entities: [
     User,
     Product,
@@ -33,7 +32,8 @@ export const ormConfig: TypeOrmModuleOptions = {
     ContactInfo,
     ProductImage,
   ],
-  migrations: ['dist/src/db/migrations/*.js'],
+  migrations: ['dist/src/migrations/*.js'],
   // synchronize: true,
   logging: true,
+  migrationsRun: true,
 };
