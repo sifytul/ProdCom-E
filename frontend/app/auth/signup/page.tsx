@@ -31,7 +31,7 @@ const SignUp = (props: Props) => {
 
   const submitHandler: SubmitHandler<TFormData> = async (data) => {
     const success = () => toast.success("Account created successfully");
-    const failed = () => toast.error("Account creation failed");
+    const failed = (message) => toast.error(message);
     //TODO: Need to implement submission
     try {
       const res = await fetch(
@@ -47,21 +47,30 @@ const SignUp = (props: Props) => {
         }
       );
 
+      const responseData = await res.json();
       if (!res.ok) {
-        throw new Error("Something went wrong");
+        if (responseData.message) {
+          responseData.message.forEach((message) => {
+            failed(message);
+          });
+        } else if (responseData.errors) {
+          responseData.errors.forEach((error) => {
+            failed(error.message);
+          });
+        }
+        return;
       }
 
-      const resData = await res.json();
-      if (!resData.success) {
-        throw new Error(resData.message);
+      if (!responseData.success) {
+        throw new Error(responseData.message);
       }
       dispatch(setAuth(true));
-      dispatch(setJid(resData.accessToken));
-      dispatch(setUser(resData.data));
+      dispatch(setJid(responseData.accessToken));
+      dispatch(setUser(responseData.data));
       router.push("/");
       success();
     } catch (error) {
-      failed();
+      failed("Something went wrong");
       console.error(error);
     }
   };

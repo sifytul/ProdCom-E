@@ -69,7 +69,7 @@ const SignIn = (props: Props) => {
       console.log(responseData);
       dispatch(setAuth(true));
       dispatch(setUser(responseData.data));
-      dispatch(setJid(responseData.jid));
+      dispatch(setJid(responseData.accessToken));
 
       router.push("/");
       success();
