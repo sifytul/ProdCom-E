@@ -73,7 +73,7 @@ export function AccountMenu({ user }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <li className="cursor-pointer">
+        <div className="cursor-pointer">
           {user ? (
             <Image
               height={32}
@@ -85,7 +85,7 @@ export function AccountMenu({ user }) {
           ) : (
             <BsPerson className="hover:scale-110 duration-200" />
           )}
-        </li>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
