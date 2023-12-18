@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { products } from "@/public/demo/db";
-import { Label } from "@radix-ui/react-label";
 import Image from "next/image";
 import React from "react";
 
@@ -28,7 +27,7 @@ const Shop = (props: Props) => {
             <div className="text-center">
               <h1 className="text-2xl md:text-5xl font-bold">Shop Page</h1>
               <p className="text-gray md:text-xl">
-                Let's design the place you always imagined.
+                Let&apos;s design the place you always imagined.
               </p>
             </div>
           </div>
