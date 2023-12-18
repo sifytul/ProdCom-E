@@ -1,5 +1,13 @@
 "use client";
-const Counter = ({ value, decreaseHandler, increaseHandler }) => {
+const Counter = ({
+  value,
+  decreaseHandler,
+  increaseHandler,
+}: {
+  value: number;
+  decreaseHandler?: () => void;
+  increaseHandler?: () => void;
+}) => {
   return (
     <div className="flex justify-between items-center bg-primary text-white font-bold px-3 py-1 rounded min-w-[90px]">
       <button

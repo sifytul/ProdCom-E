@@ -31,7 +31,7 @@ const CustomerReviewCard = (props: Props) => {
                 href="https://twitter.com/debs_obrien/status/1243255468241420288"
                 // tabIndex="0"
               >
-                <span className="absolute inset-0"></span>Debbie O'Brien
+                <span className="absolute inset-0"></span>Debbie O&apos;Brien
               </a>
             </div>
             <div className="mt-0.5">Senior Program Manager at Microsoft</div>

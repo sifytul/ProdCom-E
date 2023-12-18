@@ -58,7 +58,7 @@ const Sidebar = () => {
           </div>
         </div> */}
         <SidebarNav />
-        <SheetFooter>
+        <SheetFooter className="mt-10">
           <SheetClose asChild>
             <Button type="submit">Save changes</Button>
           </SheetClose>

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 const NavBarLink = ({ text, url }: { text: string; url: string }) => {
   const location = usePathname();
-  console.log(location);
   return (
     <Link
       className={cn(
