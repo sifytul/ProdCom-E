@@ -31,8 +31,17 @@ export class UserService {
   ) {}
   async registerUser({ name, email, password }: TRegisterProps) {
     const isUserExist = await this.findOneByEmail(email);
+    let errors = [];
     if (isUserExist) {
-      throw new ConflictException('Email already in use.');
+      errors.push({
+        field: 'email',
+        message: 'Email already in use.',
+      });
+      throw new ConflictException({
+        status: 409,
+        success: false,
+        errors,
+      });
     }
     const createdUser = this.userRepo.create({
       name,
