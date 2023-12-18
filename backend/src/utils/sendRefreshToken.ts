@@ -7,16 +7,18 @@ export const sendRefreshToken = (
   payload: { userId: number; role: UserType; tokenVersion: number } | string,
 ) => {
   if (typeof payload === 'string') {
-    res.cookie('jid', '', {
+    res.cookie('qid', '', {
       httpOnly: true,
       maxAge: 0,
-      secure: false,
+      secure: process.env.ENV === 'production',
+      sameSite: 'none',
     });
   } else {
-    res.cookie('jid', createRefreshToken(payload), {
+    res.cookie('qid', createRefreshToken(payload), {
       httpOnly: true,
       maxAge: 1024 * 60 * 60 * 24 * 3,
-      secure: false,
+      secure: process.env.ENV === 'production',
+      sameSite: 'none',
     });
   }
 };
