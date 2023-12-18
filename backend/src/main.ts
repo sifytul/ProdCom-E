@@ -9,11 +9,13 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // app.setGlobalPrefix('api/v1')
+  const server = app.getHttpAdapter().getInstance();
+  server.set('trust proxy', 1);
+  app.setGlobalPrefix('api/v1');
   app.use(cookieParser());
   app.enableCors({
     credentials: true,
-    origin: 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   });
   app.useGlobalPipes(new ValidationPipe());
@@ -24,7 +26,7 @@ async function bootstrap() {
   } catch (e) {
     console.log('yaml read error: ', e);
   }
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api/v1', app, document);
 
   // cloudinary config
   cloudinary.v2.config({
