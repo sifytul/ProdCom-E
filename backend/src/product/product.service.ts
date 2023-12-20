@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProductImage } from '@/Entity/productImage.entity';
 import { CategoryService } from '@/category/category.service';
 import { deleteImage } from '@/utils/uploadImage';
-import { IsNull, Not, Repository } from 'typeorm';
+import { ILike, IsNull, Not, Repository } from 'typeorm';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 
@@ -57,12 +57,16 @@ export class ProductService {
   }
 
   async findAll(query) {
-    const { category, page, limit, sort_by, sort_type } = query;
+    const { category, page, limit, sort_by, sort_type, searchTerm } = query;
 
     const products = await this.productRepository.find({
+      where: {
+        category: { category_name: category },
+        name: ILike(`%${searchTerm}%`),
+        deleted_at: IsNull(),
+      },
       take: limit,
       skip: (page - 1) * limit,
-      where: { category: { category_name: category } },
       order: { [sort_by]: sort_type },
     });
 

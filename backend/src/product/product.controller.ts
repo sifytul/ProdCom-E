@@ -41,7 +41,12 @@ export class ProductController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('sort_type', new DefaultValuePipe('desc')) sort_type: string,
     @Query('sort_by', new DefaultValuePipe('created_at')) sort_by: string,
+    @Query('searchTerm') searchTerm: string,
   ) {
+    if (category === 'all') {
+      category = null;
+    }
+
     let categoryExist;
     if (category) {
       category = category.toLowerCase();
@@ -59,6 +64,7 @@ export class ProductController {
       limit,
       sort_by,
       sort_type,
+      searchTerm,
     });
 
     if (!allProducts) {
@@ -119,6 +125,14 @@ export class ProductController {
 
       // if (hasUploadFailed) {
       // }
+    }
+
+    if (productDto.imageUrl) {
+      uploadedImages.push({
+        url: productDto.imageUrl,
+        public_id: null,
+        success: true,
+      });
     }
     await this.productService.create(
       productDto,
