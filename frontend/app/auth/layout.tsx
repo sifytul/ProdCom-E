@@ -27,7 +27,7 @@ const Auth = ({ children }: TProps) => {
 
       {/* right section  */}
 
-      <div className="max-w-[460px] min-w-[380px] mx-auto p-4 sm:p-8">
+      <div className="max-w-[460px] min-w-[380px] mx-auto p-4 sm:p-8 mb-10 md:mb-0">
         <>{children}</>
       </div>
     </div>

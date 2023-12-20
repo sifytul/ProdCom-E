@@ -8,6 +8,17 @@ import { toast } from "react-toastify";
 import { useAppDispatch } from "@/store";
 import { setAuth, setJid, setUser } from "@/store/slices/authSlice";
 import { useRouter } from "next/navigation";
+import { failed, success } from "@/lib/helper/toastFunctions";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const formSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1, { message: "Password is required" }),
+  rememberMe: z.boolean(),
+});
+
+type TFormData = z.infer<typeof formSchema>;
 
 type Props = {};
 
@@ -25,15 +36,13 @@ const SignIn = (props: Props) => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<TFormData>({
+    resolver: zodResolver(formSchema),
     defaultValues: initialValue,
   });
 
-  const submitHandler = async (data) => {
+  const submitHandler = async (data: TFormData) => {
     //TODO: Need to implement submission
-
-    const success = () => toast.success("Welcome Back Chief!");
-    const failed = (message) => toast.error(message);
 
     try {
       const res = await fetch(
@@ -91,23 +100,42 @@ const SignIn = (props: Props) => {
       </p>
       <form
         onSubmit={handleSubmit(submitHandler)}
-        className="flex flex-col w-full space-y-8 font-inter"
+        className="flex flex-col w-full space-y-6 font-inter"
       >
-        <Controller
-          control={control}
-          name="email"
-          render={({ field }) => (
-            <InputField placeholder="Your email address" {...field} />
-          )}
-        />
+        <div>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <InputField
+                placeholder="franklin@example.com"
+                label="Email"
+                {...field}
+              />
+            )}
+          />
 
-        <Controller
-          control={control}
-          name="password"
-          render={({ field }) => (
-            <InputField placeholder="password" passwordField {...field} />
+          {errors.email?.message && (
+            <p className="text-red-500 p-2">{errors.email?.message}</p>
           )}
-        />
+        </div>
+        <div>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <InputField
+                placeholder="secret123"
+                label="Password"
+                passwordField
+                {...field}
+              />
+            )}
+          />
+          {errors.password?.message && (
+            <p className="text-red-500 p-2">{errors.password?.message}</p>
+          )}
+        </div>
         <div className="flex justify-between items-center">
           <div>
             <Controller
@@ -126,7 +154,9 @@ const SignIn = (props: Props) => {
             />
             <span className="text-neutral-gray pl-2">Remember me</span>
           </div>
-          <p className="font-semibold">Forgot password?</p>
+          <Link href={"/auth/forgot-password"}>
+            <p className="font-semibold">Forgot password?</p>
+          </Link>
         </div>
         <Button
           type="submit"

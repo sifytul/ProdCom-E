@@ -1,5 +1,6 @@
 import { BsEyeFill, BsEyeSlashFill } from "@/public/assets/icons/react-icons";
-import React, { ChangeEvent, useState } from "react";
+import { useState } from "react";
+import { Input } from "../ui/input";
 
 type Props = {
   passwordField?: boolean;
@@ -46,11 +47,11 @@ const InputField = ({
 }: Props) => {
   const [passwordOpen, setPasswordOpen] = useState(false);
   return (
-    <>
+    <div className="space-y-2">
       {label && <label htmlFor={name}>{label}</label>}
-      <div className="flex items-center space-x-2 border-b border-gray p-2 ">
+      <div className="flex items-center space-x-2">
         {Icon && <Icon className="text-primary text-xl" />}
-        <input
+        <Input
           id={name}
           className="outline-none flex-grow bg-inherit"
           name={name}
@@ -65,11 +66,13 @@ const InputField = ({
             className="text-primary text-xl"
             onClick={() => setPasswordOpen(!passwordOpen)}
           >
-            {passwordOpen ? <BsEyeSlashFill /> : <BsEyeFill />}
+            <div className="cursor-pointer">
+              {passwordOpen ? <BsEyeSlashFill /> : <BsEyeFill />}
+            </div>
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

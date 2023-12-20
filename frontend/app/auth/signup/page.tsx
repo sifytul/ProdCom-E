@@ -7,16 +7,21 @@ import { useForm, SubmitHandler, Controller, set } from "react-hook-form";
 import { useAppDispatch } from "@/store";
 import { setAuth, setJid, setUser } from "@/store/slices/authSlice";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { failed, success } from "@/lib/helper/toastFunctions";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+const formSchema = z.object({
+  name: z.string().min(3).max(30),
+  email: z.string().email(),
+  password: z.string().min(6),
+  termsAccepted: z.boolean().refine((val) => val === true, {
+    message: "Please accept the terms and conditions",
+  }),
+});
 type Props = {};
 
-type TFormData = {
-  name: string;
-  email: string;
-  password: string;
-  termsAccepted: boolean;
-};
+type TFormData = z.infer<typeof formSchema>;
 
 const SignUp = (props: Props) => {
   const dispatch = useAppDispatch();
@@ -27,11 +32,17 @@ const SignUp = (props: Props) => {
     watch,
     control,
     formState: { errors },
-  } = useForm<TFormData>();
+  } = useForm<TFormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      termsAccepted: false,
+    },
+  });
 
-  const submitHandler: SubmitHandler<TFormData> = async (data) => {
-    const success = () => toast.success("Account created successfully");
-    const failed = (message) => toast.error(message);
+  const submitHandler: SubmitHandler<TFormData> = async (data: TFormData) => {
     //TODO: Need to implement submission
     try {
       const res = await fetch(
@@ -52,10 +63,12 @@ const SignUp = (props: Props) => {
         if (responseData.message) {
           responseData.message.forEach((message) => {
             failed(message);
+            errors[message] = message;
           });
         } else if (responseData.errors) {
           responseData.errors.forEach((error) => {
             failed(error.message);
+            errors[error.message] = error.message;
           });
         }
         return;
@@ -68,7 +81,7 @@ const SignUp = (props: Props) => {
       dispatch(setJid(responseData.accessToken));
       dispatch(setUser(responseData.data));
       router.push("/");
-      success();
+      success("Account created successfully");
     } catch (error) {
       failed("Something went wrong");
       console.error(error);
@@ -81,69 +94,93 @@ const SignUp = (props: Props) => {
       <h1 className="text-2xl font-semibold mb-6">Sign Up</h1>
       <p className="text-neutral-gray font-inter mb-8">
         Already have an account?{" "}
-        <span className="text-primary font-semibold">
+        <span className="text-accent font-semibold">
           <Link href={"/auth/signin"}>Sign in</Link>
         </span>
       </p>
       <form
         onSubmit={handleSubmit(submitHandler)}
-        className="flex flex-col w-full space-y-8 font-inter"
+        className="flex flex-col w-full space-y-6 font-inter"
       >
-        <Controller
-          name="name"
-          control={control}
-          render={({ field }) => (
-            <InputField label="Name" placeholder="Your name" {...field} />
-          )}
-        />
-        <Controller
-          name="email"
-          control={control}
-          render={({ field }) => (
-            <InputField
-              label="Email"
-              placeholder="Your email address"
-              {...field}
-            />
-          )}
-        />
-
-        <Controller
-          name="password"
-          control={control}
-          render={({ field }) => (
-            <InputField
-              label="Password"
-              placeholder="password"
-              passwordField
-              {...field}
-            />
-          )}
-        />
-        <div className="flex items-center">
+        <div>
           <Controller
-            name="termsAccepted"
+            name="name"
             control={control}
-            rules={{ required: true }}
-            defaultValue={false}
             render={({ field }) => (
-              <Checkbox
-                placeholder="terms & conditions"
-                checked={field.value}
-                onCheckedChange={(value) => field.onChange(value)}
+              <InputField
+                label="Name"
+                placeholder="James Franklin"
+                {...field}
               />
             )}
           />
-          <span className="text-neutral-gray pl-2">
-            I agree with{" "}
-            <span className="font-semibold text-neutral-black">
-              Privacy Policy
-            </span>{" "}
-            and{" "}
-            <span className="font-semibold text-neutral-black">
-              Terms of Use
+          {errors.name?.message && (
+            <p className="text-red-500 p-2">{errors.name?.message}</p>
+          )}
+        </div>
+        <div>
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <InputField
+                label="Email"
+                placeholder="franklin@example.com"
+                {...field}
+              />
+            )}
+          />
+
+          {errors.email?.message && (
+            <p className="text-red-500 p-2">{errors.email?.message}</p>
+          )}
+        </div>
+        <div>
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <InputField
+                label="Password"
+                placeholder="secret123"
+                passwordField
+                {...field}
+              />
+            )}
+          />
+          {errors.password?.message && (
+            <p className="text-red-500 p-2">{errors.password?.message}</p>
+          )}
+        </div>
+        <div>
+          <div className="flex items-center">
+            <Controller
+              name="termsAccepted"
+              control={control}
+              rules={{ required: true }}
+              defaultValue={false}
+              render={({ field }) => (
+                <Checkbox
+                  placeholder="terms & conditions"
+                  checked={field.value}
+                  onCheckedChange={(value) => field.onChange(value)}
+                />
+              )}
+            />
+            <span className="text-neutral-gray pl-2">
+              I agree with{" "}
+              <span className="font-semibold text-neutral-black">
+                Privacy Policy
+              </span>{" "}
+              and{" "}
+              <span className="font-semibold text-neutral-black">
+                Terms of Use
+              </span>
             </span>
-          </span>
+          </div>
+          {errors.termsAccepted?.message && (
+            <p className="text-red-500 p-2">{errors.termsAccepted?.message}</p>
+          )}
         </div>
         <Button type="submit">Sign Up</Button>
       </form>
