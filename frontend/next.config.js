@@ -13,6 +13,11 @@ const nextConfig = {
         hostname: "i.ibb.co",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "ycax1owz6zsv8w4g.public.blob.vercel-storage.com",
+        pathname: "**",
+      },
     ],
   },
 };

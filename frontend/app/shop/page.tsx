@@ -1,22 +1,52 @@
-"use client";
 import ProductCard from "@/components/shared/card/ProductCard";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { products } from "@/public/demo/db";
 import Image from "next/image";
 import React from "react";
+import FilterAndSort from "./FilterAndSort";
 
 type Props = {};
 
-const Shop = (props: Props) => {
+async function getProducts(category, searchTerm) {
+  let query = "";
+
+  if (category && searchTerm) {
+    query = `?category=${category}&searchTerm=${searchTerm}`;
+  } else if (category) {
+    query = `?category=${category}`;
+  } else if (searchTerm) {
+    query = `?searchTerm=${searchTerm}`;
+  }
+
+  const res = await fetch(
+    process.env.NEXT_PUBLIC_BACKEND_API + "/products" + query
+  );
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+  const data = await res.json();
+
+  return data;
+}
+
+async function getCategories() {
+  const res = await fetch(process.env.NEXT_PUBLIC_BACKEND_API + "/categories", {
+    next: { revalidate: 3600 },
+  });
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+
+  return res.json();
+}
+
+const Shop = async ({ searchParams }) => {
+  let category = (searchParams.category || "all") as string;
+  let searchTerm = (searchParams.searchTerm || "") as string;
+  const { products } = await getProducts(category, searchTerm);
+  const { categories } = await getCategories();
+
   return (
     <div>
       {/* shop cover */}
@@ -51,74 +81,8 @@ const Shop = (props: Props) => {
       {/* shop page content  */}
       <div className="container my-8">
         {/* filter and sort part  */}
-        <div className="flex justify-between items-end flex-wrap gap-4">
-          {/* filter part  */}
-          <div className="flex gap-4">
-            {/* filter by category  */}
-            <div>
-              <p className="text-gray mb-1">Category</p>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Category</SelectLabel>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="Sofa">Sofa</SelectItem>
-                    <SelectItem value="Chair">Chair</SelectItem>
-                    <SelectItem value="Table">Table</SelectItem>
-                    <SelectItem value="Bed">Bed</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            {/* filter by price  */}
-            <div>
-              <p className="text-gray mb-1">Price</p>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Category</SelectLabel>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="Sofa">Sofa</SelectItem>
-                    <SelectItem value="Chair">Chair</SelectItem>
-                    <SelectItem value="Table">Table</SelectItem>
-                    <SelectItem value="Bed">Bed</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            {/* filter by rating  */}
-            <div></div>
-          </div>
-          {/* sort part  */}
-          <div>
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Sort by</SelectLabel>
-                  <SelectItem value="rating_desc">
-                    Rating: High to Low
-                  </SelectItem>
-                  <SelectItem value="rating_asc">
-                    Rating: Low to High
-                  </SelectItem>
-                  <SelectItem value="price_desc">Price: High to Low</SelectItem>
-                  <SelectItem value="price_asc">Price: Low to High</SelectItem>
-                  <SelectItem value="name_asc">Name: A to Z</SelectItem>
-                  <SelectItem value="name_desc">Name: Z to A</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+
+        <FilterAndSort categories={categories} />
 
         {/* shop page products  */}
         <div
