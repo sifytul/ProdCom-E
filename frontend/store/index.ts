@@ -14,12 +14,20 @@ const authPersistConfig = {
   whitelist: ["isAuth", "jid", "user"],
 };
 
+const cartPersistConfig = {
+  key: "cart",
+  storage,
+  whitelist: ["cartItems"],
+};
+
 export interface IRootState {
   auth: ReturnType<typeof authReducer>;
+  cart: ReturnType<typeof cartReducer>;
 }
 
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
+  cart: persistReducer(cartPersistConfig, cartReducer),
 });
 
 export const store = configureStore({

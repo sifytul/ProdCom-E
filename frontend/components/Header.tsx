@@ -32,8 +32,18 @@ import { AccountMenu } from "./AccountMenu";
 type Props = {};
 
 const Header = (props: Props) => {
+  const cartItems = useAppSelector((state) => state.cart.cartItems);
   const [searchTerm, setSearchTerm] = useState("");
   const user = useAppSelector((state) => state.auth.user);
+
+  let cartItemsList =
+    cartItems.length > 0 ? (
+      cartItems.map((item) => (
+        <CartItemInSidebar key={item.id} product={item} />
+      ))
+    ) : (
+      <p className="text-center bg-white-200 p-4">No items in cart</p>
+    );
 
   return (
     <header className="h-16">
@@ -87,7 +97,7 @@ const Header = (props: Props) => {
                     <div className="flex">
                       <IoBasketOutline className="hover:scale-110 duration-200 cursor-pointer" />
                       <span className="h-5 w-5 flex justify-center items-center text-xs font-semibold rounded-full bg-black text-white ">
-                        10
+                        {cartItems.length}
                       </span>
                     </div>
                   </SheetTrigger>
@@ -96,15 +106,10 @@ const Header = (props: Props) => {
                     <SheetHeader>
                       <SheetTitle>Your Cart Items</SheetTitle>
                     </SheetHeader>
-                    <div className="flex-grow">
-                      <CartItemInSidebar />
-                      <CartItemInSidebar />
-                      <CartItemInSidebar />
-                      <CartItemInSidebar />
-                    </div>
+                    <div className="flex-grow">{cartItemsList}</div>
                     <SheetFooter>
                       <div className="flex justify-between items-center gap-4">
-                        <p className="font-semibold text-lg">Total: $400</p>
+                        {/* <p className="font-semibold text-lg">Total: $400</p> */}
                         <Link href={"/cart"}>
                           <Button>Checkout</Button>
                         </Link>
