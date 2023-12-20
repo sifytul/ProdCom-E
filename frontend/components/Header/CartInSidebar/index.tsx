@@ -46,9 +46,7 @@ const CartInSidebar = (props: Props) => {
             <div className="flex justify-between items-center gap-4">
               {/* <p className="font-semibold text-lg">Total: $400</p> */}
               <Link href={"/cart"}>
-                <SheetTrigger asChild>
-                  <Button>Checkout</Button>
-                </SheetTrigger>
+                <Button>Checkout</Button>
               </Link>
             </div>
           </SheetFooter>
