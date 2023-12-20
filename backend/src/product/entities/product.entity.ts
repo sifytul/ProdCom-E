@@ -35,6 +35,9 @@ export class Product {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
+  @Column('text', { nullable: true })
+  trending_title: string;
+
   @Column('decimal', { precision: 3, scale: 1, default: 0 })
   ratings: number;
 

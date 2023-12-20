@@ -14,7 +14,7 @@ export class ProductImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   public_id: string;
 
   @Column()

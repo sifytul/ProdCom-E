@@ -60,6 +60,13 @@ export class CategoryController {
           image = uploadedImgFile;
         }
       }
+
+      if (body.categoryImageUrl) {
+        image = {
+          url: body.categoryImageUrl,
+          public_id: null,
+        };
+      }
       const category = await this.categoryService.create(body, image);
       return {
         success: true,
