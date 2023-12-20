@@ -57,14 +57,19 @@ export class ProductService {
   }
 
   async findAll(query) {
-    const { category, page, limit, sort_by, sort_type, searchTerm } = query;
+    let { category, page, limit, sort_by, sort_type, searchTerm } = query;
+
+    const where = {
+      category: { category_name: category },
+      deleted_at: IsNull(),
+    };
+
+    if (searchTerm) {
+      where['name'] = ILike(`%${searchTerm}%`);
+    }
 
     const products = await this.productRepository.find({
-      where: {
-        category: { category_name: category },
-        name: ILike(`%${searchTerm}%`),
-        deleted_at: IsNull(),
-      },
+      where,
       take: limit,
       skip: (page - 1) * limit,
       order: { [sort_by]: sort_type },
