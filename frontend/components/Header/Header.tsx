@@ -1,38 +1,17 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { IoBasketOutline } from "react-icons/io5";
 import HeaderNav from "./HeaderNav";
 import Sidebar from "../Sidebar";
-import { Button } from "../ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../ui/sheet";
-import CartItemInSidebar from "../shared/card/CartItemInSidebar";
 import { useAppSelector } from "@/store";
 import { AccountMenu } from "../AccountMenu";
 import SearchInHeader from "./SearchInHeader";
+import CartInSidebar from "./CartInSidebar";
 
 type Props = {};
 
 const Header = (props: Props) => {
-  const cartItems = useAppSelector((state) => state.cart.cartItems);
-  const [searchTerm, setSearchTerm] = useState("");
   const user = useAppSelector((state) => state.auth.user);
-
-  let cartItemsList =
-    cartItems.length > 0 ? (
-      cartItems.map((item) => (
-        <CartItemInSidebar key={item.id} product={item} />
-      ))
-    ) : (
-      <p className="text-center bg-white-200 p-4">No items in cart</p>
-    );
 
   return (
     <header className="h-16">
@@ -47,46 +26,19 @@ const Header = (props: Props) => {
 
         {/* right portion of header */}
         <div>
-          <ul className="flex items-center gap-4 text-[24px]">
+          <div className="flex items-center gap-4 text-[24px]">
             {/* search icon  */}
             <SearchInHeader />
 
             {/* user icon */}
             <AccountMenu user={user} />
             {/* cart icon  */}
-            <li>
-              <>
-                <Sheet>
-                  <SheetTrigger asChild className="flex">
-                    <div className="flex">
-                      <IoBasketOutline className="hover:scale-110 duration-200 cursor-pointer" />
-                      <span className="h-5 w-5 flex justify-center items-center text-xs font-semibold rounded-full bg-black text-white ">
-                        {cartItems.length}
-                      </span>
-                    </div>
-                  </SheetTrigger>
+            <CartInSidebar />
 
-                  <SheetContent className="flex flex-col">
-                    <SheetHeader>
-                      <SheetTitle>Your Cart Items</SheetTitle>
-                    </SheetHeader>
-                    <div className="flex-grow">{cartItemsList}</div>
-                    <SheetFooter>
-                      <div className="flex justify-between items-center gap-4">
-                        {/* <p className="font-semibold text-lg">Total: $400</p> */}
-                        <Link href={"/cart"}>
-                          <Button>Checkout</Button>
-                        </Link>
-                      </div>
-                    </SheetFooter>
-                  </SheetContent>
-                </Sheet>
-              </>
-            </li>
-            <li className="sm:hidden">
+            <div className="sm:hidden">
               <Sidebar />
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
     </header>
