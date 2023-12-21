@@ -16,7 +16,9 @@ const Sidebar = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <RiMenu3Fill className="cursor-pointer" />
+        <div className="cursor-pointer">
+          <RiMenu3Fill />
+        </div>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>

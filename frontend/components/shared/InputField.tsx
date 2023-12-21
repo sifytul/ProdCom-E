@@ -1,12 +1,12 @@
 import { BsEyeFill, BsEyeSlashFill } from "@/public/assets/icons/react-icons";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Input } from "../ui/input";
 
 type Props = {
   passwordField?: boolean;
   name: string;
   label?: string;
-  placeholder: string;
+  placeholder?: string;
   Icon?: React.FunctionComponent<{ className?: string }>;
   value: string;
 };
@@ -36,44 +36,41 @@ type Props = {
  * passwordField
  * />
  */
-const InputField = ({
-  name,
-  label,
-  placeholder,
-  Icon,
-  value,
-  passwordField,
-  ...props
-}: Props) => {
-  const [passwordOpen, setPasswordOpen] = useState(false);
-  return (
-    <div className="space-y-2">
-      {label && <label htmlFor={name}>{label}</label>}
-      <div className="flex items-center space-x-2">
-        {Icon && <Icon className="text-primary text-xl" />}
-        <Input
-          id={name}
-          className="outline-none flex-grow bg-inherit"
-          name={name}
-          placeholder={placeholder}
-          type={passwordField ? (passwordOpen ? "text" : "password") : "text"}
-          value={value}
-          // onChange={changeHandler}
-          {...props}
-        />
-        {passwordField && (
-          <div
-            className="text-primary text-xl"
-            onClick={() => setPasswordOpen(!passwordOpen)}
-          >
-            <div className="cursor-pointer">
-              {passwordOpen ? <BsEyeSlashFill /> : <BsEyeFill />}
+const InputField = React.forwardRef(
+  (
+    { name, label, placeholder, Icon, value, passwordField, ...props }: Props,
+    ref
+  ) => {
+    const [passwordOpen, setPasswordOpen] = useState(false);
+    return (
+      <div className="space-y-1">
+        {label && <label htmlFor={name}>{label}</label>}
+        <div className="flex items-center space-x-2">
+          {Icon && <Icon className="text-primary text-xl" />}
+          <Input
+            id={name}
+            className="outline-none flex-grow bg-inherit"
+            name={name}
+            placeholder={placeholder}
+            type={passwordField ? (passwordOpen ? "text" : "password") : "text"}
+            value={value}
+            // onChange={changeHandler}
+            {...props}
+          />
+          {passwordField && (
+            <div
+              className="text-primary text-xl"
+              onClick={() => setPasswordOpen(!passwordOpen)}
+            >
+              <div className="cursor-pointer">
+                {passwordOpen ? <BsEyeSlashFill /> : <BsEyeFill />}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default InputField;
