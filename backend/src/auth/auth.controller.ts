@@ -84,21 +84,20 @@ export class AuthController {
     };
   }
 
-  @Public()
   @HttpCode(HttpStatus.OK)
   @Get('refresh-token')
   async getRefreshToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-    @Cookies('jid') jid: string,
+    @Cookies('qid') qid: string,
   ) {
-    if (!jid) {
+    if (!qid) {
       throw new UnauthorizedException({ success: false, accessToken: '' });
     }
 
     let verified;
     try {
-      verified = verify(jid, process.env.REFRESH_TOKEN_SECRET!) as JwtPayload;
+      verified = verify(qid, process.env.REFRESH_TOKEN_SECRET!) as JwtPayload;
       if (!verified) {
         throw new UnauthorizedException({ success: false, accessToken: '' });
       }
@@ -127,6 +126,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('password/forgot')
   async forgotPassword(@Body() { email }: ForgotPasswordDto) {
@@ -161,6 +161,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('password/reset/:token')
   async resetPassword(
@@ -195,9 +196,13 @@ export class AuthController {
       role: updatedUser.role,
     };
     sendRefreshToken(res, tokenPayload);
+    delete updatedUser.tokenVersion;
     return {
       success: true,
       accessToken: createAccessToken(tokenPayload),
+      data: {
+        ...updatedUser,
+      },
     };
   }
 
