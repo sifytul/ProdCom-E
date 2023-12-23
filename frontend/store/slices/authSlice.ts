@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { IRootState } from "..";
+import { RootState } from "..";
 
 export type TUser = {
   id: number;
@@ -22,7 +22,7 @@ const initialState: IAuthState = {
 };
 
 const logoutThunk = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
-  const state = (await thunkAPI.getState()) as IRootState;
+  const state = (await thunkAPI.getState()) as RootState;
   const { jid } = state.auth;
   try {
     const res = await fetch(
@@ -32,17 +32,17 @@ const logoutThunk = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + jid,
+          authorization: "Bearer " + jid,
         },
       }
     );
     const data = await res.json();
-    console.log(data);
     return data;
   } catch (err) {
     console.log(err);
   }
 });
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -70,6 +70,7 @@ export const authSlice = createSlice({
 });
 
 export const { setAuth, setJid, setUser } = authSlice.actions;
+
 export { logoutThunk };
 
 export const authSelector = (state: { auth: IAuthState }) => state.auth;
