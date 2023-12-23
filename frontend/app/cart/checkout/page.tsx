@@ -14,6 +14,7 @@ import { clearCart, setStepperState } from "@/store/slices/cartSlice";
 import { fetchWithReauth } from "@/app/fetchWithReauth";
 import { useRouter } from "next/navigation";
 import OrderSummery from "./OrderSummery";
+import { useEffect } from "react";
 
 const orderSchema = z.object({
   products: z.array(
@@ -98,7 +99,9 @@ const Checkout = (props: Props) => {
     }
   };
 
-  if (!isAuth) router.push("/auth/signin?redirect=/cart/checkout");
+  useEffect(() => {
+    if (!isAuth) router.push("/auth/signin?redirect=/cart/checkout");
+  }, []);
 
   return (
     <div>
