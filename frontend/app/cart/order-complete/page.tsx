@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useGetOrderDetailsQuery } from "@/store/slices/cartApiSlice";
 import { useSearchParams } from "next/navigation";
 import { Bars } from "react-loader-spinner";
+import Link from "next/link";
 
 type Props = {};
 
@@ -97,7 +98,9 @@ const OrderComplete = (props: Props) => {
           </div>
         </div>
 
-        <Button className="rounded-full font-semibold">Purchase history</Button>
+        <Link href="/">
+          <Button className="rounded-full font-semibold">Go to home</Button>
+        </Link>
       </div>
     );
   } else if (isError) {

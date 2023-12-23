@@ -143,7 +143,7 @@ const Checkout = (props: Props) => {
 
             {/* Order summary - right section */}
             {/* your order summary */}
-            <div>
+            <div className="space-y-6">
               <OrderSummery cart={cart} />
 
               {/* place order button */}

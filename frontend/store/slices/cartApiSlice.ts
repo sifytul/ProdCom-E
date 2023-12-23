@@ -4,6 +4,8 @@ export const cartApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getOrderDetails: builder.query({
       query: (orderId) => `/orders/my-orders/${orderId}`,
+      keepUnusedDataFor: 0,
+      forceRefetch: () => true,
     }),
 
     confirmOrder: builder.mutation({

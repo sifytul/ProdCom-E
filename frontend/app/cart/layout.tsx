@@ -49,7 +49,8 @@ const CartLayout = ({ children }: Props) => {
                     ? "border-accent"
                     : "border-gray-500"
                 } rounded-full shrink-0 ${
-                  completedStep.includes("checkout") && "bg-accent text-white"
+                  completedStep.includes("checkout") &&
+                  "bg-accent border-accent text-white"
                 }`}
               >
                 2
@@ -67,7 +68,8 @@ const CartLayout = ({ children }: Props) => {
                     ? "border-accent"
                     : "border-gray-500"
                 } ${
-                  completedStep.includes("payment") && "bg-accent text-white"
+                  completedStep.includes("payment") &&
+                  "bg-accent border-accent text-white"
                 }`}
               >
                 3
