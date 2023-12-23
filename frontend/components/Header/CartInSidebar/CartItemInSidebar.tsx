@@ -22,6 +22,7 @@ type TProduct = {
     image_urls: any[];
     stock: number;
     trending_title: string;
+    discountedPrice: number;
     qty: number;
   };
 };
@@ -34,6 +35,7 @@ const CartItemInSidebar = ({ product }: TProduct) => {
     ratings,
     image_urls,
     trending_title: trendingTitle,
+    discountedPrice,
     qty,
   } = product;
   return (
@@ -57,7 +59,7 @@ const CartItemInSidebar = ({ product }: TProduct) => {
           <div className="my-1">
             <p className="text-sm text-gray">Color: Black</p>
             <p className="text-sm">
-              <span className="text-gray">Price: </span>$ {price}
+              <span className="text-gray">Price: </span>$ {discountedPrice}
             </p>
           </div>
           <Counter
@@ -69,7 +71,7 @@ const CartItemInSidebar = ({ product }: TProduct) => {
       </div>
       <div className="space-y-1 p-1">
         <div>
-          <p className="font-semibold">${Number(price) * qty}</p>
+          <p className="font-semibold">${Number(discountedPrice) * qty}</p>
         </div>
 
         <div

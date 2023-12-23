@@ -89,5 +89,5 @@ const InputField = React.forwardRef(
     );
   }
 );
-
+InputField.displayName = "InputField";
 export default InputField;

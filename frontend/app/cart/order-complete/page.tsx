@@ -48,7 +48,7 @@ const OrderComplete = (props: Props) => {
         </div>
         <div className="flex gap-6 justify-evenly">
           {orderDetails?.data.ordered_items.map((item) => (
-            <div className="relative w-28 h-28 bg-white-100">
+            <div className="relative w-28 h-28 bg-white-100" key={item.id}>
               <p className="absolute -top-2 -right-2 rounded-full flex justify-center items-center h-6 w-6 bg-black text-white font-semibold">
                 {item.quantity}
               </p>

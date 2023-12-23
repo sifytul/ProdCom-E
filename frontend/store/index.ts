@@ -5,7 +5,6 @@ import { persistReducer } from "redux-persist";
 
 import { authReducer } from "./slices/authSlice";
 import storage from "./customStorage";
-import logger from "redux-logger";
 import cartReducer from "./slices/cartSlice";
 import { apiSlice } from "./slices/apiSlice";
 
@@ -32,7 +31,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(logger, apiSlice.middleware),
+    }).concat(apiSlice.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

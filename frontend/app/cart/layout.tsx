@@ -47,10 +47,11 @@ const CartLayout = ({ children }: Props) => {
                 className={`flex items-center justify-center w-5 h-5 me-2 text-xs border ${
                   router === "/cart/checkout"
                     ? "border-accent"
+                    : completedStep.includes("checkout")
+                    ? "border-accent"
                     : "border-gray-500"
                 } rounded-full shrink-0 ${
-                  completedStep.includes("checkout") &&
-                  "bg-accent border-accent text-white"
+                  completedStep.includes("checkout") && "bg-accent text-white"
                 }`}
               >
                 2
@@ -66,10 +67,11 @@ const CartLayout = ({ children }: Props) => {
                 className={`flex items-center justify-center w-5 h-5 me-2 text-xs border rounded-full shrink-0 dark:border-blue-500 ${
                   router === "/cart/payment"
                     ? "border-accent"
+                    : completedStep.includes("payment")
+                    ? "border-accent"
                     : "border-gray-500"
                 } ${
-                  completedStep.includes("payment") &&
-                  "bg-accent border-accent text-white"
+                  completedStep.includes("payment") && "bg-accent text-white"
                 }`}
               >
                 3
