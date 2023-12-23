@@ -15,10 +15,12 @@ import {
   setStepperState,
 } from "@/store/slices/cartSlice";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
 const Cart = (props: Props) => {
+  const router = useRouter();
   const cartItems = useAppSelector((state) => state.cart?.cartItems);
   const cartSubTotal = useAppSelector((state) => state.cart?.total);
   const deliveryCharge = useAppSelector(
@@ -129,7 +131,7 @@ const Cart = (props: Props) => {
                   <RadioGroupItem value="inside-ctg" id="inside-ctg" />
                   <Label htmlFor="inside-ctg">Inside Chittagong</Label>
                 </div>
-                <p>$70</p>
+                <p>$60</p>
               </div>
               <div className="flex items-center justify-between border border-gray rounded-sm px-4 py-3">
                 <div className="space-x-2">
@@ -156,12 +158,15 @@ const Cart = (props: Props) => {
             <p>${Number(cartSubTotal) + Number(deliveryCharge)}</p>
           </div>
           {cartItems.length > 0 ? (
-            <Link
-              href="/cart/checkout"
-              onClick={() => dispatch(setStepperState("cart"))}
+            <Button
+              disabled={!deliveryCharge}
+              onClick={() => {
+                dispatch(setStepperState("cart"));
+                router.push("/cart/checkout");
+              }}
             >
-              <Button>Checkout</Button>
-            </Link>
+              Checkout
+            </Button>
           ) : (
             <Link href="/shop">
               <Button variant={"outline"}>Go to Shop</Button>
