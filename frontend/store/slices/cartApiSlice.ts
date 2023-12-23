@@ -15,11 +15,19 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         body: paymentDetails,
       }),
     }),
+
+    cancelOrder: builder.mutation({
+      query: (orderId) => ({
+        url: `/orders/my-orders/${orderId}`,
+        method: "PATCH",
+        body: { status: "canceled" },
+      }),
+    }),
   }),
 });
 
 export const {
   useGetOrderDetailsQuery,
-
+  useCancelOrderMutation,
   useConfirmOrderMutation,
 } = cartApiSlice;

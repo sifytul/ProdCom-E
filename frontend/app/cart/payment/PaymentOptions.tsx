@@ -10,7 +10,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Controller } from "react-hook-form";
-import { useConfirmOrderMutation } from "@/store/slices/cartApiSlice";
+import {
+  useConfirmOrderMutation,
+  useCancelOrderMutation,
+} from "@/store/slices/cartApiSlice";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store";
@@ -46,6 +49,20 @@ const PaymentOptions = ({ orderId }: Props) => {
 
   let [confirmOrder, { isLoading, isError, error, isSuccess }] =
     useConfirmOrderMutation();
+
+  let [cancelOrder] = useCancelOrderMutation();
+
+  const handleCancelOrder = async () => {
+    let res = (await cancelOrder(orderId)) as {
+      data: { success: boolean; message: string };
+    };
+    if (res?.data?.success) {
+      toast.success(res.data.message);
+      router.push("/");
+    } else {
+      toast.error(res.data.message);
+    }
+  };
 
   const submitHandler = async (data: TPaymentOptions) => {
     const { paymentMethod } = data;
@@ -164,11 +181,17 @@ const PaymentOptions = ({ orderId }: Props) => {
         )}
       </div>
       <div className="space-x-4 mt-8">
-        <Button className="bg-red-500 font-semibold">Cancel order</Button>
+        <Button
+          className="font-semibold"
+          variant={"destructive"}
+          onClick={handleCancelOrder}
+        >
+          Cancel order
+        </Button>
         <Button
           disabled={!isValid && !isDirty}
           type="submit"
-          className="bg-accent font-semibold"
+          className="bg-accent font-semibold hover:bg-green-400"
           onClick={() => dispatch(setStepperState("payment"))}
         >
           Confirm order
