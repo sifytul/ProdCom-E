@@ -1,7 +1,6 @@
 import { Response } from 'express';
 import { UserType } from '@/user/entity/user.entity';
 import { createRefreshToken } from './tokenCreator';
-import ms from 'ms';
 
 export const sendRefreshToken = (
   res: Response,

@@ -72,7 +72,7 @@ export class OrderController {
 
     return {
       success: true,
-      message: 'Order updated successfully',
+      message: 'Order confirmed successfully',
     };
   }
 
