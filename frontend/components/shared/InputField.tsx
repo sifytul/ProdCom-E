@@ -7,8 +7,9 @@ type Props = {
   name: string;
   label?: string;
   placeholder?: string;
+  type?: string;
   Icon?: React.FunctionComponent<{ className?: string }>;
-  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 /**
@@ -38,7 +39,16 @@ type Props = {
  */
 const InputField = React.forwardRef(
   (
-    { name, label, placeholder, Icon, value, passwordField, ...props }: Props,
+    {
+      name,
+      label,
+      placeholder,
+      onChange,
+      Icon,
+      type,
+      passwordField,
+      ...props
+    }: Props,
     ref
   ) => {
     const [passwordOpen, setPasswordOpen] = useState(false);
@@ -52,9 +62,16 @@ const InputField = React.forwardRef(
             className="outline-none flex-grow bg-inherit"
             name={name}
             placeholder={placeholder}
-            type={passwordField ? (passwordOpen ? "text" : "password") : "text"}
-            value={value}
-            // onChange={changeHandler}
+            onChange={onChange}
+            type={
+              type
+                ? type
+                : passwordField
+                ? passwordOpen
+                  ? "text"
+                  : "password"
+                : "text"
+            }
             {...props}
           />
           {passwordField && (

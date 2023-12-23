@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useForm, SubmitHandler, Controller, set } from "react-hook-form";
 import { useAppDispatch } from "@/store";
 import { setAuth, setJid, setUser } from "@/store/slices/authSlice";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { failed, success } from "@/lib/helper/toastFunctions";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +26,9 @@ type TFormData = z.infer<typeof formSchema>;
 const SignUp = (props: Props) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const params = useSearchParams();
+  const redirectTo = params.get("redirect");
+
   const {
     register,
     handleSubmit,
@@ -80,7 +83,11 @@ const SignUp = (props: Props) => {
       dispatch(setAuth(true));
       dispatch(setJid(responseData.accessToken));
       dispatch(setUser(responseData.data));
-      router.push("/");
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        router.push("/");
+      }
       success("Account created successfully");
     } catch (error) {
       failed("Something went wrong");

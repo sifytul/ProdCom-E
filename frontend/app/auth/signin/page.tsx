@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "@/store";
 import { setAuth, setJid, setUser } from "@/store/slices/authSlice";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { failed, success } from "@/lib/helper/toastFunctions";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +25,9 @@ type Props = {};
 const SignIn = (props: Props) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const params = useSearchParams();
+  const redirectTo = params.get("redirect");
 
   const initialValue = {
     email: "",
@@ -75,12 +78,15 @@ const SignIn = (props: Props) => {
         return;
       }
 
-      console.log(responseData);
       dispatch(setAuth(true));
       dispatch(setUser(responseData.data));
       dispatch(setJid(responseData.accessToken));
 
-      router.push("/");
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        router.push("/");
+      }
       success();
     } catch (error) {
       failed("Something went wrong");
@@ -95,7 +101,11 @@ const SignIn = (props: Props) => {
       <p className="text-neutral-gray font-inter mb-8">
         Don&apos;t have an account yet?{" "}
         <span className="text-accent font-semibold">
-          <Link href={"/auth/signup"}>Sign Up</Link>
+          {redirectTo ? (
+            <Link href={"/auth/signup?redirect=" + redirectTo}>Sign Up</Link>
+          ) : (
+            <Link href={"/auth/signup"}>Sign Up</Link>
+          )}
         </span>
       </p>
       <form
