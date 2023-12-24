@@ -105,16 +105,7 @@ const Checkout = (props: Props) => {
 
   return (
     <div>
-      <div className="my-8 space-y-2">
-        <p>
-          Returning customer?{" "}
-          <Link
-            href={"/auth/signin"}
-            className="text-accent font-semibold hover:border-b hover:border-accent hover:text-accent"
-          >
-            Click here to login
-          </Link>
-        </p>
+      <div className="my-4">
         <div className="border-dashed border border-green-100 rounded-md p-4 lg:w-2/5">
           <form className="space-y-4">
             <h2 className="text-gray">

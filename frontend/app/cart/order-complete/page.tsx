@@ -39,7 +39,7 @@ const OrderComplete = (props: Props) => {
     );
   } else if (isSuccess) {
     content = (
-      <div className="flex flex-col justify-center items-center gap-8 shadow-lg rounded-md p-8 max-w-xl mx-auto">
+      <div className="flex flex-col justify-center items-center gap-8 border border-gray-200 rounded-md p-8 max-w-xl mx-auto mb-5">
         <div className="text-center">
           <h3 className="text-gray text-xl font-semibold">Thank you!</h3>
           <h2 className="text-2xl font-semibold">

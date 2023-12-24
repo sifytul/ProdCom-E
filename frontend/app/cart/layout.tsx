@@ -16,7 +16,9 @@ const CartLayout = ({ children }: Props) => {
   return (
     <div>
       <div className="container">
-        <h1 className="text-4xl text-center font-bold">Cart</h1>
+        <h1 className="text-3xl text-center font-bold my-4">
+          Happy Shopping...
+        </h1>
 
         {/* stepper section  */}
         <div className="mb-10">
