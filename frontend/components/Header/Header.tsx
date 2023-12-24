@@ -7,6 +7,7 @@ import { useAppSelector } from "@/store";
 import { AccountMenu } from "../AccountMenu";
 import SearchInHeader from "./SearchInHeader";
 import CartInSidebar from "./CartInSidebar";
+import Image from "next/image";
 
 type Props = {};
 
@@ -18,7 +19,13 @@ const Header = (props: Props) => {
       <div className="container flex my-auto h-full justify-between items-center mx-auto">
         {/* left portion of header */}
         <Link href="/">
-          <h1 className="text-2xl font-semibold">Logo</h1>
+          <Image
+            src="/assets/icons/ProdCom-E_logo.png"
+            alt="logo"
+            width={195}
+            height={65}
+            className="cursor-pointer"
+          />
         </Link>
 
         {/* middle portion of header */}

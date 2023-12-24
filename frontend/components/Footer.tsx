@@ -1,5 +1,7 @@
+import Link from "next/link";
 import React from "react";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import Image from "next/image";
 
 type Props = {};
 
@@ -9,7 +11,15 @@ const Footer = (props: Props) => {
       <div className="container">
         <div className="md:flex justify-between items-center mb-4">
           <div className="flex divide-x items-center">
-            <h1 className="pr-8 text-2xl">Logo</h1>
+            <Link href="/">
+              <Image
+                src="/assets/icons/ProdCom-E_logo.png"
+                alt="logo"
+                width={195}
+                height={65}
+                className="cursor-pointer"
+              />
+            </Link>
             <p className="pl-8">Gift & Decoration Store</p>
           </div>
 
