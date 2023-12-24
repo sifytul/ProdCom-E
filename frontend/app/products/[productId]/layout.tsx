@@ -13,20 +13,37 @@ import {
   FaStar,
   FaTwitter,
 } from "react-icons/fa";
+import ProductVariantSelection from "./ProductVariantSelection";
+import AddToCartAndWishlist from "./AddToCartAndWishlist";
 
 type Props = {
   children: React.ReactNode;
+  params: {
+    productId: number;
+  };
 };
 
-const SingleProduct = ({ children }: Props) => {
+const fetchProductDetails = async (productId: number) => {
+  const res = await fetch(
+    process.env.NEXT_PUBLIC_BACKEND_API + "/products/" + productId
+  );
+  const data = await res.json();
+  console.log(JSON.stringify(data, null, 2));
+  if (data.success) {
+    return data.product;
+  }
+};
+
+const SingleProduct = async ({ children, params }: Props) => {
+  const productData = await fetchProductDetails(params.productId);
   return (
-    <section className="text-gray-600 body-font overflow-hidden">
+    <section className="text-gray-600  ">
       <div className="container px-5 py-24 mx-auto">
         {/* product info section  */}
         <div className="lg:w-4/5 mx-auto flex flex-wrap">
           {/* left side - image slider  */}
-          <div className="lg:w-1/2 w-full lg:h-auto h-96 object-cover object-center rounded bg-green-400">
-            {/* <ProductImageSlider images={images} /> */}
+          <div className="lg:w-1/2 w-full max-w-[480px] mx-auto lg:h-auto h-96 object-cover object-center rounded border border-gray-100">
+            <ProductImageSlider images={productData.image_urls} />
           </div>
 
           {/* right side - product info  */}
@@ -35,7 +52,7 @@ const SingleProduct = ({ children }: Props) => {
               BRAND NAME
             </h2>
             <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-              The Catcher in the Rye
+              {productData.name}
             </h1>
             <div className="flex mb-4">
               <span className="flex items-center">
@@ -58,57 +75,29 @@ const SingleProduct = ({ children }: Props) => {
               </div>
             </div>
             <p className="leading-relaxed line-clamp-3">
-              Fam locavore kickstarter distillery. Mixtape chillwave tumeric
-              sriracha taximy chia microdosing tilde DIY. XOXO fam indxgo
-              juiceramps cornhole raw denim forage brooklyn. Everyday carry +1
-              seitan poutine tumeric. Gastropub blue bottle austin listicle
-              pour-over, neutra jean shorts keytar banjo tattooed umami
-              cardigan.
+              {productData.description}
             </p>
-            <div className="flex mt-6 items-center justify-between pb-2  mb-2">
-              <div className="flex items-center">
-                <div className="flex">
-                  <span className="mr-3">Color</span>
-                  <button className="border-2 border-gray-300 rounded-full w-6 h-6 focus:outline-none"></button>
-                  <button className="border-2 border-gray-300 ml-1 bg-gray-700 rounded-full w-6 h-6 focus:outline-none"></button>
-                  <button className="border-2 border-gray-300 ml-1 bg-green-500 rounded-full w-6 h-6 focus:outline-none"></button>
-                </div>
-                <div className="flex ml-6 items-center">
-                  <span className="mr-3">Size</span>
-                  <div className="relative">
-                    <select className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-green-200 focus:border-green-500 text-base pl-3 pr-10">
-                      <option>SM</option>
-                      <option>M</option>
-                      <option>L</option>
-                      <option>XL</option>
-                    </select>
-                    <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
-                      <FaAngleDown />
-                    </span>
-                  </div>
-                </div>
+            {productData.discount ? (
+              <div>
+                <span className="font-medium text-2xl">
+                  ${productData.price * productData.discount}
+                </span>
+                <span className="text-gray mx-3 line-through">
+                  ${productData.price}
+                </span>
               </div>
-            </div>
-            <div>
-              <span className="font-medium text-2xl">$58.00</span>
-              <span className="text-gray mx-3 line-through">$89.00</span>
-            </div>
-            <div className="grid grid-cols-8 gap-4 border-y-1 border-white-200 py-8">
-              <div className="col-span-3 sm:col-span-2">
-                <Counter
-                  value={2}
-                  // increaseHandler={() => {}}
-                  // decreaseHandler={() => {}}
-                />
+            ) : (
+              <div>
+                <span className="font-medium text-2xl">
+                  ${productData.price}
+                </span>
               </div>
-              <div className="col-span-5 sm:col-span-6 flex gap-2 py-1 rounded-md bg-white-200 items-center justify-center ">
-                <CiHeart className="text-2xl" />
-                <p>Add to wishlist</p>
-              </div>
-              <Button className="col-span-full font-medium ">
-                Add to Cart
-              </Button>
-            </div>
+            )}
+            {/* variant selection */}
+            <ProductVariantSelection />
+
+            {/* Add to cart and wishlist section  */}
+            <AddToCartAndWishlist product={productData} />
 
             <div>
               {/* tags section */}
@@ -125,11 +114,13 @@ const SingleProduct = ({ children }: Props) => {
                 <tbody>
                   <tr>
                     <td>SKU</td>
-                    <td className="text-left">123456789</td>
+                    <td className="text-left">{productData.sku}</td>
                   </tr>
                   <tr>
                     <td>Category</td>
-                    <td className="text-left">Office furniture</td>
+                    <td className="text-left">
+                      {productData.category.category_name}
+                    </td>
                   </tr>
                 </tbody>
               </Table>

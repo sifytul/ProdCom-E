@@ -2,8 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "..";
 import { logoutThunk, setAuth, setJid } from "./authSlice";
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API;
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:4000/api/v1",
+  baseUrl,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.jid;

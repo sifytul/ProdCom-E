@@ -56,6 +56,25 @@ const cartSlice = createSlice({
       }
     },
 
+    addQtyToCart: (state, action) => {
+      const { product, qty } = action.payload;
+      const existedItem = state.cartItems.find(
+        (item) => item?.id === product.id
+      );
+
+      if (!existedItem) {
+        let discountedPrice = Number(product.price * product.discount);
+        state.cartItems.push({
+          ...product,
+          qty,
+          discountedPrice,
+          subTotal: discountedPrice * qty,
+        });
+        state.total += discountedPrice * qty;
+      }
+
+      return state;
+    },
     decreaseQtyFromCart: (state, action) => {
       const decreasedItem = action.payload;
       const existedItem = state.cartItems.find(
@@ -81,6 +100,10 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.cartItems = [];
       state.total = 0;
+      state.deliveryCharge = {
+        location: "",
+        charge: 0,
+      };
     },
 
     setDeliveryCharge: {
@@ -122,6 +145,7 @@ const cartSlice = createSlice({
 
 export const {
   addToCart,
+  addQtyToCart,
   decreaseQtyFromCart,
   removeFromCart,
   clearCart,
