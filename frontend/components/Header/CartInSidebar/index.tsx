@@ -44,14 +44,15 @@ const CartInSidebar = (props: Props) => {
           </SheetHeader>
           <div className="flex-grow">{cartItemsList}</div>
           <SheetFooter>
-            <div className="flex justify-between items-center gap-4">
-              {/* <p className="font-semibold text-lg">Total: $400</p> */}
+            {/* <p className="font-semibold text-lg">Total: $400</p> */}
+
+            {cartItems.length > 0 && (
               <Link href={"/cart"}>
                 <SheetTrigger asChild>
                   <Button>Checkout</Button>
                 </SheetTrigger>
               </Link>
-            </div>
+            )}
           </SheetFooter>
         </SheetContent>
       </Sheet>
