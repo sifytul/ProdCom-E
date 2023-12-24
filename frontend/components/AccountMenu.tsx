@@ -34,13 +34,14 @@ import {
 import Link from "next/link";
 import { BsPerson } from "react-icons/bs";
 import { useAppDispatch } from "@/store";
-import { logoutThunk } from "@/store/slices/authSlice";
 import Image from "next/image";
+import { useLogoutMutation } from "@/store/slices/authApiSlice";
 
 export function AccountMenu({ user }) {
   const dispatch = useAppDispatch();
-  const handleLogout = () => {
-    dispatch(logoutThunk());
+  const [logout] = useLogoutMutation();
+  const handleLogout = async () => {
+    await logout(undefined);
   };
 
   let userMenu = user ? (
@@ -113,7 +114,6 @@ export function AccountMenu({ user }) {
           <DropdownMenuItem onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

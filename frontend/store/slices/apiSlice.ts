@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "..";
-import { logoutThunk, setAuth, setJid } from "./authSlice";
+import { setAuth, setJid, logout } from "./authSlice";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API;
 
@@ -38,7 +38,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
       results = await baseQuery(args, api, extraOptions);
     } else {
-      api.dispatch(logoutThunk());
+      api.dispatch(logout());
     }
   }
   return results;

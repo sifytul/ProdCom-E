@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "..";
+import { authApiSlice } from "./authApiSlice";
 
 export type TUser = {
   id: number;
@@ -21,28 +22,6 @@ const initialState: IAuthState = {
   user: null,
 };
 
-const logoutThunk = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
-  const state = (await thunkAPI.getState()) as RootState;
-  const { jid } = state.auth;
-  try {
-    const res = await fetch(
-      process.env.NEXT_PUBLIC_BACKEND_API + "/auth/logout",
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: "Bearer " + jid,
-        },
-      }
-    );
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -58,20 +37,26 @@ export const authSlice = createSlice({
     setUser: (state, action: PayloadAction<IAuthState["user"]>) => {
       state.user = action.payload;
     },
-  },
-
-  extraReducers: (builder) => {
-    builder.addCase(logoutThunk.fulfilled, (state) => {
+    logout: (state) => {
       state.isAuth = false;
       state.jid = "";
       state.user = null;
-    });
+    },
+  },
+
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      authApiSlice.endpoints.logout.matchFulfilled,
+      (state) => {
+        state.isAuth = false;
+        state.jid = "";
+        state.user = null;
+      }
+    );
   },
 });
 
-export const { setAuth, setJid, setUser } = authSlice.actions;
-
-export { logoutThunk };
+export const { setAuth, setJid, setUser, logout } = authSlice.actions;
 
 export const authSelector = (state: { auth: IAuthState }) => state.auth;
 
