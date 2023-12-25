@@ -57,8 +57,8 @@ const PaymentOptions = ({ orderId }: Props) => {
       data: { success: boolean; message: string };
     };
     if (res?.data?.success) {
+      router.replace("/");
       toast.success(res.data.message);
-      router.push("/");
     } else {
       toast.error(res.data.message);
     }
@@ -77,8 +77,9 @@ const PaymentOptions = ({ orderId }: Props) => {
       data: { success: boolean; message: string };
     };
     if (res?.data?.success) {
+      router.replace("/cart/order-complete?orderId=" + orderId);
+      dispatch(setStepperState("payment"));
       toast.success(res.data.message);
-      router.push("/cart/order-complete?orderId=" + orderId);
     } else {
       toast.error(res.data.message);
     }
@@ -192,7 +193,6 @@ const PaymentOptions = ({ orderId }: Props) => {
           disabled={!isValid && !isDirty}
           type="submit"
           className="bg-accent font-semibold hover:bg-green-400"
-          onClick={() => dispatch(setStepperState("payment"))}
         >
           Confirm order
         </Button>

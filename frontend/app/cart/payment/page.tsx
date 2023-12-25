@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { RxCross2 } from "react-icons/rx";
 import PaymentOptions from "./PaymentOptions";
+import Link from "next/link";
 
 type Props = {
   searchParam: {
@@ -43,6 +44,17 @@ const PaymentPage = () => {
 
   if (isLoading) {
     content = <div>Loading...</div>;
+  } else if (isSuccess && orderDetails?.data?.status === "confirmed") {
+    content = (
+      <div className="flex flex-col justify-center items-center">
+        <h2 className="text-2xl font-semibold text-center">
+          Your order has been confirmed
+        </h2>
+        <Link href="/profile/orders">
+          <Button>Check your order</Button>
+        </Link>
+      </div>
+    );
   } else if (isSuccess) {
     content = (
       <div className="space-y-8">
@@ -125,7 +137,9 @@ const PaymentPage = () => {
       </div>
       {/* -------------------order summery end ----------------------- */}
 
-      <PaymentOptions orderId={Number(orderId)} />
+      {isSuccess && orderDetails?.data?.status === "confirmed" ? null : (
+        <PaymentOptions orderId={Number(orderId)} />
+      )}
     </div>
   );
 };

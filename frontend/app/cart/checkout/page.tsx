@@ -101,7 +101,7 @@ const Checkout = (props: Props) => {
 
   useEffect(() => {
     if (!isAuth) router.push("/auth/signin?redirect=/cart/checkout");
-  }, []);
+  }, [isAuth, router]);
 
   return (
     <div>
@@ -141,7 +141,12 @@ const Checkout = (props: Props) => {
               <OrderSummery cart={cart} />
 
               {/* place order button */}
-              <Button type="submit">Place order</Button>
+              <Button
+                type="submit"
+                disabled={methods.getValues().products.length < 1}
+              >
+                Place order
+              </Button>
             </div>
           </div>
         </form>
