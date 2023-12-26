@@ -35,7 +35,7 @@ import Link from "next/link";
 import { BsPerson } from "react-icons/bs";
 import { useAppDispatch } from "@/store";
 import Image from "next/image";
-import { useLogoutMutation } from "@/store/slices/authApiSlice";
+import { useLogoutMutation } from "@/store/slices/apiSlice";
 
 export function AccountMenu({ user }) {
   const dispatch = useAppDispatch();

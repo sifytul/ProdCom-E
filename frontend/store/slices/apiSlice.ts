@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "..";
-import { setAuth, setJid, logout } from "./authSlice";
+import { setAuth, setJid } from "./authSlice";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API;
 
@@ -37,8 +37,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       api.dispatch(setJid(accessToken));
 
       results = await baseQuery(args, api, extraOptions);
-    } else {
-      api.dispatch(logout());
     }
   }
   return results;
@@ -46,5 +44,23 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
-  endpoints: (builder) => ({}),
+  endpoints: (builder) => ({
+    logout: builder.mutation({
+      query: () => ({
+        url: "/auth/logout",
+        method: "POST",
+        credentials: "include",
+      }),
+    }),
+    signin: builder.mutation({
+      query: (credentials) => ({
+        url: "/auth/login",
+        method: "POST",
+        credentials: "include",
+        body: credentials,
+      }),
+    }),
+  }),
 });
+
+export const { useSigninMutation, useLogoutMutation } = apiSlice;

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "..";
-import { authApiSlice } from "./authApiSlice";
+import { apiSlice } from "./apiSlice";
 
 export type TUser = {
   id: number;
@@ -45,14 +45,11 @@ export const authSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-    builder.addMatcher(
-      authApiSlice.endpoints.logout.matchFulfilled,
-      (state) => {
-        state.isAuth = false;
-        state.jid = "";
-        state.user = null;
-      }
-    );
+    builder.addMatcher(apiSlice.endpoints.logout.matchFulfilled, (state) => {
+      state.isAuth = false;
+      state.jid = "";
+      state.user = null;
+    });
   },
 });
 
