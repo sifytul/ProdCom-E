@@ -23,10 +23,10 @@ export default function RootLayout({
   return (
     <ReduxProvider>
       <html lang="en">
-        <body>
+        <body className="min-h-screen flex flex-col">
           <TopBar />
           <Header />
-          {children}
+          <main>{children}</main>
           <Footer />
           <ToastContainer />;
         </body>
