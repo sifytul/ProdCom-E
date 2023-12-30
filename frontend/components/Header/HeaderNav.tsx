@@ -5,7 +5,7 @@ type Props = {};
 const HeaderNav = (props: Props) => {
   return (
     <nav>
-      <ul className="hidden sm:flex gap-10 items-center text-sm sm:text-base font-medium">
+      <ul className="hidden md:flex gap-10 items-center text-sm sm:text-base font-medium">
         <li className="hover:text-black duration-200">
           <Link href={"/"}>Home</Link>
         </li>

@@ -16,7 +16,7 @@ const Header = (props: Props) => {
 
   return (
     <header className="h-16">
-      <div className="container flex my-auto h-full justify-between items-center mx-auto">
+      <div className="sm:container mr-2 sm:mr-0 flex my-auto h-full justify-between items-center mx-auto">
         {/* left portion of header */}
         <Link href="/">
           <Image
@@ -42,7 +42,7 @@ const Header = (props: Props) => {
             {/* cart icon  */}
             <CartInSidebar />
 
-            <div className="sm:hidden">
+            <div className="md:hidden">
               <Sidebar />
             </div>
           </div>
