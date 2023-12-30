@@ -46,14 +46,18 @@ export function AccountMenu({ user }) {
 
   let userMenu = user ? (
     <DropdownMenuGroup>
-      <DropdownMenuItem>
-        <User className="mr-2 h-4 w-4" />
-        <span>Profile</span>
-      </DropdownMenuItem>
-      <DropdownMenuItem>
-        <Box className="mr-2 h-4 w-4" />
-        <span>My Orders</span>
-      </DropdownMenuItem>
+      <Link href={"/profile"}>
+        <DropdownMenuItem>
+          <User className="mr-2 h-4 w-4" />
+          <span>Profile</span>
+        </DropdownMenuItem>
+      </Link>
+      <Link href={"/profile/orders"}>
+        <DropdownMenuItem>
+          <Box className="mr-2 h-4 w-4" />
+          <span>My Orders</span>
+        </DropdownMenuItem>
+      </Link>
     </DropdownMenuGroup>
   ) : (
     <DropdownMenuGroup>
