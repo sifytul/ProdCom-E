@@ -1,6 +1,6 @@
 "use client";
 import React, { ChangeEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   Select,
@@ -14,12 +14,19 @@ import {
 
 const FilterAndSort = ({ categories }) => {
   const router = useRouter();
+  const searchTerm = useSearchParams().get("searchTerm") || "";
 
   const handleFilterChange = (value) => {
     // setCategoryFilter(value);
-    router.push(`?category=${value}`, {
-      scroll: false,
-    });
+    if (searchTerm) {
+      router.push(`?category=${value}&searchTerm=${searchTerm}`, {
+        scroll: false,
+      });
+    } else {
+      router.push(`?category=${value}`, {
+        scroll: false,
+      });
+    }
   };
 
   return (

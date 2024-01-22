@@ -13,8 +13,9 @@ import {
   FaStar,
   FaTwitter,
 } from "react-icons/fa";
-import ProductVariantSelection from "./ProductVariantSelection";
+import ProductVariantSelection from "./ProductVariantSelection/ProductVariantSelection";
 import AddToCartAndWishlist from "./AddToCartAndWishlist";
+import Rating from "@/components/shared/Rating";
 
 type Props = {
   children: React.ReactNode;
@@ -28,14 +29,13 @@ const fetchProductDetails = async (productId: number) => {
     process.env.NEXT_PUBLIC_BACKEND_API + "/products/" + productId
   );
   const data = await res.json();
-  console.log(JSON.stringify(data, null, 2));
   if (data.success) {
     return data.product;
   }
 };
 
-const SingleProduct = async ({ children, params }: Props) => {
-  const productData = await fetchProductDetails(params.productId);
+const SingleProduct = async ({ children, params: { productId } }: Props) => {
+  const productData = await fetchProductDetails(productId);
   return (
     <section className="text-gray-600  ">
       <div className="container px-5 py-24 mx-auto">
@@ -56,16 +56,7 @@ const SingleProduct = async ({ children, params }: Props) => {
             </h1>
             <div className="flex mb-4">
               <span className="flex items-center">
-                <div className="flex ">
-                  {Array(5)
-                    .fill(1)
-                    .map((_, i) => (
-                      <FaStar
-                        key={i}
-                        className="h-5 fill-current text-yellow-500 "
-                      />
-                    ))}
-                </div>
+                <Rating rating={productData.ratings as number} />
                 <span className="text-gray-600 ml-3">4 Reviews</span>
               </span>
               <div className="flex items-center gap-1 ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
@@ -131,9 +122,12 @@ const SingleProduct = async ({ children, params }: Props) => {
 
         <div>
           <nav className="flex items-center h-10 my-6 space-x-4 md:space-x-8">
-            <NavBarLink text="Additional Info" url="/products/sfds" />
-            <NavBarLink text="Questions" url="/products/sfds/questions" />
-            <NavBarLink text="Reviews" url="/products/sfds/reviews" />
+            <NavBarLink text="Additional Info" url={`/products/${productId}`} />
+            <NavBarLink
+              text="Questions"
+              url={`/products/${productId}/questions`}
+            />
+            <NavBarLink text="Reviews" url={`/products/${productId}/reviews`} />
           </nav>
 
           <div>{children}</div>

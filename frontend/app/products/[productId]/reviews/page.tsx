@@ -1,3 +1,4 @@
+import Rating from "@/components/shared/Rating";
 import CustomerReviewCard from "@/components/shared/card/CustomerReviewCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,13 +22,7 @@ const Reviews = (props: Props) => {
       <h2 className="text-xl font-medium">Customer Reviews</h2>
       <div className="flex mb-4">
         <span className="flex items-center">
-          <div className="flex ">
-            {Array(5)
-              .fill(1)
-              .map((_, i) => (
-                <FaStar key={i} className="h-5 fill-current text-yellow-500 " />
-              ))}
-          </div>
+          <Rating rating={5} />
           <span className="text-gray-600 ml-3 text-sm">4 Reviews</span>
         </span>
       </div>
@@ -39,7 +34,7 @@ const Reviews = (props: Props) => {
       </div>
       <div>
         <div className="flex justify-between items-center my-8">
-          <h3>11 Reviews</h3>
+          <h3>4 Reviews</h3>
           <div>
             <Select>
               <SelectTrigger className="w-[180px]">
@@ -56,6 +51,7 @@ const Reviews = (props: Props) => {
           </div>
         </div>
         <div className="space-y-4">
+          <CustomerReviewCard />
           <CustomerReviewCard />
           <CustomerReviewCard />
           <CustomerReviewCard />
