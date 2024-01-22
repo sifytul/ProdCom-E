@@ -1,15 +1,17 @@
+"use client";
 import { BsEyeFill, BsEyeSlashFill } from "@/public/assets/icons/react-icons";
 import React, { useState } from "react";
 import { Input } from "../ui/input";
 
 type Props = {
   passwordField?: boolean;
-  name: string;
+  name?: string;
   label?: string;
   placeholder?: string;
   type?: string;
   Icon?: React.FunctionComponent<{ className?: string }>;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
 };
 
 /**
