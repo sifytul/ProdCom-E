@@ -38,9 +38,9 @@ const AccountLayout = ({ children }: Props) => {
   return (
     <div className="container">
       <h1 className="text-center text-3xl font-medium">My Account</h1>
-      <div className="flex flex-wrap">
-        <div className="bg-white-200 w-full md:w-1/3 lg:w-1/4">
-          <div className=" space-y-2">
+      <div className="grid md:grid-cols-12">
+        <div className="bg-white-200 md:col-span-4 lg:col-span-3">
+          <div className="">
             <div className="flex flex-col items-center justify-center border-b border-gray-300 py-6 mx-4">
               <Image
                 src={user?.avatar || "/assets/images/avatar.png"}
@@ -53,7 +53,7 @@ const AccountLayout = ({ children }: Props) => {
               />
               <p className="font-semibold">{user?.name || "Guest User"}</p>
             </div>
-            <div className="md:hidden">
+            <div className="md:hidden flex justify-center my-4">
               <Select
                 onValueChange={handleFilterChange}
                 value={path.split("/").pop()}
@@ -64,9 +64,10 @@ const AccountLayout = ({ children }: Props) => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Account</SelectLabel>
+                    <SelectItem value="dashboard">Dashboard</SelectItem>
+                    <SelectItem value="orders">Orders</SelectItem>
                     <SelectItem value="profile">Profile</SelectItem>
                     <SelectItem value="address">Address</SelectItem>
-                    <SelectItem value="orders">Orders</SelectItem>
                     <SelectItem value="wishlist">Wishlist</SelectItem>
                   </SelectGroup>
                 </SelectContent>
@@ -74,6 +75,24 @@ const AccountLayout = ({ children }: Props) => {
             </div>
           </div>
           <div className="hidden md:inline-block p-4 w-full">
+            <Link href="/profile/dashboard">
+              <div
+                className={`hover:bg-gray-200 w-full p-2 rounded-md cursor-pointer ${
+                  path == "/profile/dashboard" && "bg-gray-200"
+                }`}
+              >
+                Dashboard
+              </div>
+            </Link>
+            <Link href="/profile/orders">
+              <div
+                className={`hover:bg-gray-200 w-full p-2 rounded-md cursor-pointer ${
+                  path == "/profile/orders" && "bg-gray-200"
+                }`}
+              >
+                Orders
+              </div>
+            </Link>
             <Link href="/profile">
               <div
                 className={`hover:bg-gray-200 w-full p-2 rounded-md cursor-pointer ${
@@ -92,15 +111,6 @@ const AccountLayout = ({ children }: Props) => {
                 Address
               </div>
             </Link>
-            <Link href="/profile/orders">
-              <div
-                className={`hover:bg-gray-200 w-full p-2 rounded-md cursor-pointer ${
-                  path == "/profile/orders" && "bg-gray-200"
-                }`}
-              >
-                Orders
-              </div>
-            </Link>
             <Link href="/profile/wishlist">
               <div
                 className={`hover:bg-gray-200 w-full p-2 rounded-md cursor-pointer ${
@@ -113,7 +123,7 @@ const AccountLayout = ({ children }: Props) => {
           </div>
         </div>
 
-        <div className="w-full md:w-fit md:ml-8">{children}</div>
+        <div className="md:ml-8 md:col-span-8 lg:col-span-9">{children}</div>
       </div>
     </div>
   );

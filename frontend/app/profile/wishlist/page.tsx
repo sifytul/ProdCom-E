@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import {
@@ -9,10 +10,13 @@ import {
 } from "@/components/ui/table";
 import React from "react";
 import { RxCross2 } from "react-icons/rx";
+import { useAppSelector } from "@/store";
 
 function Wishlist() {
+  const wishlist = useAppSelector((state) => state.wishlist.wishlistItems);
+
   return (
-    <div>
+    <div className="my-10 text-gray-300">
       <h1 className="text-3xl font-semibold">Your Wishlist</h1>
       <div>
         <Table className="center">

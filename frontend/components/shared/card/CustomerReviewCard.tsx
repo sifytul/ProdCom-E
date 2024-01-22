@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import { FaStar } from "react-icons/fa";
+import Rating from "../Rating";
 
 type Props = {};
 
@@ -9,11 +10,7 @@ const CustomerReviewCard = (props: Props) => {
     <div>
       <figure className="relative flex flex-col-reverse bg-slate-50 rounded-lg p-6 dark:bg-slate-800 dark:highlight-white/5">
         <blockquote className="mt-6 text-slate-700 dark:text-slate-300">
-          <p>
-            Have been working with CSS for over ten years and Tailwind just
-            makes my life easier. It is still CSS and you use flex, grid, etc.
-            but just quicker to write and maintain.
-          </p>
+          <p>Awesome and authentic product. Recommended!!!</p>
         </blockquote>
         <figcaption className="flex items-center space-x-4">
           <Image
@@ -34,16 +31,9 @@ const CustomerReviewCard = (props: Props) => {
                 <span className="absolute inset-0"></span>Debbie O&apos;Brien
               </a>
             </div>
-            <div className="mt-0.5">Senior Program Manager at Microsoft</div>
-            <div className="flex ">
-              {Array(5)
-                .fill(1)
-                .map((_, i) => (
-                  <FaStar
-                    key={i}
-                    className="h-5 fill-current text-yellow-500 "
-                  />
-                ))}
+            <div className="flex flex-col md:flex-row gap-1">
+              <Rating rating={5} />
+              <div className="text-sm md:ml-2">a month ago</div>
             </div>
           </div>
         </figcaption>

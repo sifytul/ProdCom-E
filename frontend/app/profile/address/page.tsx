@@ -5,8 +5,8 @@ import { MdOutlineDelete } from "react-icons/md";
 
 const Address = () => {
   return (
-    <div>
-      <h2 className="font-semibold text-xl">Address</h2>
+    <div className="my-10 text-gray-300">
+      <h2 className="font-semibold text-xl mt-8 mb-4">Address</h2>
       <div className="lg:flex space-y-4 lg:space-y-0 lg:space-x-4 ">
         <AddressCard address={{}} />
         <AddressCard address={{}} />
