@@ -30,7 +30,7 @@ export const uploadImage = async (
     console.error(error);
     return {
       success: false,
-      error: error.message,
+      error,
     };
     // throw new HttpException('Upload image failed', 500);
   }
@@ -73,7 +73,7 @@ export const uploadMultipleImages = async (
       console.error(error);
       images.push({
         success: false,
-        error: error.message,
+        error: error,
       });
     }
   }

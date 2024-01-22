@@ -14,9 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Role, Roles } from '@/auth/decorators/roles.decorator';
-// import { UploadImages } from '@/utils/uploadImage';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { uploadImage } from '@/utils/uploadImage';
 import { User } from './decorator/user.decorator';
 import { RegisterUserDto } from './dto/registerUserDto';
 import { UpdatePasswordDto } from './dto/upadte-password.dto';
@@ -80,21 +78,16 @@ export class UserController {
     )
     avatar?: Express.Multer.File,
   ) {
-    let uploadedAvatar;
-    if (avatar) {
-      uploadedAvatar = await uploadImage(avatar);
-    } else {
-      uploadedAvatar = null;
-    }
-    if (!uploadedAvatar) {
-      throw new BadRequestException('Please upload a valid image file.');
-    }
-    await this.userService.updateUserAvatar(user.email, uploadedAvatar);
+    const response = await this.userService.updateUserAvatar(
+      user.email,
+      avatar,
+    );
+    console.log(response);
     return {
       success: true,
       message: 'Avatar successfully updated.',
       data: {
-        avatarUrl: uploadedAvatar?.url,
+        avatarUrl: response?.avatar_url,
       },
     };
   }

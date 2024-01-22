@@ -14,6 +14,7 @@ import { Repository } from 'typeorm';
 import { UpdatePasswordDto } from './dto/upadte-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entity/user.entity';
+import { deleteImage, uploadImage } from '@/utils/uploadImage';
 
 export type TUser = any;
 
@@ -144,17 +145,38 @@ export class UserService {
     return this.userRepo.save(existingUser);
   }
 
-  async updateUserAvatar(email: string, uploadedAvatar) {
+  async updateUserAvatar(email: string, avatar) {
     const existingUser = await this.findOneByEmail(email);
 
     if (!existingUser) {
       throw new BadRequestException('User not found');
     }
 
+    let uploadedAvatar;
+
+    if (avatar) {
+      uploadedAvatar = await uploadImage(avatar);
+    } else {
+      uploadedAvatar = null;
+    }
+    if (!uploadedAvatar) {
+      throw new BadRequestException('Please upload a valid image file.');
+    }
+
+    if (uploadedAvatar.error) {
+      throw new BadRequestException(uploadedAvatar.error);
+    }
+
     if (uploadedAvatar) {
+      if (existingUser.avatar_public_id) {
+        await deleteImage(existingUser.avatar_public_id);
+      }
       existingUser.avatar_url = uploadedAvatar.url;
       existingUser.avatar_public_id = uploadedAvatar.public_id;
-      return this.userRepo.save(existingUser);
+      await this.userRepo.save(existingUser);
+      return {
+        avatar_url: uploadedAvatar.url,
+      };
     }
 
     return;
