@@ -33,13 +33,20 @@ export class OrderController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('orders/my-orders')
-  async findMyOrders(@User() user) {
-    const orders = await this.orderService.findMyOrders(user);
+  async findMyOrders(
+    @User() user,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    const orders = await this.orderService.findMyOrders(user, { page, limit });
     return {
       success: true,
       message: 'Orders fetched successfully',
-      totalOrders: orders.length,
-      data: orders,
+      totalOrders: orders.totalOrders,
+      currentPage: page,
+      perPage: limit,
+      totalPage: Math.ceil(orders.totalOrders / limit),
+      data: orders.orders,
     };
   }
 

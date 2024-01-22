@@ -35,7 +35,7 @@ const profileApiSlice = apiSlice.injectEndpoints({
     }),
 
     getMyAllOrders: builder.query({
-      query: () => "/orders/my-orders",
+      query: (page = 1) => "/orders/my-orders?page=" + page,
     }),
 
     getMySingleOrder: builder.query({

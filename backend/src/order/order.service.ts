@@ -187,15 +187,25 @@ export class OrderService {
     return transactionResult;
   }
 
-  async findMyOrders(user: any) {
+  async findMyOrders(user: any, query: { page: number; limit: number }) {
+    console.log('\n\n query: ', query, '\n\n');
+    const totalOrders = await this.OrderRepository.count({
+      where: { user: { id: user.userId } },
+    });
+
     const orders = await this.OrderRepository.find({
       where: { user: { id: user.userId } },
       relations: ['shipping_info', 'ordered_items', 'ordered_items.product'],
+      skip: (query.page - 1) * query.limit,
+      take: query.limit,
     });
 
-    let orderResponse = [];
+    let orderResponse = {
+      totalOrders,
+      orders: [],
+    };
     for (const order of orders) {
-      orderResponse.push({
+      orderResponse.orders.push({
         id: order.id,
         itemsPrice: order.items_price,
         totalItems: order.total_items,
@@ -226,6 +236,7 @@ export class OrderService {
             category: item.product.category.category_name,
           };
         }),
+        createdAt: order.created_at,
       });
     }
     return orderResponse;
