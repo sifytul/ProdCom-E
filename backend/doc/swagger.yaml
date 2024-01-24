@@ -26,6 +26,8 @@ tags:
 servers:
   - description: localhost
     url: http://localhost:4000/api/v1
+  - description: production
+    url: https://prodcom-e-backend.onrender.com/api/v1
 
 paths:
   # Auth Endpoints
@@ -174,8 +176,8 @@ paths:
   '/auth/password/forgot':
     post:
       tags: ['Auth']
-      security:
-        - bearerAuth: []
+      # security:
+      #   - bearerAuth: []
       description: This route will help a user to reset his password if he has an account on this website with the provided email.
       requestBody:
         content:
@@ -203,8 +205,6 @@ paths:
   '/auth/password/reset/{token}':
     post:
       tags: [Auth]
-      security:
-        - bearerAuth: []
       description: This route will reset the password of the particular user.
       parameters:
         - $ref: '#/components/parameters/tokenParam'
@@ -252,6 +252,8 @@ paths:
     get:
       tags: [Auth]
       description: retrive access token by providing httponly refresh token
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: success response
@@ -417,7 +419,7 @@ paths:
           $ref: '#/components/responses/401'
 
   '/me/update/avatar':
-    post:
+    patch:
       tags: [User]
       security:
         - bearerAuth: []
@@ -832,6 +834,9 @@ paths:
             schema:
               type: object
               properties:
+                sku:
+                  type: string
+                  example: afslafa24
                 name:
                   type: string
                   example: xiaomi airdot 6
@@ -853,6 +858,12 @@ paths:
                 stock:
                   type: integer
                   example: 30
+                trending_title:
+                  type: string
+                  example: new
+                discount:
+                  type: string
+                  example: 0.4
               required:
                 - name
                 - description
