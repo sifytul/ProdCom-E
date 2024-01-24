@@ -7,14 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/store";
 import ContactInfoFormContext from "./ContactInfoFormContext";
 import ShippingInfoFormContext from "./ShippingInfoFormContext";
-import Link from "next/link";
-import { setJid } from "@/store/slices/authSlice";
 import { toast } from "react-toastify";
 import { clearCart, setStepperState } from "@/store/slices/cartSlice";
-import { fetchWithReauth } from "@/app/fetchWithReauth";
 import { useRouter } from "next/navigation";
 import OrderSummery from "./OrderSummery";
 import { useEffect } from "react";
+import { useOrderProductMutation } from "@/store/slices/cartApiSlice";
 
 const orderSchema = z.object({
   products: z.array(
@@ -47,8 +45,11 @@ type Props = {};
 const Checkout = (props: Props) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user, jid, isAuth } = useAppSelector((state) => state.auth);
+  const { user, isAuth } = useAppSelector((state) => state.auth);
   const cart = useAppSelector((state) => state.cart);
+
+  const [orderProduct, { isSuccess, error }] = useOrderProductMutation();
+
   const methods = useForm<TOrderSchema>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
@@ -75,21 +76,7 @@ const Checkout = (props: Props) => {
   });
 
   const submitHandler = async (data: TOrderSchema) => {
-    let res = await fetchWithReauth(
-      "/orders/new",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${jid}`,
-        },
-        body: JSON.stringify(data),
-        credentials: "include",
-        mode: "cors",
-      },
-      dispatch,
-      setJid
-    );
+    let res = await orderProduct(data).unwrap();
 
     if (res.success) {
       toast.success("Order placed successfully");

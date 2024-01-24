@@ -8,6 +8,14 @@ export const cartApiSlice = apiSlice.injectEndpoints({
       forceRefetch: () => true,
     }),
 
+    orderProduct: builder.mutation({
+      query: (orderDetails) => ({
+        url: "/orders/new",
+        method: "POST",
+        body: orderDetails,
+      }),
+    }),
+
     confirmOrder: builder.mutation({
       query: ({ orderId, paymentDetails }) => ({
         url: `/orders/my-orders/${orderId}`,
@@ -28,6 +36,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetOrderDetailsQuery,
+  useOrderProductMutation,
   useCancelOrderMutation,
   useConfirmOrderMutation,
 } = cartApiSlice;

@@ -2,7 +2,6 @@
 import InputField from "@/components/shared/InputField";
 import { Input } from "@/components/ui/input";
 import React, { useEffect, useState } from "react";
-import { fetchWithReauth } from "../fetchWithReauth";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { setJid } from "@/store/slices/authSlice";
 import { useGetProfileQuery } from "@/store/slices/profileApiSlice";
