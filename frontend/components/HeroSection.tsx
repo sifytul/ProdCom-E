@@ -7,22 +7,22 @@ import Image from "next/image";
 
 const carouselSlider = [
   {
-    imageURL: "/assets/images/home-cover.jfif",
+    imageURL: "/assets/images/home-cover.png",
     heading: "The Best Quality Products Guranteed!!",
     subheading:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias, rem.",
+      "We choose the best for our client. Client happiness is the most priority",
   },
   {
-    imageURL: "/assets/images/home-cover.jfif",
+    imageURL: "/assets/images/shop-page-cover.png",
     heading: "The Best Quality Products Guranteed!!",
     subheading:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias, rem.",
+      "We choose the best for our client. Client happiness is the most priority",
   },
   {
-    imageURL: "/assets/images/home-cover.jfif",
+    imageURL: "/assets/images/home-cover.png",
     heading: "The Best Quality Products Guranteed!!",
     subheading:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias, rem.",
+      "We choose the best for our client. Client happiness is the most priority",
   },
 ];
 const HeroSection = () => {
