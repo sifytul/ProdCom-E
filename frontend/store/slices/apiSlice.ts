@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "..";
-import { setAuth, setJid } from "./authSlice";
+import { setAuth, setJid, logout } from "./authSlice";
+import { toast } from "react-toastify";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API;
 
@@ -37,6 +38,12 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       api.dispatch(setJid(accessToken));
 
       results = await baseQuery(args, api, extraOptions);
+    } else {
+      api.dispatch(logout());
+      toast.error("Session Ended! Please login again");
+      toast.info("Redirecting to login page...");
+      window.location.href =
+        "/auth/signin?redirect=" + window.location.pathname;
     }
   }
   return results;
