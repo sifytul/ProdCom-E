@@ -2,6 +2,11 @@
 /dist
 /node_modules
 
+# docker
+docker-compose.yml
+docker-compose-frondend.yml
+docker-backend-backend.yml
+
 # Logs
 logs
 *.log

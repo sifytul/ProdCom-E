@@ -17,6 +17,11 @@
 
 *.sh
 
+# docker
+docker-compose.yml
+frontend/docker-compose-frontend.yml
+backend/docker-backend-backend.yml
+
 # misc
 .DS_Store
 *.pem

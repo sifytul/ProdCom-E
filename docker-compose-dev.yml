@@ -1,0 +1,61 @@
+version: "3.8"
+services:
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+
+    command: ["yarn", "dev"]
+
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_BACKEND_API=http://server:4000/api/v1
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - "./frontend:/app"
+      - "/app/node_modules"
+      - "/app/.next"
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:4000"
+    volumes:
+      - "./backend:/app"
+      - "/app/node_modules"
+    environment:
+      REFRESH_TOKEN_SECRET: refresh_token_secret
+      REFRESH_TOKEN_NAME: qid
+      REFRESH_TOKEN_EXPIREDIN: 3d
+      ACCESS_TOKEN_SECRET: access_token_secret
+      ACCESS_TOKEN_NAME: jid
+      ACCESS_TOKEN_EXPIREDIN: 3d
+      CORS_ORIGIN: http://localhost:3000
+      LOCAL_POSTGRES_DB_URI: postgres://postgres:postgres@db:5432/prodcom_e
+      CLOUDINARY_NAME: add_your_cloudinary_name
+      CLOUDINARY_API_KEY: add_your_cloudinary_api_key
+      CLOUDINARY_API_SECRET: add_your_cloudinary_api_secret
+      ENV: development
+    depends_on:
+      - db
+  db:
+    image: postgres:15.4-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: prodcom_e
+    volumes:
+      - prodcom_e:/var/lib/postgresql/data
+volumes:
+  prodcom_e:
+    driver: local

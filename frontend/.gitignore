@@ -15,6 +15,11 @@
 # production
 /build
 
+# docker
+docker-compose.yml
+docker-compose-frondend.yml
+docker-backend-backend.yml
+
 # misc
 .DS_Store
 *.pem
