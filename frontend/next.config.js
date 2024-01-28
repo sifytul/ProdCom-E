@@ -18,6 +18,11 @@ const nextConfig = {
         hostname: "ycax1owz6zsv8w4g.public.blob.vercel-storage.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "**",
+      },
     ],
   },
 };
