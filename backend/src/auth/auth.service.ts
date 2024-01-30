@@ -1,13 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { UserService } from '@/user/user.service';
 export type TRegisterProps = {
   name: string;
-  email: string;
-  password: string;
-};
-type TLoginProps = {
   email: string;
   password: string;
 };
@@ -16,10 +11,7 @@ type TErrors = { field: string; message: string };
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private userService: UserService) {}
 
   async register(registerProps: TRegisterProps) {
     const createdUser = await this.userService.registerUser(registerProps);

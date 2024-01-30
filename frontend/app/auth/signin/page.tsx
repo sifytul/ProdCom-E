@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { useAppDispatch } from "@/store";
 import { setAuth, setJid, setUser } from "@/store/slices/authSlice";
 import { useRouter, useSearchParams } from "next/navigation";
-import { failed, success } from "@/lib/helper/toastFunctions";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -20,9 +19,7 @@ const formSchema = z.object({
 
 type TFormData = z.infer<typeof formSchema>;
 
-type Props = {};
-
-const SignIn = (props: Props) => {
+const SignIn = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -68,11 +65,11 @@ const SignIn = (props: Props) => {
       if (!res.ok) {
         if (responseData.message) {
           responseData.message.forEach((message) => {
-            failed(message);
+            toast.error(message);
           });
         } else if (responseData.errors) {
           responseData.errors.forEach((error) => {
-            failed(error.message);
+            toast.error(error.message);
           });
         }
         return;
@@ -87,9 +84,9 @@ const SignIn = (props: Props) => {
       } else {
         router.push("/");
       }
-      success();
+      toast.success("Welcome back Chief!");
     } catch (error) {
-      failed("Something went wrong");
+      toast.error("Something went wrong");
       console.error(error);
     }
   };

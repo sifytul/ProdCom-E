@@ -14,9 +14,7 @@ import { Input } from "../ui/input";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
-type Props = {};
-
-const SearchInHeader = (props: Props) => {
+const SearchInHeader = () => {
   const router = useRouter();
   const {
     control,

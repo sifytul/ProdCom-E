@@ -8,8 +8,8 @@ const Address = () => {
     <div className="my-10 text-gray-300">
       <h2 className="font-semibold text-xl mt-8 mb-4">Address</h2>
       <div className="lg:flex space-y-4 lg:space-y-0 lg:space-x-4 ">
-        <AddressCard address={{}} />
-        <AddressCard address={{}} />
+        <AddressCard />
+        <AddressCard />
       </div>
     </div>
   );
@@ -17,7 +17,7 @@ const Address = () => {
 
 export default Address;
 
-function AddressCard({ address }) {
+function AddressCard() {
   return (
     <div className="border border-gray-200 rounded-md p-4 min-w-[342px] relative">
       <div className="flex items-center absolute right-4 top-4">

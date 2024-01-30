@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -48,7 +47,7 @@ export class UserController {
     @User() user: TTokenPayload,
     @Body() body: UpdatePasswordDto,
   ) {
-    const updatedUser = await this.userService.updatePassword(user.email, body);
+    await this.userService.updatePassword(user.email, body);
     return {
       success: true,
       message: 'Password successfully changed.',
@@ -86,7 +85,6 @@ export class UserController {
       user.email,
       avatar,
     );
-    console.log(response);
     return {
       success: true,
       message: 'Avatar successfully updated.',
@@ -152,7 +150,7 @@ export class UserController {
   @Roles(Role.ADMIN)
   @Delete('admin/users/:id')
   async deleteUserById(@Param('id') userId: number) {
-    const deletedUser = await this.userService.deleteUserById(userId);
+    await this.userService.deleteUserById(userId);
     //TODO: need to delete all the orders and address and contact info of the user if user gave permission to delete
     return {
       success: true,

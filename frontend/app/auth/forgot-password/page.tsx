@@ -1,17 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { failed, success } from "@/lib/helper/toastFunctions";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm();
+  const { control, handleSubmit } = useForm();
 
   const submitHandler = async (data) => {
     const res = await fetch(
@@ -34,18 +29,18 @@ const ForgotPassword = () => {
     if (!res.ok) {
       if (responseData.message) {
         responseData.message.forEach((message) => {
-          failed(message);
+          toast.error(message);
         });
       } else if (responseData.errors) {
         responseData.errors.forEach((error) => {
-          failed(error.message);
+          toast.error(error.message);
         });
       }
       return;
     }
 
     if (res.ok && responseData.success) {
-      success(responseData.message);
+      toast.success(responseData.message);
     }
   };
   return (

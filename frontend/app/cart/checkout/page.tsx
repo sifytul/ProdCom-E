@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -40,15 +40,13 @@ const orderSchema = z.object({
 
 export type TOrderSchema = z.infer<typeof orderSchema>;
 
-type Props = {};
-
-const Checkout = (props: Props) => {
+const Checkout = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { user, isAuth } = useAppSelector((state) => state.auth);
   const cart = useAppSelector((state) => state.cart);
 
-  const [orderProduct, { isSuccess, error }] = useOrderProductMutation();
+  const [orderProduct] = useOrderProductMutation();
 
   const methods = useForm<TOrderSchema>({
     resolver: zodResolver(orderSchema),

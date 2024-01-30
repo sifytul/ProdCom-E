@@ -8,11 +8,10 @@ import {
   InternalServerErrorException,
   Param,
   Post,
-  Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { UserService } from '@/user/user.service';
 import { sendResetPasswordLinkEMail } from '@/utils/sendEmail';
@@ -88,7 +87,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Get('refresh-token')
   async getRefreshToken(
-    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @Cookies('qid') qid: string,
   ) {

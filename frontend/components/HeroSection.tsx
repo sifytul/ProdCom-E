@@ -3,7 +3,6 @@
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import CarouselBanner from "./shared/carousel/CarouselBanner";
-import Image from "next/image";
 
 const carouselSlider = [
   {

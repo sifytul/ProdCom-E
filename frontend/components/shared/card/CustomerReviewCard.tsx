@@ -1,11 +1,7 @@
 import Image from "next/image";
-import React from "react";
-import { FaStar } from "react-icons/fa";
 import Rating from "../Rating";
 
-type Props = {};
-
-const CustomerReviewCard = (props: Props) => {
+const CustomerReviewCard = () => {
   return (
     <div>
       <figure className="relative flex flex-col-reverse bg-slate-50 rounded-lg p-6 dark:bg-slate-800 dark:highlight-white/5">

@@ -1,44 +1,29 @@
 import {
   Cloud,
-  CreditCard,
   Github,
-  Keyboard,
   LifeBuoy,
   LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
   Box,
   PlusCircle,
-  Settings,
   User,
   UserPlus,
-  Users,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { BsPerson } from "react-icons/bs";
-import { useAppDispatch } from "@/store";
 import Image from "next/image";
 import { useLogoutMutation } from "@/store/slices/apiSlice";
 
 export function AccountMenu({ user }) {
-  const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
   const handleLogout = async () => {
     await logout(undefined);

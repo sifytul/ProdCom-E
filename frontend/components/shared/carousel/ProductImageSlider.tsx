@@ -1,5 +1,4 @@
 "use client";
-import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";

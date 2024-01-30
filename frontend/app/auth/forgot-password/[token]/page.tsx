@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { failed, success } from "@/lib/helper/toastFunctions";
 import { useAppDispatch } from "@/store";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { setAuth, setJid, setUser } from "@/store/slices/authSlice";
+import { toast } from "react-toastify";
 
 const ForgotPassswordToken = () => {
   const dispatch = useAppDispatch();
@@ -14,11 +14,7 @@ const ForgotPassswordToken = () => {
   const router = useRouter();
   const params = useParams();
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { control, handleSubmit } = useForm();
 
   const submitHandler = async (data) => {
     try {
@@ -44,11 +40,11 @@ const ForgotPassswordToken = () => {
       if (!res.ok) {
         if (responseData.message) {
           responseData.message.forEach((message) => {
-            failed(message);
+            toast.error(message);
           });
         } else if (responseData.errors) {
           responseData.errors.forEach((error) => {
-            failed(error);
+            toast(error);
           });
         }
         return;
@@ -57,11 +53,10 @@ const ForgotPassswordToken = () => {
       dispatch(setAuth(true));
       dispatch(setUser(responseData.data));
       dispatch(setJid(responseData.accessToken));
-      success("Password changed successfully");
+      toast.success("Password changed successfully");
       router.push("/");
     } catch (error) {
-      console.log(error);
-      failed();
+      toast.error("Something went wrong");
     }
   };
   return (

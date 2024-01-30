@@ -1,10 +1,7 @@
-import Image from "next/image";
 import React from "react";
 import { FaArrowRight } from "react-icons/fa";
 
-type Props = {};
-
-const CategoryDisplayCard = (props: Props) => {
+const CategoryDisplayCard = () => {
   return (
     <div className="bg-white-100 h-full max-h-[664px] min-h-[320px] relative">
       <div>

@@ -2,8 +2,6 @@
 import Counter from "@/components/Counter";
 import { useAppDispatch } from "@/store";
 import Image from "next/image";
-import { CgCross } from "react-icons/cg";
-import { FaCross } from "react-icons/fa";
 import { RxCross1 } from "react-icons/rx";
 import {
   removeFromCart,
@@ -28,16 +26,7 @@ type TProduct = {
 };
 const CartItemInSidebar = ({ product }: TProduct) => {
   const dispatch = useAppDispatch();
-  let {
-    name,
-    price,
-    discount,
-    ratings,
-    image_urls,
-    trending_title: trendingTitle,
-    discountedPrice,
-    qty,
-  } = product;
+  let { name, image_urls, discountedPrice, qty } = product;
   return (
     <div className="flex justify-between items-center py-4 border-b border-green-50">
       <div className="flex items-center gap-2">

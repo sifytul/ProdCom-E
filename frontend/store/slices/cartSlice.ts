@@ -1,14 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type TProduct = {
-  id: number;
-  name: string;
-  image: string;
-  price: number;
-  stock: number;
-  qty: number;
-};
-
 type TInitialState = {
   cartItems: any[];
   total: number;

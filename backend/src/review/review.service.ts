@@ -28,12 +28,6 @@ export class ReviewService {
         message: 'Product not exist to review',
       });
     }
-    let payload = {
-      ...createReviewDto,
-      product: { id: productId },
-      user: { id: user.userId },
-    };
-    console.log(payload);
 
     const review = this.reviewRepository.create({
       ...createReviewDto,

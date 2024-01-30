@@ -5,9 +5,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { TOrderSchema } from "./page";
 import { Checkbox } from "@/components/ui/checkbox";
 
-type Props = {};
-
-const ShippingInfoFormContext = (props: Props) => {
+const ShippingInfoFormContext = () => {
   const {
     control,
     formState: { errors },

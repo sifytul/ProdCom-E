@@ -117,7 +117,7 @@ const ProductImageCarousel = ({ images }) => {
           </motion.div>
         </div>
       </div>
-      {/* <div className="carousel-indicator">
+      <div className="carousel-indicator">
         {images.map((_, index) => (
           <motion.div
             key={index}
@@ -129,7 +129,7 @@ const ProductImageCarousel = ({ images }) => {
             variants={dotsVariants}
           ></motion.div>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 };

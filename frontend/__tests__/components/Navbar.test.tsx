@@ -1,4 +1,4 @@
-import Navbar from "@/components/Header";
+import Navbar from "@/components/Header/Header";
 import { cleanup, render, screen } from "@testing-library/react";
 
 function renderNavbar() {

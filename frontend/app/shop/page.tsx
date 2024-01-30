@@ -4,8 +4,6 @@ import Image from "next/image";
 import React from "react";
 import FilterAndSort from "./FilterAndSort";
 
-type Props = {};
-
 async function getProducts(category, searchTerm) {
   let query = "";
 

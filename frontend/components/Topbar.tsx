@@ -3,9 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 
-type Props = {};
-
-const TopBar = (props: Props) => {
+const TopBar = () => {
   return (
     <div className="h-10 font-inter text-sm bg-accent font-semibold flex items-center justify-center relative">
       <div className="flex justify-center items-center gap-4">

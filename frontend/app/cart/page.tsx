@@ -17,9 +17,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-type Props = {};
-
-const Cart = (props: Props) => {
+const Cart = () => {
   const router = useRouter();
   const cartItems = useAppSelector((state) => state.cart?.cartItems);
   const cartSubTotal = useAppSelector((state) => state.cart?.total);

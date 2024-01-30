@@ -10,11 +10,8 @@ import {
 } from "@/components/ui/table";
 import React from "react";
 import { RxCross2 } from "react-icons/rx";
-import { useAppSelector } from "@/store";
 
 function Wishlist() {
-  const wishlist = useAppSelector((state) => state.wishlist.wishlistItems);
-
   return (
     <div className="my-10 text-gray-300">
       <h1 className="text-3xl font-semibold">Your Wishlist</h1>
@@ -31,21 +28,6 @@ function Wishlist() {
           <TableBody>
             <TableRow>
               <TableCell>
-                {/* <div className="flex items-center space-x-4">
-                  <div className="flex-none w-20 h-20">
-                    <img
-                      src="/assets/images/lamp.png"
-                      alt=""
-                      className="object-cover w-full h-full rounded"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Table lamp</h3>
-                    <p>color: Gray</p>
-                  </div>
-                </div> */}
                 <div className="flex items-center gap-2">
                   <div className=" w-20 h-20 flex-shrink-0">
                     <Image

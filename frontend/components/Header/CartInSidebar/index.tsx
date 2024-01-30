@@ -13,9 +13,7 @@ import Link from "next/link";
 import { IoBasketOutline } from "react-icons/io5";
 import CartItemInSidebar from "./CartItemInSidebar";
 
-type Props = {};
-
-const CartInSidebar = (props: Props) => {
+const CartInSidebar = () => {
   const cartItems = useAppSelector((state) => state.cart.cartItems);
 
   let cartItemsList =
@@ -44,8 +42,6 @@ const CartInSidebar = (props: Props) => {
           </SheetHeader>
           <div className="flex-grow">{cartItemsList}</div>
           <SheetFooter>
-            {/* <p className="font-semibold text-lg">Total: $400</p> */}
-
             {cartItems.length > 0 && (
               <Link href={"/cart"}>
                 <SheetTrigger asChild>

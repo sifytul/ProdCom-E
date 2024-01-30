@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
 import HeaderNav from "./HeaderNav";
 import Sidebar from "../Sidebar";
 import { useAppSelector } from "@/store";
@@ -9,14 +8,12 @@ import SearchInHeader from "./SearchInHeader";
 import CartInSidebar from "./CartInSidebar";
 import Image from "next/image";
 
-type Props = {};
-
-const Header = (props: Props) => {
+const Header = () => {
   const user = useAppSelector((state) => state.auth.user);
 
   return (
     <header className="h-16">
-      <div className="sm:container mr-2 sm:mr-0 flex my-auto h-full justify-between items-center mx-auto">
+      <div className="sm:container mr-2 flex my-auto h-full justify-between items-center mx-auto">
         {/* left portion of header */}
         <Link href="/">
           <Image

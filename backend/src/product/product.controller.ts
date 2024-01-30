@@ -19,7 +19,6 @@ import { Public } from '@/auth/decorators/public.decorator';
 import { Role, Roles } from '@/auth/decorators/roles.decorator';
 import { CategoryService } from '@/category/category.service';
 import { User } from '@/user/decorator/user.decorator';
-import { UserService } from '@/user/user.service';
 import { uploadMultipleImages } from '@/utils/uploadImage';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -31,7 +30,6 @@ export class ProductController {
   constructor(
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService,
-    private readonly userService: UserService,
   ) {}
 
   @Public()

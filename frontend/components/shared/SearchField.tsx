@@ -15,7 +15,7 @@ const SearchField = ({
   SearchIconComponent?: React.FunctionComponent<{ className: string }>;
   inputRef?: LegacyRef<HTMLInputElement>;
 }) => {
-  const [isSearchBarVisible, setIsSearchBarVisible] = React.useState(false);
+  const [isSearchBarVisible] = React.useState(false);
 
   if (isSearchBarVisible) {
     return (

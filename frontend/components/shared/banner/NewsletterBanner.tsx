@@ -2,11 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import React from "react";
-import { BsInbox } from "react-icons/bs";
 
-type Props = {};
-
-const NewsletterBanner = (props: Props) => {
+const NewsletterBanner = () => {
   return (
     <div className="grid sm:grid-cols-5 min-h-[200px] items-center">
       {/* left  */}

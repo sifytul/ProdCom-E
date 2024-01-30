@@ -7,5 +7,5 @@ export class Admin1702907760963 implements MigrationInterface {
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(): Promise<void> {}
 }

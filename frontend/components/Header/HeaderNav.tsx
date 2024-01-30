@@ -1,8 +1,6 @@
 import Link from "next/link";
 
-type Props = {};
-
-const HeaderNav = (props: Props) => {
+const HeaderNav = () => {
   return (
     <nav>
       <ul className="hidden md:flex gap-10 items-center text-sm sm:text-base font-medium">

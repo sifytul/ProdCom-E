@@ -10,7 +10,6 @@ const AddToCartAndWishlist = ({ product }) => {
   const dispatch = useAppDispatch();
   const cart = useAppSelector((state) => state.cart);
 
-  console.log("cart", cart);
   const isProductExistInCart = cart.cartItems.find(
     (item) => item.id === product.id
   );

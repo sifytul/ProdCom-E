@@ -115,7 +115,6 @@ export class ProductService {
     product.stock = updateProductDto.stock;
     product.discount = updateProductDto.discount;
 
-    console.log('Product: ', product);
     return this.productRepository.save(product);
   }
 

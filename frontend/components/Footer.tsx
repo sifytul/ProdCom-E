@@ -3,9 +3,7 @@ import React from "react";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 import Image from "next/image";
 
-type Props = {};
-
-const Footer = (props: Props) => {
+const Footer = () => {
   return (
     <footer className="mt-auto bg-black text-white min-h-[250px] grid items-center justify-center md:justify-normal py-8">
       <div className="container">

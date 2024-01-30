@@ -1,31 +1,12 @@
 "use client";
-import OrderSummery from "../checkout/OrderSummery";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/store";
-import { setJid } from "@/store/slices/authSlice";
 import { useGetOrderDetailsQuery } from "@/store/slices/cartApiSlice";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { RxCross2 } from "react-icons/rx";
 import PaymentOptions from "./PaymentOptions";
 import Link from "next/link";
-
-type Props = {
-  searchParam: {
-    orderId: string;
-  };
-};
 
 const PaymentPage = () => {
   const params = useSearchParams();

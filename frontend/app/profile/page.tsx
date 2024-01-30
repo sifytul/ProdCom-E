@@ -1,15 +1,11 @@
 "use client";
 import InputField from "@/components/shared/InputField";
-import { Input } from "@/components/ui/input";
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/store";
-import { setJid } from "@/store/slices/authSlice";
 import { useGetProfileQuery } from "@/store/slices/profileApiSlice";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Profile = () => {
-  const { data: meData, isFetching, isLoading } = useGetProfileQuery(null);
+  const { isLoading } = useGetProfileQuery(null);
 
   if (isLoading) {
     return <Loader />;

@@ -18,23 +18,16 @@ import {
 import { useGetMyAllOrdersQuery } from "@/store/slices/profileApiSlice";
 import { Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 
-type Props = {};
-
-const Orders = (props: Props) => {
+const Orders = () => {
   const queryParams = useSearchParams();
   const page = queryParams.get("page") ? Number(queryParams.get("page")) : 1;
 
   const {
     data: allOrderDetails,
     isLoading,
-    isError,
-    error,
     isSuccess,
   } = useGetMyAllOrdersQuery(page);
-
-  console.log("allOrderDetails", allOrderDetails);
 
   let orderList;
 

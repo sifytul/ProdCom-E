@@ -12,7 +12,11 @@ import {
   OrderedItemsResponseDto,
 } from './dto/create-order-response.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto, UpdateOrderDtoForAdmin } from './dto/update-order.dto';
+import {
+  PaymentInfo,
+  UpdateOrderDto,
+  UpdateOrderDtoForAdmin,
+} from './dto/update-order.dto';
 import { Order, StatusEnum } from './entities/order.entity';
 import { OrderedItem } from './entities/orderedItems.entity';
 
@@ -76,11 +80,11 @@ export class OrderService {
       }
     }
 
-    let shippingInfo;
+    let shippingInfo: Address | null;
     let contact;
     // create contact info
     if (typeof shipping_info === 'number') {
-      shippingInfo = this.AddressRepository.findOne({
+      shippingInfo = await this.AddressRepository.findOne({
         where: { id: shipping_info },
       });
     } else {
@@ -98,7 +102,7 @@ export class OrderService {
           phone_one: shipping_info.contact.phone_one,
           phone_two: shipping_info.contact.phone_two ?? null,
           user: { id: user.userId },
-        };
+        } as DeepPartial<ContactInfo>;
 
         contact = this.ContactInfoRepository.create(contactPayload);
       }
@@ -112,7 +116,7 @@ export class OrderService {
       });
     }
 
-    shippingInfo = await this.AddressRepository.save(shippingInfo);
+    shippingInfo = await this.AddressRepository.save(shippingInfo as Address);
 
     // Start transaction
     const queryRunner = await this.dataSource.createQueryRunner();
@@ -120,13 +124,17 @@ export class OrderService {
     const transactionResult = await queryRunner.manager.transaction(
       async (transactionalEntityManager) => {
         // create an order instance with shipping info and user
-        const newOrder = this.OrderRepository.create({
-          user: { id: user.userId },
+        const newOrder: Order = this.OrderRepository.create({
+          user: user.userId,
           payment_info: null,
           shipping_info: shippingInfo,
         });
 
-        const order = await transactionalEntityManager.save(newOrder);
+        const order: Order & {
+          items_price: number;
+          total_items: number;
+          total_price: number;
+        } = await transactionalEntityManager.save(newOrder);
 
         // create ordered items with order instance and product instance
         let items = [];
@@ -183,12 +191,10 @@ export class OrderService {
         };
       },
     );
-    console.log('transactionResult: ', transactionResult);
     return transactionResult;
   }
 
   async findMyOrders(user: any, query: { page: number; limit: number }) {
-    console.log('\n\n query: ', query, '\n\n');
     const totalOrders = await this.OrderRepository.count({
       where: { user: { id: user.userId } },
     });
@@ -305,7 +311,7 @@ export class OrderService {
     }
     if (updateOrderDto.status === 'canceled') {
       existedOrder.status = updateOrderDto.status as StatusEnum;
-      const order = await this.OrderRepository.save(existedOrder);
+      await this.OrderRepository.save(existedOrder);
       return { status: 'canceled' };
     }
 
@@ -314,10 +320,10 @@ export class OrderService {
       updateOrderDto.paymentStatus === 'paid' &&
       updateOrderDto.paymentInfo !== 'cod'
     ) {
-      const { paymentInfo } = updateOrderDto;
-      const { medium, transactionId, paidAt, amount } = paymentInfo;
+      const { medium, transactionId, paidAt, amount } =
+        updateOrderDto.paymentInfo as Required<PaymentInfo>;
 
-      payment = await this.PaymentRepository.create({
+      payment = this.PaymentRepository.create({
         medium,
         transaction_id: transactionId,
         paid_at: paidAt,
@@ -337,7 +343,7 @@ export class OrderService {
     existedOrder.payment_info = payment;
     existedOrder.status = updateOrderDto.status as StatusEnum;
 
-    let order = await this.OrderRepository.save(existedOrder);
+    await this.OrderRepository.save(existedOrder);
 
     return { status: 'confirmed' };
   }
@@ -368,11 +374,11 @@ export class OrderService {
   async findAll(
     page: number = 1,
     limit: number = 10,
-    status: string,
-    paymentStatus: string,
-    sortBy: string,
+    status: string | undefined,
+    paymentStatus: string | undefined,
+    sortBy: string | undefined,
     sortType: 'ASC' | 'DESC',
-    searchTerm: string,
+    searchTerm: string | undefined,
   ) {
     let orderQuery = this.OrderRepository.createQueryBuilder('order');
 

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-class paymentInfo {
+export class PaymentInfo {
   @IsNotEmpty()
   @IsString()
   medium: string;
@@ -24,7 +24,7 @@ export class UpdateOrderDto {
 
   @IsNotEmpty()
   @IsOptional()
-  paymentInfo?: paymentInfo | 'cod';
+  paymentInfo?: PaymentInfo | 'cod';
 
   @IsNotEmpty()
   @IsString()
@@ -47,7 +47,7 @@ export class UpdateOrderDtoForAdmin {
 
   @IsNotEmpty()
   @IsOptional()
-  paymentInfo?: paymentInfo | 'cod';
+  paymentInfo?: PaymentInfo | 'cod';
 
   // @IsOptional()
   // @IsNotEmpty()

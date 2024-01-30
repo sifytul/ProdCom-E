@@ -105,7 +105,7 @@
   }
 }
 
-@layer components {
+@layer utilities {
   .carousel {
     position: relative;
   }

@@ -1,7 +1,7 @@
 import { FaStar } from "react-icons/fa";
 
-const Rating = ({ rating }: { rating: number }) => {
-  const ratingWithCeil = Math.ceil(5);
+const Rating = ({ rating = 5 }: { rating: number }) => {
+  const ratingWithCeil = Math.ceil(rating);
   return (
     <div className="flex ">
       {Array(ratingWithCeil)

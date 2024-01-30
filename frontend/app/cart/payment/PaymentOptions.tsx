@@ -47,8 +47,7 @@ const PaymentOptions = ({ orderId }: Props) => {
     formState: { errors, isValid, isDirty },
   } = form;
 
-  let [confirmOrder, { isLoading, isError, error, isSuccess }] =
-    useConfirmOrderMutation();
+  let [confirmOrder] = useConfirmOrderMutation();
 
   let [cancelOrder] = useCancelOrderMutation();
 

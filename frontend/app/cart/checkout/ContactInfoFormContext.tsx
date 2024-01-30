@@ -3,9 +3,7 @@ import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { TOrderSchema } from "./page";
 
-type Props = {};
-
-const ContactInfoFormContext = (props: Props) => {
+const ContactInfoFormContext = () => {
   const {
     control,
     formState: { errors },

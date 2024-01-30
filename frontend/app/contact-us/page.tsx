@@ -25,7 +25,6 @@ const formSchema = z.object({
 const ContactUs = () => {
   const {
     control,
-    handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),

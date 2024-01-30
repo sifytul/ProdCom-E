@@ -1,18 +1,8 @@
-import Counter from "@/components/Counter";
 import NavBarLink from "@/components/shared/NavBarLink";
 import ProductImageSlider from "@/components/shared/carousel/ProductImageSlider";
-import { Button } from "@/components/ui/button";
 import { Table } from "@/components/ui/table";
 import React from "react";
-import { CiHeart } from "react-icons/ci";
-import {
-  FaAngleDown,
-  FaFacebookF,
-  FaInstagram,
-  FaSignal,
-  FaStar,
-  FaTwitter,
-} from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 import ProductVariantSelection from "./ProductVariantSelection/ProductVariantSelection";
 import AddToCartAndWishlist from "./AddToCartAndWishlist";
 import Rating from "@/components/shared/Rating";

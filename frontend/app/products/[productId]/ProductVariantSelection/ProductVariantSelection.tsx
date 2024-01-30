@@ -1,5 +1,4 @@
 import React from "react";
-import { FaAngleDown } from "react-icons/fa";
 import ColorsSelection from "./ColorsSelection";
 import SizeSelection from "./SizeSelection";
 

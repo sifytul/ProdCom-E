@@ -7,9 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { Bars } from "react-loader-spinner";
 import Link from "next/link";
 
-type Props = {};
-
-const OrderComplete = (props: Props) => {
+const OrderComplete = () => {
   const params = useSearchParams();
   let orderId = params.get("orderId");
 

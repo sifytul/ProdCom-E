@@ -20,14 +20,14 @@ export const sendRefreshToken = (
       httpOnly: true,
       maxAge: 0,
       secure: process.env.ENV === 'production',
-      sameSite: 'none',
+      sameSite: process.env.ENV === 'production' ? 'none' : 'lax',
     });
   } else {
     res.cookie(process.env.REFRESH_TOKEN_NAME, createRefreshToken(payload), {
       httpOnly: true,
       maxAge: 1024 * 60 * maxAge,
       secure: process.env.ENV === 'production',
-      sameSite: 'none',
+      sameSite: process.env.ENV === 'production' ? 'none' : 'lax',
     });
   }
 };
