@@ -16,6 +16,7 @@ import { User } from '@/user/decorator/user.decorator';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewService } from './review.service';
+import { TTokenPayload } from 'types/type';
 
 @Controller()
 export class ReviewController {
@@ -25,7 +26,7 @@ export class ReviewController {
   async create(
     @Body() createReviewDto: CreateReviewDto,
     @Param('productId', ParseIntPipe) productId: number,
-    @User() user,
+    @User() user: TTokenPayload,
   ) {
     await this.reviewService.create(createReviewDto, productId, user);
 
@@ -51,7 +52,7 @@ export class ReviewController {
   async updateReview(
     @Param('id', ParseIntPipe) reviewId: number,
     @Body() updateReviewDto: UpdateReviewDto,
-    @User() user,
+    @User() user: TTokenPayload,
   ) {
     const { userId } = user;
     await this.reviewService.updateReview(reviewId, updateReviewDto, userId);
@@ -65,7 +66,7 @@ export class ReviewController {
   @Delete('reviews/:id')
   async deleteReview(
     @Param('id', ParseIntPipe) reviewId: number,
-    @User() user,
+    @User() user: TTokenPayload,
   ) {
     const { userId } = user;
 

@@ -20,13 +20,14 @@ import { RegisterUserDto } from './dto/registerUserDto';
 import { UpdatePasswordDto } from './dto/upadte-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
+import { TTokenPayload } from 'types/type';
 
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('me')
-  async me(@User() user) {
+  async me(@User() user: TTokenPayload) {
     const me = await this.userService.findOneByEmail(user.email);
     const response = {
       id: me.id,
@@ -43,7 +44,10 @@ export class UserController {
   }
 
   @Patch('me/password/update')
-  async updateMyPassword(@User() user, @Body() body: UpdatePasswordDto) {
+  async updateMyPassword(
+    @User() user: TTokenPayload,
+    @Body() body: UpdatePasswordDto,
+  ) {
     const updatedUser = await this.userService.updatePassword(user.email, body);
     return {
       success: true,
@@ -52,7 +56,7 @@ export class UserController {
   }
 
   @Patch('me/update')
-  async updateMe(@User() user, @Body() body: UpdateUserDto) {
+  async updateMe(@User() user: TTokenPayload, @Body() body: UpdateUserDto) {
     await this.userService.updateUser(user.email, body);
     return {
       success: true,
@@ -63,7 +67,7 @@ export class UserController {
   @Patch('me/update/avatar')
   @UseInterceptors(FileInterceptor('avatar'))
   async updateMyAvatar(
-    @User() user,
+    @User() user: TTokenPayload,
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({

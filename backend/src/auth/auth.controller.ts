@@ -25,6 +25,7 @@ import { ChangePasswordDto } from './dto/changePasswordDto';
 import { ForgotPasswordDto } from './dto/forgotPasswordDto';
 import { registerUserDto } from './dto/registerUserDto';
 import { SignInDto } from './dto/signinDto';
+import { TTokenPayload } from 'types/type';
 
 @Controller('auth')
 export class AuthController {
@@ -41,14 +42,14 @@ export class AuthController {
   ) {
     const response = await this.authService.register(registerProps);
     const { id, email, role, tokenVersion } = response;
-    const tokenPayload = {
+    const tokenPayload: TTokenPayload = {
       userId: id,
       email,
       role,
       tokenVersion,
     };
     sendRefreshToken(res, tokenPayload);
-    delete response.tokenVersion;
+    delete (response as any)?.tokenVersion;
     return {
       success: true,
       accessToken: createAccessToken(tokenPayload),
@@ -67,7 +68,7 @@ export class AuthController {
   ) {
     const response = await this.authService.signIn(body);
     const { id, email, role, tokenVersion } = response;
-    const tokenPayload = {
+    const tokenPayload: TTokenPayload = {
       userId: id,
       email,
       role,
@@ -112,7 +113,7 @@ export class AuthController {
     if (verified.tokenVersion !== isUserExisted.tokenVersion) {
       throw new UnauthorizedException({ success: false, accessToken: '' });
     }
-    const tokenPayload = {
+    const tokenPayload: TTokenPayload = {
       userId: verified.id,
       email: verified.email,
       role: verified.role,
@@ -189,7 +190,7 @@ export class AuthController {
       password,
       wantToLogOutFromOtherDevices,
     );
-    let tokenPayload = {
+    let tokenPayload: TTokenPayload = {
       userId: updatedUser.id,
       email: updatedUser.email,
       tokenVersion: updatedUser.tokenVersion,

@@ -15,6 +15,7 @@ import { User } from '@/user/decorator/user.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto, UpdateOrderDtoForAdmin } from './dto/update-order.dto';
 import { OrderService } from './order.service';
+import { TTokenPayload } from 'types/type';
 
 @Controller()
 export class OrderController {
@@ -22,7 +23,10 @@ export class OrderController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('orders/new')
-  async create(@Body() createOrderDto: CreateOrderDto, @User() user) {
+  async create(
+    @Body() createOrderDto: CreateOrderDto,
+    @User() user: TTokenPayload,
+  ) {
     const createdOrder = await this.orderService.create(createOrderDto, user);
     return {
       success: true,
@@ -34,7 +38,7 @@ export class OrderController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('orders/my-orders')
   async findMyOrders(
-    @User() user,
+    @User() user: TTokenPayload,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
@@ -51,7 +55,7 @@ export class OrderController {
   }
 
   @Get('orders/my-orders/:id')
-  async findMyOrder(@Param('id') id: number, @User() user) {
+  async findMyOrder(@Param('id') id: number, @User() user: TTokenPayload) {
     const order = await this.orderService.findMyOrder(id, user);
     return {
       success: true,

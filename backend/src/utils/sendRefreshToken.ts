@@ -1,17 +1,19 @@
 import { Response } from 'express';
-import { UserType } from '@/user/entity/user.entity';
 import { createRefreshToken } from './tokenCreator';
+import { TTokenPayload } from 'types/type';
 
 export const sendRefreshToken = (
   res: Response,
-  payload: { userId: number; role: UserType; tokenVersion: number } | string,
+  payload: TTokenPayload | string,
 ) => {
   const expiredIn = process.env.REFRESH_TOKEN_EXPIREDIN;
   let maxAge = expiredIn.includes('d')
     ? parseInt(expiredIn.replace('d', '')) * 24 * 60
-    : expiredIn.includes('h')
+    : expiredIn && expiredIn.includes('h')
     ? parseInt(expiredIn.replace('h', '')) * 60
-    : expiredIn.includes('m') && parseInt(expiredIn.replace('m', ''));
+    : expiredIn && expiredIn.includes('m')
+    ? parseInt(expiredIn.replace('m', ''))
+    : 1;
 
   if (typeof payload === 'string') {
     res.cookie(process.env.REFRESH_TOKEN_NAME, '', {

@@ -24,6 +24,7 @@ import { uploadMultipleImages } from '@/utils/uploadImage';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
+import { TTokenPayload } from 'types/type';
 
 @Controller()
 export class ProductController {
@@ -100,7 +101,7 @@ export class ProductController {
   @Post('admin/products/new')
   async createProduct(
     @Body() createProductDto: CreateProductDto,
-    @User() user,
+    @User() user: TTokenPayload,
     @UploadedFiles() images?: Express.Multer.File[],
   ) {
     const { category, ...productDto } = createProductDto;
