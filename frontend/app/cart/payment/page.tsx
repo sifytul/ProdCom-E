@@ -42,25 +42,22 @@ const PaymentPage = () => {
           <h2 className="text-xl font-medium mb-4">Order summery</h2>
           <Table className="w-full">
             <TableBody>
-              {orderDetails.data.ordered_items.map((item) => (
+              {orderDetails.data.orderedItems.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>
                     <Image
-                      src={item.product.image_urls[0]?.url}
+                      src={item.image.url}
                       width={100}
                       height={100}
-                      alt={item.product.name}
+                      alt={item.name}
                     />
                   </TableCell>
                   <TableCell className="font-medium flex items-center gap-2">
-                    {item.product.name} -{" "}
-                    <span>{item.product.variant && item.product.variant}</span>{" "}
+                    {item.name} - <span>{item.variant && item.variant}</span>{" "}
                     <RxCross2 />
                     <span> {item.quantity}</span>
                   </TableCell>
-                  <TableCell className="text-right">
-                    ${item.sub_total}
-                  </TableCell>
+                  <TableCell className="text-right">${item.subTotal}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -74,15 +71,15 @@ const PaymentPage = () => {
               <TableRow className="text-lg font-medium">
                 <TableCell>Subtotal</TableCell>
                 <TableCell className="text-right">
-                  ${orderDetails.data.items_price}
+                  ${orderDetails.data.itemsPrice}
                 </TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell>Shipping address</TableCell>
                 <TableCell className="text-right">
-                  {orderDetails.data.shipping_info.address},{" "}
-                  {orderDetails.data.shipping_info.city},{" "}
+                  {orderDetails.data.shippingInfo.address},{" "}
+                  {orderDetails.data.shippingInfo.city},{" "}
                 </TableCell>
               </TableRow>
 
@@ -90,13 +87,13 @@ const PaymentPage = () => {
                 <TableCell>Shipping Charge</TableCell>
 
                 <TableCell className="text-right">
-                  ${orderDetails.data.shipping_price}
+                  ${orderDetails.data.shippingPrice}
                 </TableCell>
               </TableRow>
               <TableRow className="text-lg font-medium">
                 <TableCell>Total</TableCell>
                 <TableCell className="text-right">
-                  ${orderDetails.data.total_price}
+                  ${orderDetails.data.totalPrice}
                 </TableCell>
               </TableRow>
             </TableBody>

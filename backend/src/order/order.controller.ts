@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -15,7 +16,7 @@ import { User } from '@/user/decorator/user.decorator';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto, UpdateOrderDtoForAdmin } from './dto/update-order.dto';
 import { OrderService } from './order.service';
-import { TTokenPayload } from 'types/type';
+import { TTokenPayload } from '@/auth/types/type';
 
 @Controller()
 export class OrderController {
@@ -55,7 +56,16 @@ export class OrderController {
   }
 
   @Get('orders/my-orders/:id')
-  async findMyOrder(@Param('id') id: number, @User() user: TTokenPayload) {
+  async findMyOrder(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: TTokenPayload,
+  ) {
+    if (id === null) {
+      return {
+        success: false,
+        message: 'Order not found',
+      };
+    }
     const order = await this.orderService.findMyOrder(id, user);
     return {
       success: true,
@@ -101,11 +111,11 @@ export class OrderController {
   findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
-    @Query('status') status: string,
-    @Query('paymentStatus') paymentStatus: string,
-    @Query('sortBy') sortBy: string,
+    @Query('status') status: string | null,
+    @Query('paymentStatus') paymentStatus: string | null,
+    @Query('sortBy') sortBy: string | null,
     @Query('sortType') sortType: 'ASC' | 'DESC',
-    @Query('searchTerm') searchTerm: string,
+    @Query('searchTerm') searchTerm: string | null,
   ) {
     if (status === 'all') {
       status = null;

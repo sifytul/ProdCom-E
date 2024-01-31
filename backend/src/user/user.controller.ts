@@ -19,7 +19,7 @@ import { RegisterUserDto } from './dto/registerUserDto';
 import { UpdatePasswordDto } from './dto/upadte-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
-import { TTokenPayload } from 'types/type';
+import { TTokenPayload } from '@/auth/types/type';
 
 @Controller()
 export class UserController {
@@ -97,10 +97,10 @@ export class UserController {
   @Roles(Role.ADMIN)
   @Get('admin/users')
   async getAllUsers(
-    @Query('page') page,
-    @Query('limit') limit,
-    @Query('sort_type') sort_type,
-    @Query('sort_by') sort_by,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('sort_type') sort_type: 'ASC' | 'DESC' = 'ASC',
+    @Query('sort_by') sort_by: string = 'id',
   ) {
     const allUsers = await this.userService.findAllUsers({
       page,

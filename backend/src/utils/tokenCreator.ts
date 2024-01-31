@@ -1,5 +1,5 @@
+import { TTokenPayload } from '@/auth/types/type';
 import * as jwt from 'jsonwebtoken';
-import { TTokenPayload } from 'types/type';
 
 export const createRefreshToken = (payload: TTokenPayload) => {
   return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET!, {

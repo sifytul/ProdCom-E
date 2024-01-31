@@ -6,6 +6,7 @@ import { DeepPartial, Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/review.entity';
+import { TReviewData } from './types/type';
 
 @Injectable()
 export class ReviewService {
@@ -17,7 +18,7 @@ export class ReviewService {
 
   async create(
     createReviewDto: CreateReviewDto,
-    productId,
+    productId: number,
     user: { userId: number },
   ) {
     const existedProduct = await this.productService.findOneById(productId);
@@ -41,10 +42,15 @@ export class ReviewService {
     const reviews = await this.reviewRepository.find({
       where: { product: { id: productId } },
     });
-    let response = [];
+    let response: TReviewData[] = [];
     for (let review of reviews) {
       response.push({
-        ...review,
+        id: review.id,
+        comment: review.comment,
+        rating: review.rating,
+        createdAt: review.created_at,
+        updatedAt: review.created_at,
+        productId: review.product.id,
         reviewer: new ReviewerResponseDto(review.reviewer),
       });
     }
@@ -53,7 +59,7 @@ export class ReviewService {
 
   async updateReview(
     reviewId: number,
-    updateReviewDto: UpdateReviewDto,
+    { comment, rating }: UpdateReviewDto,
     userId: number,
   ) {
     const review = await this.reviewRepository.findOne({
@@ -67,8 +73,12 @@ export class ReviewService {
       });
     }
 
-    review.comment = updateReviewDto.comment;
-    review.rating = updateReviewDto.rating;
+    if (comment) {
+      review.comment = comment;
+    }
+    if (rating) {
+      review.rating = rating;
+    }
 
     return this.reviewRepository.save(review);
   }

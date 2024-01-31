@@ -42,8 +42,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       api.dispatch(logout());
       toast.error("Session Ended! Please login again");
       toast.info("Redirecting to login page...");
-      window.location.href =
-        "/auth/signin?redirect=" + window.location.pathname;
+      window.location.href = "/auth/signin?redirect=" + "/";
     }
   }
   return results;

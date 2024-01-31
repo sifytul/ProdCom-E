@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetMyAllOrdersQuery } from "@/store/slices/profileApiSlice";
+import { dateFormatter } from "@/utils/dateFormatter";
 import { Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
@@ -42,12 +43,7 @@ const Orders = () => {
       );
     } else {
       orderList = allOrderDetails?.data?.map((order) => {
-        let dateStr = order.createdAt;
-        let dateObj = new Date(dateStr);
-        let formattedDate = new Intl.DateTimeFormat("en-US", {
-          dateStyle: "medium",
-        }).format(dateObj);
-
+        const formattedDate = dateFormatter(order.createdAt);
         return (
           <TableRow key={order.id}>
             <TableCell>{order.id}</TableCell>

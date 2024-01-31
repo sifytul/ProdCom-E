@@ -24,7 +24,7 @@ import { ChangePasswordDto } from './dto/changePasswordDto';
 import { ForgotPasswordDto } from './dto/forgotPasswordDto';
 import { registerUserDto } from './dto/registerUserDto';
 import { SignInDto } from './dto/signinDto';
-import { TTokenPayload } from 'types/type';
+import { TTokenPayload } from './types/type';
 
 @Controller('auth')
 export class AuthController {
@@ -74,7 +74,7 @@ export class AuthController {
       tokenVersion,
     };
     sendRefreshToken(res, tokenPayload);
-    delete response.tokenVersion;
+    delete (response as any).tokenVersion;
     return {
       success: true,
       accessToken: createAccessToken(tokenPayload),

@@ -10,7 +10,7 @@ import {
 import { User } from '@/user/decorator/user.decorator';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
-import { TTokenPayload } from 'types/type';
+import { TTokenPayload } from '@/auth/types/type';
 
 @Controller('carts/my-cart')
 export class CartController {

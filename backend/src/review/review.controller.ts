@@ -16,7 +16,7 @@ import { User } from '@/user/decorator/user.decorator';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewService } from './review.service';
-import { TTokenPayload } from 'types/type';
+import { TTokenPayload } from '@/auth/types/type';
 
 @Controller()
 export class ReviewController {

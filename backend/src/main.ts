@@ -1,6 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule } from '@nestjs/swagger';
+import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import * as cloudinary from 'cloudinary';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
@@ -24,11 +24,13 @@ async function bootstrap() {
 
   let document;
   try {
-    document = yaml.load(fs.readFileSync('doc/swagger.yaml', 'utf8'));
+    document = yaml.load(
+      fs.readFileSync('doc/swagger.yaml', 'utf8'),
+    ) as OpenAPIObject;
   } catch (e) {
     console.log('yaml read error: ', e);
   }
-  SwaggerModule.setup('api/v1', app, document);
+  SwaggerModule.setup('api/v1', app, document as OpenAPIObject);
 
   // cloudinary config
   cloudinary.v2.config({

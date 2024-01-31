@@ -18,6 +18,7 @@ import { deleteImage, uploadImage } from '@/utils/uploadImage';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { TUploadedImage } from '@/product/types/type';
 
 @Controller()
 export class CategoryController {
@@ -52,21 +53,23 @@ export class CategoryController {
         });
       }
 
-      let image = null;
+      let image: TUploadedImage | null = null;
       if (categoryImage) {
         const uploadedImgFile = await uploadImage(categoryImage, 'categories');
 
         if (uploadedImgFile.success) {
           image = uploadedImgFile;
         }
+      } else {
+        if (body.categoryImageUrl) {
+          image = {
+            success: true,
+            url: body.categoryImageUrl,
+            public_id: undefined,
+          };
+        }
       }
 
-      if (body.categoryImageUrl) {
-        image = {
-          url: body.categoryImageUrl,
-          public_id: null,
-        };
-      }
       const category = await this.categoryService.create(body, image);
       return {
         success: true,
@@ -104,7 +107,11 @@ export class CategoryController {
       });
     }
 
-    let uploadedImgFile = null;
+    let uploadedImgFile: TUploadedImage = {
+      success: false,
+      url: '',
+      public_id: '',
+    };
     if (image) {
       uploadedImgFile = await uploadImage(image, 'categories');
     }

@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
 import { Address } from '@/Entity/address.entity';
 import { ContactInfo } from '@/Entity/contactInfo.entity';
-import { TRegisterProps } from '@/auth/auth.service';
 import { Order } from '@/order/entities/order.entity';
 import { hashPassword } from '@/utils/hashPassword';
 import { Repository } from 'typeorm';
@@ -15,6 +14,8 @@ import { UpdatePasswordDto } from './dto/upadte-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entity/user.entity';
 import { deleteImage, uploadImage } from '@/utils/uploadImage';
+import { TError, TFindAllUserQuery } from '@/types/type';
+import { TRegisterProps } from '@/auth/types/type';
 
 export type TUser = any;
 
@@ -32,7 +33,7 @@ export class UserService {
   ) {}
   async registerUser({ name, email, password }: TRegisterProps) {
     const isUserExist = await this.findOneByEmail(email);
-    let errors = [];
+    let errors: TError[] = [];
     if (isUserExist) {
       errors.push({
         field: 'email',
@@ -75,17 +76,17 @@ export class UserService {
     };
   }
 
-  async findAllUsers(query) {
+  async findAllUsers(query: TFindAllUserQuery) {
     let { page, limit, sort_type, sort_by } = query;
 
     const queryBuilder = this.userRepo.createQueryBuilder();
 
     if (sort_type && sort_by) {
-      queryBuilder.orderBy(sort_by, sort_type.toUpperCase());
+      queryBuilder.orderBy(sort_by, sort_type);
     } else if (sort_by) {
       queryBuilder.orderBy(sort_by);
     } else if (sort_type) {
-      queryBuilder.orderBy('id', sort_type.toUpperCase());
+      queryBuilder.orderBy('id', sort_type);
     }
 
     if (page && page > 0) {
@@ -118,7 +119,7 @@ export class UserService {
 
   async updatePassword(email: string, body: UpdatePasswordDto) {
     const existedUser = await this.findOneByEmail(email);
-    let errors = [];
+    let errors: TError[] = [];
     const hasMatch = await compare(body.oldPassword, existedUser?.password);
     if (!hasMatch) {
       errors.push({
@@ -145,7 +146,7 @@ export class UserService {
     return this.userRepo.save(existingUser);
   }
 
-  async updateUserAvatar(email: string, avatar) {
+  async updateUserAvatar(email: string, avatar: Express.Multer.File) {
     const existingUser = await this.findOneByEmail(email);
 
     if (!existingUser) {
@@ -167,24 +168,30 @@ export class UserService {
       throw new BadRequestException(uploadedAvatar.error);
     }
 
-    if (uploadedAvatar) {
-      if (existingUser.avatar_public_id) {
-        await deleteImage(existingUser.avatar_public_id);
-      }
-      existingUser.avatar_url = uploadedAvatar.url;
-      existingUser.avatar_public_id = uploadedAvatar.public_id;
-      await this.userRepo.save(existingUser);
-      return {
-        avatar_url: uploadedAvatar.url,
-      };
+    if (existingUser.avatar_public_id) {
+      await deleteImage(existingUser.avatar_public_id);
     }
-
-    return;
+    existingUser.avatar_url = uploadedAvatar.url;
+    existingUser.avatar_public_id = uploadedAvatar.public_id;
+    await this.userRepo.save(existingUser);
+    return {
+      avatar_url: uploadedAvatar.url,
+    };
   }
   async updateUserById(userId: number, body: UpdateUserDto) {
     const existingUser = await this.userRepo.findOne({ where: { id: userId } });
-    existingUser.name = body.name;
-    existingUser.role = body.role;
+
+    if (!existingUser) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (body && body.name) {
+      existingUser.name = body.name;
+    }
+
+    if (body && body.role) {
+      existingUser.role = body.role;
+    }
     return this.userRepo.save(existingUser);
   }
 

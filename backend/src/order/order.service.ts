@@ -3,7 +3,6 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Address } from '@/Entity/address.entity';
 import { ContactInfo } from '@/Entity/contactInfo.entity';
 import { Product } from '@/product/entities/product.entity';
-// import { User } from '@/user/entity/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { Payment, PaymentStatus } from '@/Entity/payment.entity';
 import { DataSource, DeepPartial, In, Repository } from 'typeorm';
@@ -19,6 +18,8 @@ import {
 } from './dto/update-order.dto';
 import { Order, StatusEnum } from './entities/order.entity';
 import { OrderedItem } from './entities/orderedItems.entity';
+import { TOrder, TOrderResponse } from './types/type';
+import { TTokenPayload } from '@/auth/types/type';
 
 @Injectable()
 export class OrderService {
@@ -39,7 +40,7 @@ export class OrderService {
     private dataSource: DataSource,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto, user: any) {
+  async create(createOrderDto: CreateOrderDto, user: TTokenPayload) {
     const { shipping_info, products } = createOrderDto;
 
     const productIds = products.map((product) => product.product_id);
@@ -124,20 +125,31 @@ export class OrderService {
     const transactionResult = await queryRunner.manager.transaction(
       async (transactionalEntityManager) => {
         // create an order instance with shipping info and user
-        const newOrder: Order = this.OrderRepository.create({
-          user: user.userId,
-          payment_info: null,
-          shipping_info: shippingInfo,
-        });
+        const newOrder = this.OrderRepository.create([
+          {
+            user: { id: user.userId },
+            shipping_info: shippingInfo,
+            payment_info: undefined,
+            probable_delivery_date: new Date(
+              Date.now() + 3 * 24 * 60 * 60 * 1000,
+            ),
+          },
+        ] as DeepPartial<Order>[]);
 
         const order: Order & {
           items_price: number;
           total_items: number;
           total_price: number;
-        } = await transactionalEntityManager.save(newOrder);
+        } = await transactionalEntityManager.save(newOrder[0]);
 
+        type TOrderedItems = {
+          product: Product;
+          quantity: number;
+          sub_total: number;
+          order: Order;
+        };
         // create ordered items with order instance and product instance
-        let items = [];
+        let items: TOrderedItems[] = [];
 
         for (const product of products) {
           const productEntity = productEntities.find(
@@ -194,7 +206,10 @@ export class OrderService {
     return transactionResult;
   }
 
-  async findMyOrders(user: any, query: { page: number; limit: number }) {
+  async findMyOrders(
+    user: TTokenPayload,
+    query: { page: number; limit: number },
+  ) {
     const totalOrders = await this.OrderRepository.count({
       where: { user: { id: user.userId } },
     });
@@ -206,7 +221,7 @@ export class OrderService {
       take: query.limit,
     });
 
-    let orderResponse = {
+    let orderResponse: TOrderResponse = {
       totalOrders,
       orders: [],
     };
@@ -220,6 +235,13 @@ export class OrderService {
         status: order.status,
         probableDeliveryDate: order.probable_delivery_date,
         deliveredAt: order.delivered_at,
+        paymentInfo: {
+          id: order.payment_info.id,
+          status: order.payment_info.status,
+          medium: order.payment_info.medium,
+          amount: order.payment_info.amount,
+          paidAt: order.payment_info.created_at,
+        },
         shippingInfo: {
           address: order.shipping_info.address,
           city: order.shipping_info.city,
@@ -248,7 +270,8 @@ export class OrderService {
     return orderResponse;
   }
 
-  async findMyOrder(id: number, user: any) {
+  async findMyOrder(id: number, user: TTokenPayload) {
+    console.log('id', id);
     const order = await this.OrderRepository.findOne({
       where: { id, user: { id: user.userId } },
       relations: ['shipping_info', 'ordered_items', 'ordered_items.product'],
@@ -261,41 +284,48 @@ export class OrderService {
       );
     }
 
-    // return {
-    //   id: order.id,
-    //   itemsPrice: order.items_price,
-    //   totalItems: order.total_items,
-    //   totalPrice: order.total_price,
-    //   shippingPrice: order.shipping_price,
-    //   status: order.status,
-    //   probableDeliveryDate: order.probable_delivery_date,
-    //   deliveredAt: order.delivered_at,
-    //   paymentInfo: order.payment_info.medium,
-    //   shippingInfo: {
-    //     address: order.shipping_info.address,
-    //     city: order.shipping_info.city,
-    //     country: order.shipping_info.country,
-    //     postalCode: order.shipping_info.postal_code,
-    //     contact: {
-    //       phoneOne: order.shipping_info.contact.phone_one,
-    //       phoneTwo: order.shipping_info.contact.phone_two,
-    //     },
-    //   },
-    //   orderedItems: order.ordered_items.map((item) => {
-    //     return {
-    //       productId: item.product.id,
-    //       name: item.product.name,
-    //       image: item.product.image_urls[0] ?? null,
-    //       price: item.product.price,
-    //       discount: item.product.discount,
-    //       quantity: item.quantity,
-    //       subTotal: item.sub_total,
-    //       category: item.product.category.category_name,
-    //     };
-    //   }),
-    // };
+    const orderResponse: TOrder = {
+      id: order.id,
+      itemsPrice: order.items_price,
+      totalItems: order.total_items,
+      totalPrice: order.total_price,
+      shippingPrice: order.shipping_price,
+      status: order.status,
+      probableDeliveryDate: order.probable_delivery_date,
+      deliveredAt: order.delivered_at,
+      paymentInfo: {
+        id: order.payment_info.id,
+        status: order.payment_info.status,
+        medium: order.payment_info.medium,
+        amount: order.payment_info.amount,
+        paidAt: order.payment_info.created_at,
+      },
+      createdAt: order.created_at,
+      shippingInfo: {
+        address: order.shipping_info.address,
+        city: order.shipping_info.city,
+        country: order.shipping_info.country,
+        postalCode: order.shipping_info.postal_code,
+        contact: {
+          phoneOne: order.shipping_info.contact.phone_one,
+          phoneTwo: order.shipping_info.contact.phone_two,
+        },
+      },
+      orderedItems: order.ordered_items.map((item) => {
+        return {
+          productId: item.product.id,
+          name: item.product.name,
+          image: item.product.image_urls[0],
+          price: item.product.price,
+          discount: item.product.discount,
+          quantity: item.quantity,
+          subTotal: item.sub_total,
+          category: item.product.category.category_name,
+        };
+      }),
+    };
 
-    return order;
+    return orderResponse;
   }
 
   async confirmOrCancelOrder(orderId: number, updateOrderDto: UpdateOrderDto) {
@@ -374,11 +404,11 @@ export class OrderService {
   async findAll(
     page: number = 1,
     limit: number = 10,
-    status: string | undefined,
-    paymentStatus: string | undefined,
-    sortBy: string | undefined,
+    status: string | null,
+    paymentStatus: string | null,
+    sortBy: string | null,
     sortType: 'ASC' | 'DESC',
-    searchTerm: string | undefined,
+    searchTerm: string | null,
   ) {
     let orderQuery = this.OrderRepository.createQueryBuilder('order');
 
@@ -414,7 +444,7 @@ export class OrderService {
       .take(limit)
       .getMany();
 
-    let orderResponse = [];
+    let orderResponse: TOrder[] = [];
     for (const order of orders) {
       orderResponse.push({
         id: order.id,
@@ -423,24 +453,23 @@ export class OrderService {
         totalPrice: order.total_price,
         shippingPrice: order.shipping_price,
         status: order.status,
+        createdAt: order.created_at,
         probableDeliveryDate: order.probable_delivery_date,
         deliveredAt: order.delivered_at,
-        paymentInfo: order.payment_info?.medium,
+        paymentInfo: {
+          id: order.payment_info.id,
+          status: order.payment_info.status,
+          medium: order.payment_info.medium,
+          amount: order.payment_info.amount,
+          paidAt: order.payment_info.created_at,
+        },
         shippingInfo: {
-          address: order.shipping_info.address
-            ? order.shipping_info.address
-            : null,
-          city: order.shipping_info.city ? order.shipping_info.city : null,
-          country: order.shipping_info.country
-            ? order.shipping_info.country
-            : null,
-          postalCode: order.shipping_info.postal_code
-            ? order.shipping_info.postal_code
-            : null,
+          address: order.shipping_info.address,
+          city: order.shipping_info.city,
+          country: order.shipping_info.country,
+          postalCode: order.shipping_info.postal_code,
           contact: {
-            phoneOne: order.shipping_info.contact.phone_one
-              ? order.shipping_info.contact.phone_one
-              : null,
+            phoneOne: order.shipping_info.contact.phone_one,
             phoneTwo: order.shipping_info.contact.phone_two
               ? order.shipping_info.contact.phone_two
               : null,

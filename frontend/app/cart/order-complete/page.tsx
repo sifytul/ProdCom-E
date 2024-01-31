@@ -6,6 +6,7 @@ import { useGetOrderDetailsQuery } from "@/store/slices/cartApiSlice";
 import { useSearchParams } from "next/navigation";
 import { Bars } from "react-loader-spinner";
 import Link from "next/link";
+import { dateFormatter } from "@/utils/dateFormatter";
 
 const OrderComplete = () => {
   const params = useSearchParams();
@@ -36,6 +37,7 @@ const OrderComplete = () => {
       </div>
     );
   } else if (isSuccess) {
+    const formattedDate = dateFormatter(orderDetails.data.createdAt);
     content = (
       <div className="flex flex-col justify-center items-center gap-8 border border-gray-200 rounded-md p-8 max-w-xl mx-auto mb-5">
         <div className="text-center">
@@ -45,14 +47,14 @@ const OrderComplete = () => {
           </h2>
         </div>
         <div className="flex gap-6 justify-evenly">
-          {orderDetails?.data.ordered_items.map((item) => (
+          {orderDetails?.data.orderedItems.map((item) => (
             <div className="relative w-28 h-28 bg-white-100" key={item.id}>
               <p className="absolute -top-2 -right-2 rounded-full flex justify-center items-center h-6 w-6 bg-black text-white font-semibold">
                 {item.quantity}
               </p>
               <Image
-                src={item.product.image_urls[0]?.url}
-                alt={item.product.name}
+                src={item.image?.url}
+                alt={item.name}
                 width={60}
                 height={60}
                 style={{
@@ -76,22 +78,22 @@ const OrderComplete = () => {
           </div>
           <div className="flex justify-between">
             <p className="text-gray">Date</p>
-            <p className="font-semibold">{orderDetails.data.updated_at}</p>
+            <p className="font-semibold">{formattedDate}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray">Total</p>
-            <p className="font-semibold">${orderDetails.data.total_price}</p>
+            <p className="font-semibold">${orderDetails.data.totalPrice}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray">Payment method</p>
             <p className="font-semibold">
-              {orderDetails.data.payment_info?.medium}
+              {orderDetails.data.paymentInfo?.medium}
             </p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray">Payment Status</p>
             <p className="font-semibold">
-              {orderDetails.data.payment_info?.status}
+              {orderDetails.data.paymentInfo?.status}
             </p>
           </div>
         </div>

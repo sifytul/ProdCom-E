@@ -91,7 +91,7 @@ export const randomProductsStub = () => {
 };
 
 export const getTenRandomProductsStub = () => {
-  const product = [];
+  const product: any[] = [];
 
   for (let i = 0; i < 10; i++) {
     product.push(randomProductsStub());

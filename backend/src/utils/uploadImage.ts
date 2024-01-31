@@ -1,3 +1,4 @@
+import { TUploadedImage } from '@/product/types/type';
 import { HttpException } from '@nestjs/common';
 import * as cloudinary from 'cloudinary';
 import * as path from 'path';
@@ -5,7 +6,7 @@ import * as path from 'path';
 export const uploadImage = async (
   imageFile: Express.Multer.File,
   folder?: string,
-) => {
+): Promise<TUploadedImage> => {
   const imageBase64 = imageFile.buffer.toString('base64');
 
   const imageDataUri = `data:image/${path
@@ -31,22 +32,17 @@ export const uploadImage = async (
     return {
       success: false,
       error,
+      public_id: undefined,
+      url: undefined,
     };
     // throw new HttpException('Upload image failed', 500);
   }
 };
 
-type TImage = {
-  success: boolean;
-  public_id?: string;
-  url?: string;
-  error?: string;
-};
-
 export const uploadMultipleImages = async (
   imageFiles: Array<Express.Multer.File>,
 ) => {
-  const images: TImage[] = [];
+  const images: TUploadedImage[] = [];
 
   for (const imageFile of imageFiles) {
     const imageBase64 = imageFile.buffer.toString('base64');
@@ -74,6 +70,8 @@ export const uploadMultipleImages = async (
       images.push({
         success: false,
         error: error,
+        public_id: undefined,
+        url: undefined,
       });
     }
   }

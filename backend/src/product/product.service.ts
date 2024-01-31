@@ -7,9 +7,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProductImage } from '@/Entity/productImage.entity';
 import { CategoryService } from '@/category/category.service';
 import { deleteImage } from '@/utils/uploadImage';
-import { ILike, IsNull, Not, Repository } from 'typeorm';
+import {
+  DeepPartial,
+  FindOperator,
+  ILike,
+  IsNull,
+  Not,
+  Repository,
+} from 'typeorm';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
+import { TTokenPayload } from '@/auth/types/type';
+import { TFindAllProductQuery, TUploadedImage } from './types/type';
+import { Category } from '@/category/entities/category.entity';
+import { CreateProductDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -21,7 +32,12 @@ export class ProductService {
     private imageRepository: Repository<ProductImage>,
   ) {}
 
-  async create(createProductDto, user, category, images) {
+  async create(
+    createProductDto: Omit<CreateProductDto, 'category'>,
+    user: TTokenPayload,
+    category: Category,
+    images: TUploadedImage[],
+  ) {
     const product = this.productRepository.create({
       ...createProductDto,
       added_by: { id: user.userId },
@@ -30,9 +46,9 @@ export class ProductService {
 
     const savedProduct = await this.productRepository.save(product);
 
-    let savedProductImages;
+    let savedProductImages: ProductImage[] = [];
     if (images.length > 0) {
-      const ImagesPayload = images.map((image) => {
+      const ImagesPayload = images.map((image: TUploadedImage) => {
         if (image.success) {
           return {
             product: savedProduct,
@@ -40,9 +56,12 @@ export class ProductService {
             public_id: image.public_id,
           };
         }
+        return null;
       });
 
-      const savedImages = this.imageRepository.create(ImagesPayload);
+      const savedImages = this.imageRepository.create(
+        ImagesPayload as DeepPartial<ProductImage>[],
+      );
       savedProductImages = await this.imageRepository.save(savedImages);
     } else {
       savedProductImages = [];
@@ -56,10 +75,16 @@ export class ProductService {
     };
   }
 
-  async findAll(query) {
+  async findAll(query: TFindAllProductQuery) {
     let { category, page, limit, sort_by, sort_type, searchTerm } = query;
 
-    const where = {
+    type TWhere = {
+      category: { category_name: string };
+      deleted_at: FindOperator<any>;
+      name?: FindOperator<string>;
+    };
+
+    const where: TWhere = {
       category: { category_name: category },
       deleted_at: IsNull(),
     };
@@ -72,7 +97,7 @@ export class ProductService {
       where,
       take: limit,
       skip: (page - 1) * limit,
-      order: { [sort_by]: sort_type },
+      order: { [sort_by]: sort_type.toUpperCase() },
     });
 
     return products;
@@ -86,7 +111,10 @@ export class ProductService {
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(
+    id: number,
+    { category, name, description, price, stock, discount }: UpdateProductDto,
+  ) {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
       throw new BadRequestException({
@@ -96,7 +124,7 @@ export class ProductService {
     }
 
     const categoryExist = await this.categoryService.findCategoryByName(
-      updateProductDto.category,
+      category as string,
     );
     if (!categoryExist) {
       throw new BadRequestException({
@@ -105,16 +133,29 @@ export class ProductService {
       });
     }
 
-    if (updateProductDto.category !== product.category.category_name) {
+    if (category !== product.category.category_name) {
       product.category = categoryExist;
     }
 
-    product.name = updateProductDto.name;
-    product.description = updateProductDto.description;
-    product.price = updateProductDto.price;
-    product.stock = updateProductDto.stock;
-    product.discount = updateProductDto.discount;
+    if (name) {
+      product.name = name;
+    }
 
+    if (description) {
+      product.description = description;
+    }
+
+    if (price) {
+      product.price = price;
+    }
+
+    if (stock) {
+      product.stock = stock;
+    }
+
+    if (discount) {
+      product.discount = discount;
+    }
     return this.productRepository.save(product);
   }
 

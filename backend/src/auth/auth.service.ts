@@ -1,19 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { compare } from 'bcrypt';
 import { UserService } from '@/user/user.service';
-export type TRegisterProps = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-type TErrors = { field: string; message: string };
+import {
+  TRegisterProps,
+  TRegisterResponse,
+  TSignInProps,
+  TSignInResponse,
+} from './types/type';
+import { TError } from '@/types/type';
 
 @Injectable()
 export class AuthService {
   constructor(private userService: UserService) {}
 
-  async register(registerProps: TRegisterProps) {
+  async register(registerProps: TRegisterProps): Promise<TRegisterResponse> {
     const createdUser = await this.userService.registerUser(registerProps);
 
     return {
@@ -26,15 +26,9 @@ export class AuthService {
     };
   }
 
-  async signIn({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }): Promise<any> {
+  async signIn({ email, password }: TSignInProps): Promise<TSignInResponse> {
     const user = await this.userService.findOneByEmail(email);
-    let errors: TErrors[] = [];
+    let errors: TError[] = [];
     if (!user) {
       errors.push({
         field: 'email',

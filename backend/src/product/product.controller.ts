@@ -23,7 +23,9 @@ import { uploadMultipleImages } from '@/utils/uploadImage';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
-import { TTokenPayload } from 'types/type';
+import { TTokenPayload } from '@/auth/types/type';
+import { TUploadedImage } from './types/type';
+import { Category } from '@/category/entities/category.entity';
 
 @Controller()
 export class ProductController {
@@ -35,10 +37,10 @@ export class ProductController {
   @Public()
   @Get('products')
   async findAllProducts(
-    @Query('category') category: string,
+    @Query('category') category: string | null,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('sort_type', new DefaultValuePipe('desc')) sort_type: string,
+    @Query('sort_type', new DefaultValuePipe('desc')) sort_type: 'asc' | 'desc',
     @Query('sort_by', new DefaultValuePipe('created_at')) sort_by: string,
     @Query('searchTerm') searchTerm: string,
   ) {
@@ -113,7 +115,7 @@ export class ProductController {
       });
     }
 
-    let uploadedImages = [];
+    let uploadedImages: TUploadedImage[] = [];
     if (images && images.length > 0) {
       uploadedImages = await Promise.all(await uploadMultipleImages(images));
 
@@ -129,14 +131,14 @@ export class ProductController {
     if (productDto.imageUrl) {
       uploadedImages.push({
         url: productDto.imageUrl,
-        public_id: null,
+        public_id: undefined,
         success: true,
       });
     }
     await this.productService.create(
       productDto,
       user,
-      categoryExist,
+      categoryExist as Category,
       uploadedImages,
     );
     return {
