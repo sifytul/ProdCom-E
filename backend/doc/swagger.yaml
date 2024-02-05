@@ -26,8 +26,10 @@ tags:
 servers:
   - description: localhost
     url: http://localhost:4000/api/v1
-  - description: production
+  - description: production (render.com)
     url: https://prodcom-e-backend.onrender.com/api/v1
+  - description: production (app.cyclic.sh)
+    url: https://long-tan-clam-gear.cyclic.app/api/v1
 
 paths:
   # Auth Endpoints
