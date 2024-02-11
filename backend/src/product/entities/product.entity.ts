@@ -1,4 +1,3 @@
-import { ProductImage } from '@/Entity/productImage.entity';
 import { CartItem } from '@/cart/entities/cartItem.entity';
 import { Category } from '@/category/entities/category.entity';
 import { SubCategory } from '@/category/entities/subCategory.entity';
@@ -17,6 +16,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProductImage } from './productImage.entity';
 
 @Entity()
 export class Product {

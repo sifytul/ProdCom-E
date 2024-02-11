@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductImage } from '@/Entity/productImage.entity';
 import { CategoryService } from '@/category/category.service';
 import { deleteImage } from '@/utils/uploadImage';
 import {
@@ -21,6 +20,7 @@ import { TTokenPayload } from '@/auth/types/type';
 import { TFindAllProductQuery, TUploadedImage } from './types/type';
 import { Category } from '@/category/entities/category.entity';
 import { CreateProductDto } from './dto/create-product.dto';
+import { ProductImage } from './entities/productImage.entity';
 
 @Injectable()
 export class ProductService {

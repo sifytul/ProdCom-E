@@ -1,6 +1,6 @@
+import { ProductImage } from '@/product/entities/productImage.entity';
 import { Exclude, Expose, Transform } from 'class-transformer';
 import { IsOptional } from 'class-validator';
-import { ProductImage } from '@/Entity/productImage.entity';
 
 class Contact {
   id: number;
