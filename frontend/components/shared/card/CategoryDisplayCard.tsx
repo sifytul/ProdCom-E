@@ -1,28 +1,34 @@
 import React from "react";
 import { FaArrowRight } from "react-icons/fa";
+import Image from "next/image";
+import Link from "next/link";
 
-const CategoryDisplayCard = () => {
+type CategoryDisplayCardProps = {
+  imgSrc: string;
+  title: string;
+};
+
+const CategoryDisplayCard = ({ imgSrc, title }: CategoryDisplayCardProps) => {
   return (
-    <div className="bg-white-100 h-full max-h-[664px] min-h-[320px] relative">
+    <div className="bg-white-100 relative rounded-xl overflow-hidden group">
       <div>
-        {/* <Image
-          src="/assets/images/sofa-white.png"
-          alt="hero"
+        <Image
+          src={imgSrc}
+          alt={title}
           width={500}
           height={500}
-          style={{
-            height: "100%",
-            width: "100%",
-            objectFit: "contain",
-          }}
-        /> */}
+          className="h-full w-full object-contain group-hover:scale-110 transition-transform duration-500 ease-in-out"
+        />
       </div>
-      <div className="absolute left-8 bottom-8">
-        <h3 className="text-2xl font-medium">Headband</h3>
-        <div className="flex items-center gap-3 cursor-pointer pb-0.5  hover:border-b border-gray w-fit">
+      <div className="absolute left-8 bottom-8 bg-white px-4 py-3 h-fit rounded-md">
+        <h3 className="text-2xl font-medium">{title}</h3>
+        <Link
+          href={`/shop?category=${title}`}
+          className="flex items-center gap-3 cursor-pointer pb-0.5  hover:border-b border-gray w-fit"
+        >
           <p>Collection</p>
           <FaArrowRight />
-        </div>
+        </Link>
       </div>
     </div>
   );
