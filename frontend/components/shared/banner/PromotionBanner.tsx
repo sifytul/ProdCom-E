@@ -7,9 +7,9 @@ const PromotionBanner = () => (
   <div className="md:container">
     <div className="grid grid-cols-1 lg:grid-cols-2">
       {/* image placeholder */}
-      <div className="bg-white-100">
+      <div className="bg-white-100 max-h-[300px] lg:max-h-max ">
         <Image
-          src="/assets/images/sofa.png"
+          src="/assets/images/home-cover.png"
           width={300}
           height={300}
           style={{

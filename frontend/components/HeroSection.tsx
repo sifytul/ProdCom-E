@@ -31,7 +31,10 @@ const HeroSection = () => {
     // </div>
     <div className="md:container">
       <Carousel
-        autoPlay={false}
+        autoPlay={true}
+        transitionTime={1000}
+        interval={5000}
+        stopOnHover={true}
         infiniteLoop={true}
         showStatus={false}
         emulateTouch={true}

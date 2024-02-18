@@ -53,12 +53,14 @@ const ProductCard = ({ product }: TProduct) => {
   return (
     <div
       className={`
-        w-[152px] h-[283px]  xs:h-[392px] xs:w-[231px]
+        w-[152px] h-[283px]  xs:h-[392px] xs:w-[231px] 
         sm:h-[433px] sm:w-[262px] group space-y-3 
       flex flex-col`}
     >
+      {/* product display  */}
       <div className="relative   sm:h-[350px] flex justify-center items-center flex-grow bg-white-100">
-        <div className="">
+        <div className="z-10">
+          {/* trending title and discount */}
           <div className="absolute top-2 left-2 xs:top-4 xs:left-4 space-y-2 font-semibold">
             {trendingTitle && (
               <p className="font-inter w-10 h-4 xs:w-16 xs:h-6 p-0.5 xs:px-3 xs:py-1 text-center bg-white rounded-md xs:leading-none leading-none uppercase text-xs xs:text-base">
@@ -71,21 +73,26 @@ const ProductCard = ({ product }: TProduct) => {
               </div>
             )}
           </div>
+
+          {/* wish button */}
           <div className="bg-white h-8 w-8 absolute top-4 right-4 shadow-md flex justify-center items-center rounded-full cursor-pointer group/wishbutton ">
             <CiHeart className="text-xl group-hover/wishbutton:scale-105" />
           </div>
         </div>
-        <div className="w-full">
+
+        {/* product image  */}
+        <div className="overflow-hidden h-full">
           <Image
             src={image_urls[0]?.url}
             alt={name}
             width={150}
             height={150}
+            className="group-hover:scale-105 transition-transform duration-300 ease-in-out"
             style={{ objectFit: "contain", height: "100%", width: "100%" }}
           />
         </div>
         <Button
-          className="absolute bottom-3 w-4/5 invisible group-hover:visible"
+          className="absolute bottom-3 w-4/5 opacity-0 group-hover:opacity-100 transition duration-300"
           onClick={() => {
             dispatch(addToCart(product));
             toast.success("Added to cart");
@@ -95,6 +102,7 @@ const ProductCard = ({ product }: TProduct) => {
         </Button>
       </div>
 
+      {/* product info  */}
       <Link href={`/products/${product.id}`}>
         <div className="h-[98px] font-inter font-semibold p=">
           <div className="flex ">
