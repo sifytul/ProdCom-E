@@ -5,7 +5,7 @@ export type TPaymentInfo = {
   status: PaymentStatus;
   medium: string;
   amount: number;
-  paidAt: Date;
+  createdAt: Date;
 };
 
 export type TOrder = {
@@ -17,7 +17,7 @@ export type TOrder = {
   status: string;
   probableDeliveryDate: Date;
   deliveredAt: Date;
-  paymentInfo: TPaymentInfo;
+  paymentInfo: TPaymentInfo | null;
   shippingInfo: {
     address: string;
     city: string;

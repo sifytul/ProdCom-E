@@ -36,7 +36,10 @@ export const ormConfig: TypeOrmModuleOptions = {
   // synchronize: true,
   logging: true,
   migrationsRun: true,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl:
+    process.env.ENV === 'production'
+      ? {
+          rejectUnauthorized: false,
+        }
+      : false,
 };
