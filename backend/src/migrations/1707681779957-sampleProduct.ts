@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class SampleProduct1707681779957 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-    INSERT INTO category (id, category_name, description, image_url) VALUES (1, 'furniture', 'Furniture for home decoration', 'https://ycax1owz6zsv8w4g.public.blob.vercel-storage.com/furniture.png');
+    INSERT INTO category (id, category_name, description, image_url) VALUES (1, 'furniture', 'Furniture for home decoration', 'https://ycax1owz6zsv8w4g.public.blob.vercel-storage.com/furniture-category-image.jpg');
 
 INSERT INTO product (id, sku, name, description, price, discount, category_id, trending_title, stock, added_by_id)
 VALUES (1, 'hmsof22', 'Loveseat Sofa', 'Fantastic sofa for home decoration', 400, 0.5, 1, 'new', 30, 1);
