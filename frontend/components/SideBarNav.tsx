@@ -16,19 +16,12 @@ export default function SidebarNav() {
   return (
     <NavigationMenu>
       <NavigationMenuList className="grid">
-        <NavigationMenuItem className="w-full">
+        <NavigationMenuItem>
           <NavigationMenuLink className={navigationMenuTriggerStyle()}>
             <Link href="/" legacyBehavior passHref>
               Home
             </Link>
           </NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/products" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Products
-            </NavigationMenuLink>
-          </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link href="/shop" legacyBehavior passHref>
@@ -38,7 +31,7 @@ export default function SidebarNav() {
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/contact" legacyBehavior passHref>
+          <Link href="/contact-us" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Contact Us
             </NavigationMenuLink>

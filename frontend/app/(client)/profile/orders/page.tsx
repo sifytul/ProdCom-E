@@ -33,8 +33,10 @@ const Orders = () => {
   let orderList;
 
   if (isLoading) {
-    orderList = <Loader />;
-  } else if (isSuccess) {
+    return <Loader />;
+  }
+
+  if (isSuccess) {
     if (allOrderDetails.data.length < 1) {
       orderList = (
         <TableRow>
@@ -73,7 +75,7 @@ const Orders = () => {
           <TableBody>{orderList}</TableBody>
         </Table>
       </div>
-      <div className="my-8">
+      {/* <div className="my-8">
         <Pagination>
           <PaginationContent>
             {page > 1 && (
@@ -112,7 +114,7 @@ const Orders = () => {
             )}
           </PaginationContent>
         </Pagination>
-      </div>
+      </div> */}
     </div>
   );
 };
