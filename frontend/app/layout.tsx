@@ -3,6 +3,7 @@ import ReduxProvider from "@/store/ReduxProvider";
 import { ToastContainer } from "react-toastify";
 import { type Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/components/provider/theme-provider";
 
 type Props = {
   children: React.ReactNode;
@@ -18,8 +19,15 @@ const RootLayout = ({ children }: Props) => {
     <ReduxProvider>
       <html lang="en">
         <body className="min-h-screen flex flex-col">
-          {children}
-          <ToastContainer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <ToastContainer />
+          </ThemeProvider>
         </body>
       </html>
     </ReduxProvider>
