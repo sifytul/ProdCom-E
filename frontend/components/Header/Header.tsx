@@ -7,6 +7,7 @@ import { AccountMenu } from "../AccountMenu";
 import SearchInHeader from "./SearchInHeader";
 import CartInSidebar from "./CartInSidebar";
 import Image from "next/image";
+import DarkModeToggler from "../shared/DarkModeToggle";
 
 const Header = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -33,6 +34,9 @@ const Header = () => {
           <div className="flex items-center gap-4 text-[24px]">
             {/* search icon  */}
             <SearchInHeader />
+
+            {/* dark mode icon */}
+            <DarkModeToggler />
 
             {/* user icon */}
             <AccountMenu user={user} />
