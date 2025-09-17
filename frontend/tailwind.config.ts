@@ -23,13 +23,14 @@ module.exports = {
     //   poppins: ["Poppins", "sans-serif"],
     //   inter: ["Inter", "sans-serif"],
     // },
-    // container: {
-    //   center: true,
-    //   padding: "2rem",
-    //   screens: {
-    //     "2xl": "1400px",
-    //   },
-    // },
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+
     extend: {
       screens: {
         xs: "568px",
@@ -57,6 +58,11 @@ module.exports = {
         gray: {
           DEFAULT: "hsl(var(--neutral-gray))",
           ...colors.gray,
+        },
+
+        purple: {
+          DEFAULT: "hsl(var(--purple))",
+          light: "hsl(var(--purple-light))",
         },
 
         border: "hsl(var(--border))",
