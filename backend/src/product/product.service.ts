@@ -196,10 +196,12 @@ export class ProductService {
     });
 
     if (images && images.length > 0) {
-      images.forEach(async (image) => {
-        await deleteImage(image.public_id);
-        await this.imageRepository.remove(image);
-      });
+      await Promise.all(
+        images.map(async (image) => {
+          await deleteImage(image.public_id);
+          await this.imageRepository.remove(image);
+        }),
+      );
     }
 
     const product = await this.productRepository.findOne({
