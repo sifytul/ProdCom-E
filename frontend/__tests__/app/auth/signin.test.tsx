@@ -1,4 +1,4 @@
-import SignIn from "@/app/(client)/auth/signin/page";
+import SignIn from "@/app/(client)/auth/signin/SignInPageContent";
 import "@testing-library/jest-dom";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 

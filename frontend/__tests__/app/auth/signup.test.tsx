@@ -1,4 +1,4 @@
-import SignUp from "@/app/(client)/auth/signup/page";
+import SignUp from "@/app/(client)/auth/signup/SignUpPage";
 import "@testing-library/jest-dom";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
