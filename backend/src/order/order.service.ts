@@ -467,13 +467,15 @@ export class OrderService {
         createdAt: order.created_at,
         probableDeliveryDate: order.probable_delivery_date,
         deliveredAt: order.delivered_at,
-        paymentInfo: {
-          id: order.payment_info.id,
-          status: order.payment_info.status,
-          medium: order.payment_info.medium,
-          amount: order.payment_info.amount,
-          createdAt: order.payment_info.created_at,
-        },
+        paymentInfo: order.payment_info
+          ? {
+              id: order.payment_info.id,
+              status: order.payment_info.status,
+              medium: order.payment_info.medium,
+              amount: order.payment_info.amount,
+              createdAt: order.payment_info.created_at,
+            }
+          : null,
         shippingInfo: {
           address: order.shipping_info.address,
           city: order.shipping_info.city,

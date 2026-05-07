@@ -116,6 +116,13 @@ export class UserService {
   ) {
     let oldUserData = await this.findOneByEmail(email);
 
+    if (!oldUserData) {
+      throw new BadRequestException({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
     oldUserData.password = await hashPassword(password);
     if (wantToLogOutFromOtherDevices) {
       oldUserData.tokenVersion += 1;
