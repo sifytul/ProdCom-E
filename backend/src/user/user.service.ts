@@ -79,6 +79,12 @@ export class UserService {
   async findAllUsers(query: TFindAllUserQuery) {
     let { page, limit, sort_type, sort_by } = query;
 
+    // Validate sort_by against allowed fields to prevent SQL injection
+    const validSortFields = ['id', 'email', 'name', 'created_at', 'updated_at'];
+    if (sort_by && !validSortFields.includes(sort_by)) {
+      sort_by = 'created_at'; // Default fallback
+    }
+
     const queryBuilder = this.userRepo.createQueryBuilder();
 
     if (sort_type && sort_by) {
@@ -87,6 +93,8 @@ export class UserService {
       queryBuilder.orderBy(sort_by);
     } else if (sort_type) {
       queryBuilder.orderBy('id', sort_type);
+    } else {
+      queryBuilder.orderBy('created_at', 'DESC');
     }
 
     if (page && page > 0) {

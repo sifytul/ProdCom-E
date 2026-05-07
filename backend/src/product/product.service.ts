@@ -78,6 +78,12 @@ export class ProductService {
   async findAll(query: TFindAllProductQuery) {
     let { category, page, limit, sort_by, sort_type, searchTerm } = query;
 
+    // Validate sort_by against allowed fields to prevent SQL injection
+    const validSortFields = ['id', 'name', 'price', 'discount', 'stock', 'created_at'];
+    if (sort_by && !validSortFields.includes(sort_by)) {
+      sort_by = 'created_at'; // Default fallback
+    }
+
     type TWhere = {
       category: { category_name: string };
       deleted_at: FindOperator<any>;
@@ -97,7 +103,7 @@ export class ProductService {
       where,
       take: limit,
       skip: (page - 1) * limit,
-      order: { [sort_by]: sort_type.toUpperCase() },
+      order: { [sort_by]: sort_type?.toUpperCase() || 'DESC' },
     });
 
     return products;

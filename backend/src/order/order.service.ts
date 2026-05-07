@@ -437,8 +437,12 @@ export class OrderService {
       );
     }
 
-    if (sortBy && sortType) {
+    // Validate sortBy against allowed fields to prevent SQL injection
+    const validSortFields = ['id', 'created_at', 'status', 'total_price', 'updated_at'];
+    if (sortBy && sortType && validSortFields.includes(sortBy)) {
       orderQuery = orderQuery.orderBy(`order.${sortBy}`, sortType);
+    } else {
+      orderQuery = orderQuery.orderBy('order.created_at', 'DESC');
     }
 
     const orders = await orderQuery
