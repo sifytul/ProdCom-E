@@ -28,27 +28,20 @@ export class AuthService {
 
   async signIn({ email, password }: TSignInProps): Promise<TSignInResponse> {
     const user = await this.userService.findOneByEmail(email);
-    let errors: TError[] = [];
-    if (!user) {
-      errors.push({
-        field: 'email',
-        message: 'wrong credential',
-      });
-      throw new BadRequestException({
-        success: false,
-        errors,
-      });
-    }
 
-    const hasMatch = await compare(password, user?.password);
-    if (!hasMatch) {
-      errors.push({
-        field: 'password',
-        message: 'wrong credentials',
-      });
+    // Use constant-time comparison to prevent timing attacks
+    // Return generic error regardless of whether user exists or password is wrong
+    const hasMatch = user ? await compare(password, user.password) : false;
+
+    if (!user || !hasMatch) {
       throw new BadRequestException({
         success: false,
-        errors,
+        errors: [
+          {
+            field: 'credentials',
+            message: 'Invalid email or password',
+          },
+        ],
       });
     }
 
