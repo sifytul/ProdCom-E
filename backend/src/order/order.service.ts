@@ -45,13 +45,11 @@ export class OrderService {
 
     const productIds = products.map((product) => product.product_id);
 
+    // Validate products exist before transaction
     const productEntities = await this.ProductRepository.find({
       where: { id: In(productIds) },
     });
-    // check if the requested product is available
 
-    let total_price = 0;
-    let total_items = 0;
     for (const product of products) {
       const productEntity = productEntities.find(
         (productEntity) => productEntity.id === product.product_id,
@@ -61,23 +59,6 @@ export class OrderService {
           `Product with ID:${product.product_id} not found`,
           HttpStatus.BAD_REQUEST,
         );
-      }
-      if (productEntity && productEntity.stock <= product.quantity) {
-        throw new HttpException(
-          `Product ${product.product_id} is out of stock`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      if (
-        productEntity &&
-        productEntity.stock &&
-        productEntity.stock >= product.quantity
-      ) {
-        const sub_total =
-          productEntity.price * (1 - productEntity.discount) * product.quantity;
-        total_price += sub_total;
-        total_items += product.quantity;
       }
     }
 
@@ -95,7 +76,6 @@ export class OrderService {
 
       if (contact && shipping_info.contact.phone_two) {
         contact.phone_two = shipping_info.contact.phone_two;
-        // await this.ContactInfoRepository.save(contact);
       }
 
       if (!contact) {
@@ -119,11 +99,41 @@ export class OrderService {
 
     shippingInfo = await this.AddressRepository.save(shippingInfo as Address);
 
-    // Start transaction
+    // Start transaction with pessimistic locking to prevent race conditions
     const queryRunner = await this.dataSource.createQueryRunner();
 
     const transactionResult = await queryRunner.manager.transaction(
       async (transactionalEntityManager) => {
+        // Fetch products with pessimistic lock inside transaction
+        const lockedProductEntities = await transactionalEntityManager
+          .getRepository(Product)
+          .find({
+            where: { id: In(productIds) },
+            lock: { mode: 'pessimistic_write' },
+          });
+
+        // Validate stock and calculate totals inside transaction
+        let total_price = 0;
+        let total_items = 0;
+        for (const product of products) {
+          const productEntity = lockedProductEntities.find(
+            (p) => p.id === product.product_id,
+          );
+          if (productEntity && productEntity.stock < product.quantity) {
+            throw new HttpException(
+              `Product ${product.product_id} is out of stock`,
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          const sub_total =
+            productEntity.price *
+            (1 - productEntity.discount) *
+            product.quantity;
+          total_price += sub_total;
+          total_items += product.quantity;
+        }
+
         // create an order instance with shipping info and user
         const newOrder = this.OrderRepository.create([
           {
@@ -152,26 +162,20 @@ export class OrderService {
         let items: TOrderedItems[] = [];
 
         for (const product of products) {
-          const productEntity = productEntities.find(
-            (productEntity) => productEntity.id === product.product_id,
+          const productEntity = lockedProductEntities.find(
+            (p) => p.id === product.product_id,
           );
 
-          if (
-            productEntity &&
-            productEntity.stock &&
-            productEntity.stock >= product.quantity
-          ) {
-            const sub_total =
-              productEntity.price *
-              (1 - productEntity.discount) *
-              product.quantity;
-            items.push({
-              product: productEntity,
-              quantity: product.quantity,
-              sub_total,
-              order,
-            });
-          }
+          const sub_total =
+            productEntity.price *
+            (1 - productEntity.discount) *
+            product.quantity;
+          items.push({
+            product: productEntity,
+            quantity: product.quantity,
+            sub_total,
+            order,
+          });
         }
 
         const orderedItems = this.OrderedItemRepository.create(items);
@@ -184,8 +188,8 @@ export class OrderService {
         order.total_price = Number(total_price) + Number(order.shipping_price);
         await transactionalEntityManager.save(order);
 
-        // update product stock
-        for (let productEntity of productEntities) {
+        // update product stock with locked entities
+        for (let productEntity of lockedProductEntities) {
           const product = products.find(
             (product) => product.product_id === productEntity.id,
           );
@@ -433,8 +437,12 @@ export class OrderService {
       );
     }
 
-    if (sortBy && sortType) {
+    // Validate sortBy against allowed fields to prevent SQL injection
+    const validSortFields = ['id', 'created_at', 'status', 'total_price', 'updated_at'];
+    if (sortBy && sortType && validSortFields.includes(sortBy)) {
       orderQuery = orderQuery.orderBy(`order.${sortBy}`, sortType);
+    } else {
+      orderQuery = orderQuery.orderBy('order.created_at', 'DESC');
     }
 
     const orders = await orderQuery
@@ -459,13 +467,15 @@ export class OrderService {
         createdAt: order.created_at,
         probableDeliveryDate: order.probable_delivery_date,
         deliveredAt: order.delivered_at,
-        paymentInfo: {
-          id: order.payment_info.id,
-          status: order.payment_info.status,
-          medium: order.payment_info.medium,
-          amount: order.payment_info.amount,
-          createdAt: order.payment_info.created_at,
-        },
+        paymentInfo: order.payment_info
+          ? {
+              id: order.payment_info.id,
+              status: order.payment_info.status,
+              medium: order.payment_info.medium,
+              amount: order.payment_info.amount,
+              createdAt: order.payment_info.created_at,
+            }
+          : null,
         shippingInfo: {
           address: order.shipping_info.address,
           city: order.shipping_info.city,
