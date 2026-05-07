@@ -61,7 +61,7 @@ export class CartService {
   }
 
   async remove(userId: number, cartItemId: number) {
-    const IscartItemExist = this.cartItemRepository.findOne({
+    const IscartItemExist = await this.cartItemRepository.findOne({
       where: { id: cartItemId, user: { id: userId } },
     });
 
