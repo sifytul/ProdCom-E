@@ -494,9 +494,13 @@ export class OrderService {
       .take(limit)
       .getMany();
 
-    let orderResponse: TOrder[] = [];
+    const totalOrders = await this.OrderRepository.count();
+    let orderResponse: TOrderResponse = {
+      totalOrders,
+      orders: [],
+    };
     for (const order of orders) {
-      orderResponse.push({
+      orderResponse.orders.push({
         id: order.id,
         itemsPrice: order.items_price,
         totalItems: order.total_items,

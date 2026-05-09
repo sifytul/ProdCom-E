@@ -108,7 +108,7 @@ export class OrderController {
 
   @Roles(Role.ADMIN)
   @Get('admin/orders')
-  findAll(
+  async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('status') status: string | null,
@@ -132,8 +132,7 @@ export class OrderController {
     if (searchTerm === 'none') {
       searchTerm = null;
     }
-
-    return this.orderService.findAll(
+    const orders = await this.orderService.findAll(
       page,
       limit,
       status,
@@ -142,6 +141,14 @@ export class OrderController {
       sortType,
       searchTerm,
     );
+    return {
+      success: true,
+      data: orders.orders,
+      total: orders.totalOrders,
+      page,
+      limit,
+      totalPage: Math.ceil(orders.totalOrders / limit),
+    };
   }
 
   @Patch('/admin/orders/:id')
