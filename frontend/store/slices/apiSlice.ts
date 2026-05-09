@@ -50,6 +50,13 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
+  tagTypes: [
+    "AdminOrders",
+    "AdminProducts",
+    "AdminCategories",
+    "AdminUsers",
+    "AdminStats",
+  ],
   endpoints: (builder) => ({
     logout: builder.mutation({
       query: () => ({
