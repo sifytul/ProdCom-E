@@ -26,14 +26,6 @@ export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly OrderRepository: Repository<Order>,
-    @InjectRepository(OrderedItem)
-    private readonly OrderedItemRepository: Repository<OrderedItem>,
-    @InjectRepository(Product)
-    private readonly ProductRepository: Repository<Product>,
-    @InjectRepository(Address)
-    private readonly AddressRepository: Repository<Address>,
-    @InjectRepository(ContactInfo)
-    private readonly ContactInfoRepository: Repository<ContactInfo>,
     @InjectRepository(Payment)
     private readonly PaymentRepository: Repository<Payment>,
     @InjectDataSource()
@@ -42,159 +34,203 @@ export class OrderService {
 
   async create(createOrderDto: CreateOrderDto, user: TTokenPayload) {
     const { shipping_info, products } = createOrderDto;
-
     const productIds = products.map((product) => product.product_id);
 
-    const productEntities = await this.ProductRepository.find({
-      where: { id: In(productIds) },
-    });
-    // check if the requested product is available
-
-    let total_price = 0;
-    let total_items = 0;
-    for (const product of products) {
-      const productEntity = productEntities.find(
-        (productEntity) => productEntity.id === product.product_id,
-      );
-      if (!productEntity) {
-        throw new HttpException(
-          `Product with ID:${product.product_id} not found`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      if (productEntity && productEntity.stock <= product.quantity) {
-        throw new HttpException(
-          `Product ${product.product_id} is out of stock`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      if (
-        productEntity &&
-        productEntity.stock &&
-        productEntity.stock >= product.quantity
-      ) {
-        const sub_total =
-          productEntity.price * (1 - productEntity.discount) * product.quantity;
-        total_price += sub_total;
-        total_items += product.quantity;
-      }
-    }
-
-    let shippingInfo: Address | null;
-    let contact;
-    // create contact info
-    if (typeof shipping_info === 'number') {
-      shippingInfo = await this.AddressRepository.findOne({
-        where: { id: shipping_info },
-      });
-    } else {
-      contact = await this.ContactInfoRepository.findOne({
-        where: { user: { id: user.userId } },
-      });
-
-      if (contact && shipping_info.contact.phone_two) {
-        contact.phone_two = shipping_info.contact.phone_two;
-        // await this.ContactInfoRepository.save(contact);
-      }
-
-      if (!contact) {
-        let contactPayload = {
-          phone_one: shipping_info.contact.phone_one,
-          phone_two: shipping_info.contact.phone_two ?? null,
-          user: { id: user.userId },
-        } as DeepPartial<ContactInfo>;
-
-        contact = this.ContactInfoRepository.create(contactPayload);
-      }
-      shippingInfo = this.AddressRepository.create({
-        address: shipping_info.address,
-        city: shipping_info.city,
-        country: shipping_info.country,
-        postal_code: shipping_info.postal_code,
-        contact,
-        user: { id: user.userId },
-      });
-    }
-
-    shippingInfo = await this.AddressRepository.save(shippingInfo as Address);
-
-    // Start transaction
-    const queryRunner = await this.dataSource.createQueryRunner();
-
-    const transactionResult = await queryRunner.manager.transaction(
+    return await this.dataSource.transaction(
       async (transactionalEntityManager) => {
-        // create an order instance with shipping info and user
-        const newOrder = this.OrderRepository.create([
-          {
+        // ─── 1. Resolve Shipping Info (inside transaction) ───────────────────────
+
+        let shippingInfo: Address;
+
+        if (typeof shipping_info === 'number') {
+          // Fix #5: throw a clear error when address ID is not found
+          const existingAddress = await transactionalEntityManager
+            .getRepository(Address)
+            .findOne({ where: { id: shipping_info } });
+
+          if (!existingAddress) {
+            throw new HttpException(
+              `Address with ID:${shipping_info} not found`,
+              HttpStatus.NOT_FOUND,
+            );
+          }
+
+          shippingInfo = existingAddress;
+        } else {
+          // Fix #3 & #4: properly save both new and existing contacts
+          let contact = await transactionalEntityManager
+            .getRepository(ContactInfo)
+            .findOne({ where: { user: { id: user.userId } } });
+
+          if (contact) {
+            // Update both phone fields if provided; persist the changes
+            contact.phone_one =
+              shipping_info.contact.phone_one ?? contact.phone_one;
+            contact.phone_two =
+              shipping_info.contact.phone_two ?? contact.phone_two;
+            contact = await transactionalEntityManager.save(
+              ContactInfo,
+              contact,
+            );
+          } else {
+            // Fix #4: explicitly save the new contact before using it
+            const newContact = transactionalEntityManager
+              .getRepository(ContactInfo)
+              .create({
+                phone_one: shipping_info.contact.phone_one,
+                phone_two: shipping_info.contact.phone_two ?? null,
+                user: { id: user.userId },
+              } as DeepPartial<ContactInfo>);
+
+            contact = await transactionalEntityManager.save(
+              ContactInfo,
+              newContact,
+            );
+          }
+
+          // Fix #2: address is now created and saved inside the transaction
+          const newAddress = transactionalEntityManager
+            .getRepository(Address)
+            .create({
+              address: shipping_info.address,
+              city: shipping_info.city,
+              country: shipping_info.country,
+              postal_code: shipping_info.postal_code,
+              contact,
+              user: { id: user.userId },
+            });
+
+          shippingInfo = await transactionalEntityManager.save(
+            Address,
+            newAddress,
+          );
+        }
+
+        // ─── 2. Fetch Products with Pessimistic Lock ──────────────────────────────
+        // Step 1: lock the product rows only — no joins, no problem
+        await transactionalEntityManager
+          .getRepository(Product)
+          .createQueryBuilder('product')
+          .where('product.id IN (:...ids)', { ids: productIds })
+          .setLock('pessimistic_write')
+          .setOnLocked('nowait')
+          .getMany();
+
+        // Step 2: fetch the full product data with relations freely
+        const lockedProductEntities = await transactionalEntityManager
+          .getRepository(Product)
+          .find({
+            where: { id: In(productIds) },
+            relations: { category: true },
+          });
+
+        // ─── 3. Validate Products and Stock ──────────────────────────────────────
+
+        for (const product of products) {
+          const productEntity = lockedProductEntities.find(
+            (p) => p.id === product.product_id,
+          );
+
+          //  throw explicitly instead of silently skipping undefined entity
+          if (!productEntity) {
+            throw new HttpException(
+              `Product with ID:${product.product_id} not found`,
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          if (productEntity.stock < product.quantity) {
+            throw new HttpException(
+              `Product with ID:${product.product_id} is out of stock`,
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        }
+
+        // ─── 4. Calculate Totals ──────────────────────────────────────────────────
+
+        //  single shared helper — no more duplicated formula
+        const calcSubTotal = (
+          productEntity: Product,
+          quantity: number,
+        ): number =>
+          productEntity.price * (1 - productEntity.discount) * quantity;
+
+        let total_price = 0;
+        let total_items = 0;
+
+        for (const product of products) {
+          const productEntity = lockedProductEntities.find(
+            (p) => p.id === product.product_id,
+          )!;
+
+          total_price += calcSubTotal(productEntity, product.quantity);
+          total_items += product.quantity;
+        }
+
+        // ─── 5. Create and Persist Order ─────────────────────────────────────────
+
+        // removed the confusing create([...])[0] pattern — use object form
+        const newOrder = transactionalEntityManager
+          .getRepository(Order)
+          .create({
             user: { id: user.userId },
             shipping_info: shippingInfo,
             payment_info: undefined,
             probable_delivery_date: new Date(
               Date.now() + 3 * 24 * 60 * 60 * 1000,
             ),
-          },
-        ] as DeepPartial<Order>[]);
+          } as DeepPartial<Order>);
 
-        const order: Order & {
-          items_price: number;
-          total_items: number;
-          total_price: number;
-        } = await transactionalEntityManager.save(newOrder[0]);
+        const order = await transactionalEntityManager.save(Order, newOrder);
 
-        type TOrderedItems = {
-          product: Product;
-          quantity: number;
-          sub_total: number;
-          order: Order;
-        };
-        // create ordered items with order instance and product instance
-        let items: TOrderedItems[] = [];
+        // ─── 6. Create and Persist Ordered Items ─────────────────────────────────
 
-        for (const product of products) {
-          const productEntity = productEntities.find(
-            (productEntity) => productEntity.id === product.product_id,
-          );
+        const items = products.map((product) => {
+          const productEntity = lockedProductEntities.find(
+            (p) => p.id === product.product_id,
+          )!;
 
-          if (
-            productEntity &&
-            productEntity.stock &&
-            productEntity.stock >= product.quantity
-          ) {
-            const sub_total =
-              productEntity.price *
-              (1 - productEntity.discount) *
-              product.quantity;
-            items.push({
-              product: productEntity,
-              quantity: product.quantity,
-              sub_total,
-              order,
-            });
-          }
-        }
+          return {
+            product: productEntity,
+            quantity: product.quantity,
+            sub_total: calcSubTotal(productEntity, product.quantity),
+            order,
+          };
+        });
 
-        const orderedItems = this.OrderedItemRepository.create(items);
+        const orderedItems = transactionalEntityManager
+          .getRepository(OrderedItem)
+          .create(items);
 
-        await transactionalEntityManager.save(orderedItems);
+        await transactionalEntityManager.save(OrderedItem, orderedItems);
 
-        // update order total price and total items
+        // ─── 7. Update Order Totals ───────────────────────────────────────────────
+
+        // guard against undefined/null shipping_price to prevent NaN total
+        const shipping_price = Number(order.shipping_price) || 0;
+
         order.items_price = total_price;
         order.total_items = total_items;
-        order.total_price = Number(total_price) + Number(order.shipping_price);
-        await transactionalEntityManager.save(order);
+        order.total_price = total_price + shipping_price;
 
-        // update product stock
-        for (let productEntity of productEntities) {
+        await transactionalEntityManager.save(Order, order);
+
+        // ─── 8. Decrement Product Stock ───────────────────────────────────────────
+
+        for (const productEntity of lockedProductEntities) {
           const product = products.find(
-            (product) => product.product_id === productEntity.id,
+            (p) => p.product_id === productEntity.id,
           );
 
           if (product) {
             productEntity.stock -= product.quantity;
-            await transactionalEntityManager.save(productEntity);
+            await transactionalEntityManager.save(Product, productEntity);
           }
         }
+
+        // ─── 9. Return Response ───────────────────────────────────────────────────
+
         return {
           order: new OrderResponseDto(order),
           orderedItems: orderedItems.map(
@@ -203,7 +239,8 @@ export class OrderService {
         };
       },
     );
-    return transactionResult;
+    //  dataSource.transaction() manages connect/commit/rollback/release
+    // automatically — no manual queryRunner lifecycle needed
   }
 
   async findMyOrders(
@@ -434,7 +471,13 @@ export class OrderService {
     }
 
     // Validate sortBy against allowed fields to prevent SQL injection
-    const validSortFields = ['id', 'created_at', 'status', 'total_price', 'updated_at'];
+    const validSortFields = [
+      'id',
+      'created_at',
+      'status',
+      'total_price',
+      'updated_at',
+    ];
     if (sortBy && sortType && validSortFields.includes(sortBy)) {
       orderQuery = orderQuery.orderBy(`order.${sortBy}`, sortType);
     } else {
