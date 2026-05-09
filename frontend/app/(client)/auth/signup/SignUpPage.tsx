@@ -45,15 +45,18 @@ const SignUpPageContent = () => {
   const submitHandler: SubmitHandler<TFormData> = async (data: TFormData) => {
     //TODO: Need to implement submission
     try {
-      const res = await fetch(process.env.BACKEND_API + "/auth/register", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        mode: "cors",
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_BACKEND_API + "/auth/register",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          mode: "cors",
+        }
+      );
 
       const responseData = await res.json();
       if (!res.ok) {
