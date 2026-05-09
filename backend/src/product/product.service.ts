@@ -79,7 +79,14 @@ export class ProductService {
     let { category, page, limit, sort_by, sort_type, searchTerm } = query;
 
     // Validate sort_by against allowed fields to prevent SQL injection
-    const validSortFields = ['id', 'name', 'price', 'discount', 'stock', 'created_at'];
+    const validSortFields = [
+      'id',
+      'name',
+      'price',
+      'discount',
+      'stock',
+      'created_at',
+    ];
     if (sort_by && !validSortFields.includes(sort_by)) {
       sort_by = 'created_at'; // Default fallback
     }
@@ -107,6 +114,52 @@ export class ProductService {
     });
 
     return products;
+  }
+
+  async findAllForAdmin({
+    page = 1,
+    limit = 10,
+    sortBy = 'created_at',
+    sortType = 'DESC',
+    searchTerm,
+    stockStatus,
+  }: {
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortType?: 'ASC' | 'DESC';
+    searchTerm?: string;
+    stockStatus?: 'in_stock' | 'out_of_stock' | 'all';
+  }) {
+    const whereCondition: any = {
+      deleted_at: IsNull(),
+    };
+
+    if (searchTerm) {
+      whereCondition.name = ILike(`%${searchTerm}%`);
+    }
+
+    if (stockStatus === 'in_stock') {
+      whereCondition.stock = Not(0);
+    } else if (stockStatus === 'out_of_stock') {
+      whereCondition.stock = 0;
+    }
+
+    const [products, total] = await this.productRepository.findAndCount({
+      where: whereCondition,
+      take: limit,
+      skip: (page - 1) * limit,
+      order: { [sortBy]: sortType.toUpperCase() },
+      relations: ['category', 'sub_category', 'added_by'],
+    });
+
+    return {
+      success: true,
+      data: products,
+      total,
+      page,
+      limit,
+    };
   }
 
   async findOneById(id: number) {

@@ -97,6 +97,26 @@ export class ProductController {
   }
 
   @Roles(Role.ADMIN)
+  @Get('admin/products')
+  async fetchAllProductsForAdmin(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('sortBy') sortBy: string,
+    @Query('sortType') sortType: 'ASC' | 'DESC',
+    @Query('searchTerm') searchTerm: string,
+    @Query('stockStatus') stockStatus: 'in_stock' | 'out_of_stock' | 'all',
+  ) {
+    return this.productService.findAllForAdmin({
+      page,
+      limit,
+      sortBy,
+      sortType,
+      searchTerm,
+      stockStatus,
+    });
+  }
+
+  @Roles(Role.ADMIN)
   @UseInterceptors(FilesInterceptor('images'))
   @Post('admin/products/new')
   async createProduct(
