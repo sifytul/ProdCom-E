@@ -7,7 +7,6 @@ import {
   TSignInProps,
   TSignInResponse,
 } from './types/type';
-import { TError } from '@/types/type';
 
 @Injectable()
 export class AuthService {

@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from '@/category/entities/category.entity';
+import { Category } from './entities/category.entity';
 import { deleteImage } from '@/utils/uploadImage';
 import { Repository } from 'typeorm';
 import { TUploadedImage } from '@/product/types/type';
