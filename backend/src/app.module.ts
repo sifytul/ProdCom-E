@@ -18,6 +18,9 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
 import { Keyv } from 'keyv';
 import { KeyvCacheableMemory } from 'cacheable';
+import { RedisModule } from './redis/redis.module';
+import { RateLimitGuard } from './common/rate-limiter/rate-limit.guard';
+import { RateLimiterModule } from './common/rate-limiter/rate-limit.module';
 
 @Module({
   imports: [
@@ -47,10 +50,17 @@ import { KeyvCacheableMemory } from 'cacheable';
         };
       },
     }),
+
+    RedisModule,
+    RateLimiterModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RateLimitGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

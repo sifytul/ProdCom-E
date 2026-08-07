@@ -17,6 +17,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto, UpdateOrderDtoForAdmin } from './dto/update-order.dto';
 import { OrderService } from './order.service';
 import { TTokenPayload } from '@/auth/types/type';
+import { RateLimit } from '@/common/rate-limiter/rate-limit.decorator';
 
 @Controller()
 export class OrderController {
@@ -24,6 +25,7 @@ export class OrderController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('orders/new')
+  @RateLimit({ capacity: 10, refillRate: 1, failClosed: true })
   async create(
     @Body() createOrderDto: CreateOrderDto,
     @User() user: TTokenPayload,

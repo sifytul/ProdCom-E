@@ -25,6 +25,7 @@ import { ForgotPasswordDto } from './dto/forgotPasswordDto';
 import { registerUserDto } from './dto/registerUserDto';
 import { SignInDto } from './dto/signinDto';
 import { TTokenPayload } from './types/type';
+import { RateLimit } from '@/common/rate-limiter/rate-limit.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -35,6 +36,7 @@ export class AuthController {
 
   @Public()
   @Post('/register')
+  @RateLimit({ capacity: 5, refillRate: 5 / 60, failClosed: true })
   async registerUser(
     @Res({ passthrough: true }) res: Response,
     @Body() registerProps: registerUserDto,
@@ -61,6 +63,7 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('/signin')
+  @RateLimit({ capacity: 5, refillRate: 5 / 60, failClosed: true })
   async loginUser(
     @Body() body: SignInDto,
     @Res({ passthrough: true }) res: Response,
