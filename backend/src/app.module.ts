@@ -14,6 +14,10 @@ import { ProductModule } from './product/product.module';
 import { ReviewModule } from './review/review.module';
 import { UserModule } from './user/user.module';
 import { CategoryModule } from './category/category.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { createKeyv } from '@keyv/redis';
+import { Keyv } from 'keyv';
+import { KeyvCacheableMemory } from 'cacheable';
 
 @Module({
   imports: [
@@ -26,6 +30,23 @@ import { CategoryModule } from './category/category.module';
     OrderModule,
     CartModule,
     CategoryModule,
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => {
+        const redisStore = createKeyv('redis://:helloredis@redis:6379');
+        redisStore.on('error', (err) =>
+          console.error('KEYV REDIS ERROR:', err),
+        );
+
+        const memoryStore = new Keyv({
+          store: new KeyvCacheableMemory({ ttl: 60000, lruSize: 5000 }),
+        });
+
+        return {
+          stores: [memoryStore, redisStore],
+        };
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [

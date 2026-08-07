@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -21,6 +22,8 @@ import { TFindAllProductQuery, TUploadedImage } from './types/type';
 import { Category } from '@/category/entities/category.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductImage } from './entities/productImage.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ProductService {
@@ -30,6 +33,8 @@ export class ProductService {
     private categoryService: CategoryService,
     @InjectRepository(ProductImage)
     private imageRepository: Repository<ProductImage>,
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
   ) {}
 
   async create(
@@ -163,9 +168,20 @@ export class ProductService {
   }
 
   async findOneById(id: number) {
+    const cacheKey = `ecom:product:${id}`;
+
+    const cachedProduct = await this.cacheManager.get<Product>(cacheKey);
+
+    if (cachedProduct) {
+      console.log(`Cache hit for product ID ${id}`);
+      return cachedProduct;
+    }
+
     const product = await this.productRepository.findOne({
       where: { id },
     });
+
+    await this.cacheManager.set(cacheKey, product, 300); // Cache for 5 minutes
 
     return product;
   }

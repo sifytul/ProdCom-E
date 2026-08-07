@@ -26,6 +26,7 @@ import { ProductService } from './product.service';
 import { TTokenPayload } from '@/auth/types/type';
 import { TUploadedImage } from './types/type';
 import { Category } from '@/category/entities/category.entity';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller()
 export class ProductController {
@@ -35,6 +36,7 @@ export class ProductController {
   ) {}
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
   @Get('products')
   async findAllProducts(
     @Query('category') category: string | null,
@@ -81,6 +83,7 @@ export class ProductController {
   }
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
   @Get('products/:id')
   async findOneProductById(@Param('id', ParseIntPipe) id: number) {
     const product = await this.productService.findOneById(id);
