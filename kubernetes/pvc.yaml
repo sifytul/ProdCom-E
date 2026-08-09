@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: ecom
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # storageClassName: gp3   # uncomment and set to your cluster's storage class
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: ecom
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # storageClassName: gp3
+  resources:
+    requests:
+      storage: 2Gi

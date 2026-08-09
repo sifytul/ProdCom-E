@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecom-frontend-config
+  namespace: ecom
+data:
+  NODE_ENV: production
+  PORT: 3000
+  # Public API URL the browser will call — must be reachable from the
+  # client's browser, so this should be your public Ingress host, not the
+  # internal ClusterIP service name.
+  NEXT_PUBLIC_BACKEND_API: ecom-api

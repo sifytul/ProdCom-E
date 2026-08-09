@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecom-ingress
+  namespace: ecom
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod # remove if not using cert-manager
+spec:
+  ingressClassName: nginx # change if using a different ingress controller (traefik, alb, etc.)
+  tls:
+    - hosts:
+        - api.prodcome.com # replace with your real API domain
+        - www.prodcome.com # replace with your real frontend domain
+      secretName: ecom-tls
+  rules:
+    - host: api.prodcome.com # backend API
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ecom-api
+                port:
+                  number: 80
+    - host: www.prodcome.com # Next.js frontend
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ecom-frontend
+                port:
+                  number: 80

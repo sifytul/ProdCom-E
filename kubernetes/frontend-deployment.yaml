@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecom-frontend
+  namespace: ecom
+  labels:
+    app: ecom-frontend
+spec:
+  replicas: 2 # HPA will scale this; this is just the starting count
+  selector:
+    matchLabels:
+      app: ecom-frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0 # zero-downtime rolling deploys
+  template:
+    metadata:
+      labels:
+        app: ecom-frontend
+    spec:
+      containers:
+        - name: ecom-frontend
+          image: sifytul/prodcom-e-frontend:v1.0.2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: ecom-frontend-config
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
